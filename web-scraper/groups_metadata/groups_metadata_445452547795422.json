@@ -4,26 +4,27 @@
     "primary_focus": {
         "listing_type": "Sale",
         "property_category": "Land",
-        "percentage": 15.1
+        "percentage": 14.1
     },
-    "avg_scroll_time_1_day_sec": 378.5,
+    "avg_scroll_time_1_day_sec": 637.7,
     "distributions": {
-        "Sale - Apartment": 9,
-        "Unknown - Apartment": 12,
-        "Unknown - General / Unclassified": 77,
-        "Unknown - Media-Only": 19,
-        "Rent - House": 8,
-        "Unknown - House": 8,
-        "Sale - Land": 26,
-        "Unknown - Land": 13
+        "Sale - Apartment": 44,
+        "Unknown - Apartment": 20,
+        "Unknown - General / Unclassified": 178,
+        "Unknown - Media-Only": 47,
+        "Rent - House": 12,
+        "Unknown - House": 12,
+        "Sale - Land": 57,
+        "Unknown - Land": 26,
+        "Sale - House": 8
     },
     "scroll_benchmarks": {
         "2026-09-15": {
-            "scroll_duration_seconds": 29.33378839492798,
-            "oldest_post_age_hours": 1.86,
-            "posts_scanned": 41
+            "scroll_duration_seconds": 183.86526226997375,
+            "oldest_post_age_hours": 6.92,
+            "posts_scanned": 232
         }
     },
-    "last_scraped": "2026-09-15T20:23:09.781490",
-    "total_collected": 172
+    "last_scraped": "2026-09-15T21:07:41.290984",
+    "total_collected": 404
 }
