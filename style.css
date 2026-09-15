@@ -115,7 +115,7 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background 0.15s ease;
+    transition: transform 0.2s ease, background 0.15s ease;
 }
 
 .collapse-btn:hover {
@@ -390,6 +390,7 @@ footer {
     margin-bottom: 0;
 }
 
+/* Smoothly rotate the arrow icon to point right ">" when collapsed */
 .filters-collapsed .collapse-btn {
     transform: rotate(180deg);
 }

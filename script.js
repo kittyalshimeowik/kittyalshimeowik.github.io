@@ -71,18 +71,18 @@ document.addEventListener("DOMContentLoaded", () => {
         document.querySelectorAll("[data-i18n-placeholder]").forEach(element => element.placeholder = text(element.dataset.i18nPlaceholder));
         document.querySelectorAll(".language-btn").forEach(button => button.classList.toggle("active", button.dataset.language === currentLanguage));
         updateFilterToggle();
-            locationOptions.querySelectorAll("label").forEach(label => {
-                const input = label.querySelector("input");
-                if (input && label.lastChild) label.lastChild.textContent = ` ${translateLocation(input.value)}`;
-            });
+        locationOptions.querySelectorAll("label").forEach(label => {
+            const input = label.querySelector("input");
+            if (input && label.lastChild) label.lastChild.textContent = ` ${translateLocation(input.value)}`;
+        });
     }
 
     function updateFilterToggle() {
-        const isExpanded = toggleFilters.getAttribute("aria-expanded") === "true";
-        const label = isExpanded
-            ? (currentLanguage === "hy" ? "Փակել զտիչները" : "Collapse filters")
-            : (currentLanguage === "hy" ? "Բացել զտիչները" : "Expand filters");
-        toggleFilters.textContent = isExpanded ? "<" : ">";
+        const isCollapsed = catalogLayout.classList.contains("filters-collapsed");
+        const label = isCollapsed
+            ? (currentLanguage === "hy" ? "Բացել զտիչները" : "Expand filters")
+            : (currentLanguage === "hy" ? "Փակել զտիչները" : "Collapse filters");
+        toggleFilters.setAttribute("aria-expanded", String(!isCollapsed));
         toggleFilters.setAttribute("aria-label", label);
         toggleFilters.title = label;
     }
@@ -97,7 +97,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let allListings = [];
 
-    // Fetch the JSON data output file
     fetch("web-scraper/master_listings_json/all_for_sale_rent.json")
         .then(response => {
             if (!response.ok) {
@@ -106,7 +105,6 @@ document.addEventListener("DOMContentLoaded", () => {
             return response.json();
         })
         .then(data => {
-            // Keep only legitimate real estate categories from the scraper data
             allListings = data.filter(item => 
                 item.property_category && 
                 item.property_category !== "General / Unclassified" && 
@@ -186,7 +184,6 @@ document.addEventListener("DOMContentLoaded", () => {
         displayListings(filteredListings);
     }
 
-    // Render compact listing rows because the feed has no image URLs.
     function displayListings(listings) {
         gridContainer.innerHTML = "";
         resultCount.textContent = translations[currentLanguage].listingCount(listings.length);
@@ -200,29 +197,26 @@ document.addEventListener("DOMContentLoaded", () => {
             const card = document.createElement("article");
             card.className = "property-card";
 
-            // Format price extraction safely
             let priceText = text("priceUponRequest");
             if (item.prices && item.prices.length > 0) {
                 const p = item.prices[0];
                 priceText = `${p.raw_text || p.amount} ${p.currency !== "Unspecified Currency" ? p.currency : ''}`.trim();
             }
 
-            // Format rooms & sizes metadata
             let detailsArr = [];
             if (item.rooms && item.rooms.length > 0) {
-                detailsArr.push(`${item.rooms.join(", ")} ${translations[currentLanguage].roomLabel(item.rooms[0])}`);
+                // Fixed: use roomLabel directly with the numeric room value to avoid duplication (e.g. "4 rooms" instead of "4 4 rooms")
+                detailsArr.push(translations[currentLanguage].roomLabel(Number(item.rooms[0])));
             }
             if (item.sizes_sqm && item.sizes_sqm.length > 0) {
                 detailsArr.push(`${item.sizes_sqm[0]} m²`);
             }
             const detailsText = detailsArr.length > 0 ? detailsArr.join(" • ") : (translations[currentLanguage].propertyTypes[item.property_category] || text("property"));
 
-            // Format location string
             const locationText = item.locations && item.locations.length > 0
                 ? item.locations.map(translateLocation).join(", ")
                 : text("armenia");
 
-            // Listing type tag handling (Sale vs Rent)
             const listingType = item.listing_type || "Unknown";
             const listingTypeLabel = translations[currentLanguage].listingTypes[listingType] || listingType;
             let typeTagClass = "sale";
@@ -256,12 +250,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.addEventListener("input", handleFilterChange);
     document.addEventListener("change", handleFilterChange);
+
     toggleFilters.addEventListener("click", () => {
-        const isExpanded = toggleFilters.getAttribute("aria-expanded") === "true";
-        toggleFilters.setAttribute("aria-expanded", String(!isExpanded));
-        catalogLayout.classList.toggle("filters-collapsed", isExpanded);
+        catalogLayout.classList.toggle("filters-collapsed");
         updateFilterToggle();
     });
+
     resetFilters.addEventListener("click", () => {
         document.querySelectorAll("input[type='checkbox']").forEach(input => input.checked = false);
         document.getElementById("source-filter").value = "All";
@@ -276,7 +270,6 @@ document.addEventListener("DOMContentLoaded", () => {
         applyFilters();
     });
 
-    // Helper to escape special HTML characters safely in snippets
     function escapeHtml(str) {
         return str.replace(/[&<>'"]/g, 
             tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
