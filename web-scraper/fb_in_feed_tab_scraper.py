@@ -22,6 +22,7 @@ import time
 import json
 import random
 import base64
+import argparse
 from datetime import datetime, timedelta
 from playwright.sync_api import sync_playwright
 
@@ -215,7 +216,6 @@ def update_group_config_status(group_id, new_posts_count):
 
 
 def calculate_dynamic_runtime(group_id):
-    # Set maximum limit for scrolling a given group to 12-15 minutes max (randomly picked between 720 and 900 seconds)
     max_group_limit_sec = float(random.randint(720, 900))
     default_fallback_sec = min(180.0, max_group_limit_sec)
     
@@ -882,8 +882,6 @@ def smooth_scroll(page, direction="down"):
 
 
 def perform_human_action_chain(page, mouse_pos):
-    # Windows-only safe branching: Completely disable clicking/hovering UI elements on Windows 
-    # to prevent accidental clicks on "Home" or navigation items due to OS scaling/window focus differences.
     if CURRENT_OS == "windows":
         action_type = random.choices(["scroll_down", "scroll_up"], weights=[0.90, 0.10], k=1)[0]
     else:
@@ -910,7 +908,6 @@ def check_global_break(global_timer_state, page, mouse_pos):
         viewport = page.viewport_size or {"width": 1366, "height": 768}
         
         while time.time() < break_end:
-            # On Windows, keep mouse idle during breaks to avoid unintended clicks or hover triggers
             if CURRENT_OS != "windows" and random.random() < 0.15: 
                 target_x = random.randint(200, viewport["width"] - 200)
                 target_y = random.randint(200, viewport["height"] - 200)
@@ -923,7 +920,6 @@ def check_global_break(global_timer_state, page, mouse_pos):
 
 
 def manage_tabs_and_cleanup(browser_context, open_tabs, current_page, mouse_pos):
-    # Skip closing background tabs via top bar coordinates on Windows to prevent clicking browser chrome/tabs accidentally
     if CURRENT_OS != "windows" and len(open_tabs) > 2 and random.random() < 0.3:
         candidates = [t for t in open_tabs if t != current_page and not t.is_closed()]
         if candidates:
@@ -951,11 +947,19 @@ def run_facebook_housing_scraper():
         print("❌ No target groups found in groups_config.json.")
         return
 
+    # --- Robust Argument Parsing (supports positional style AND flag style) ---
+    parser = argparse.ArgumentParser(description="Facebook Housing Posts Scraper")
+    parser.add_argument("positional_time", nargs="?", type=float, default=None, help="Time limit in minutes per group (positional)")
+    parser.add_argument("-t", "--time-limit", type=float, default=None, help="Time limit in minutes per group (flag)")
+    
+    parsed_args, unknown = parser.parse_known_args()
+    cli_runtime_min = parsed_args.time_limit if parsed_args.time_limit is not None else parsed_args.positional_time
+
     cli_runtime_sec = None
-    if len(sys.argv) > 1:
+    if cli_runtime_min is not None:
         try:
-            cli_runtime_sec = float(sys.argv[1]) * 60.0
-            print(f"⏱️ CLI Override active: Forcing runtime to {sys.argv[1]} minutes per group.")
+            cli_runtime_sec = float(cli_runtime_min) * 60.0
+            print(f"⏱️ CLI Override active: Forcing runtime to {cli_runtime_min} minutes per group.")
         except ValueError:
             print("⚠️ Invalid argument for runtime provided. Falling back to dynamic metadata calculation.")
 
@@ -966,7 +970,6 @@ def run_facebook_housing_scraper():
     }
 
     with sync_playwright() as p:
-        # Construct launch context parameters conditionally for Windows vs other OSes
         context_args = {
             "user_data_dir": USER_DATA_DIR,
             "headless": False,
