@@ -1132,47 +1132,70 @@ def run_facebook_housing_scraper():
                 current_height = page.evaluate("document.body.scrollHeight")
                 current_post_count = len(current_session_posts)
 
-                # Evaluate if height or post count changed
-                if current_height == last_scroll_height and current_post_count == last_post_count:
+                # Only increment stagnation if height didn't expand AND no new posts were collected
+                if current_height <= last_scroll_height and current_post_count == last_post_count:
                     stagnant_counter += 1
                 else:
                     stagnant_counter = 0  # Reset counter on any progress
-                    last_scroll_height = current_height
+                    last_scroll_height = max(last_scroll_height, current_height)
                     last_post_count = current_post_count
 
-                # Fast stagnation recovery trigger (~3 idle checks / ~6-9 seconds)
-                if stagnant_counter >= 3:
-                    print(f"⚠️ [{group_name}] Feed paused. Nudging scroll to wake up lazy-load...")
+                # Relaxed stagnation recovery trigger (~6 idle checks / ~15-20 seconds)
+                if stagnant_counter >= 6:
+                    print(f"⚠️ [{group_name}] Feed paused. Nudging scroll and waiting for lazy-load...")
                     smooth_scroll(page, direction="up", pixels=300)
-                    time.sleep(0.8)
-                    smooth_scroll(page, direction="down", pixels=600)
                     time.sleep(1.5)
+                    smooth_scroll(page, direction="down", pixels=700)
+                    time.sleep(3.0)  # Give network time to fetch GraphQL posts
                     
-                    # Re-check height after recovery jolt
+                    # Re-check height and post count after recovery jolt
                     new_height = page.evaluate("document.body.scrollHeight")
-                    if new_height == last_scroll_height:
+                    current_post_count = len(current_session_posts)
+                    
+                    if new_height <= last_scroll_height and current_post_count == last_post_count:
                         print(f"🛑 [{group_name}] Page fully stuck or end of feed reached. Moving on early.")
                         break
                     else:
+                        print(f"✅ [{group_name}] Feed un-stuck successfully! Resuming scroll.")
                         stagnant_counter = 0  # Successfully unstuck, reset counter!
+                        last_scroll_height = new_height
+                        last_post_count = current_post_count
 
-                if current_session_posts:
+                # --- Consecutive Streak Stopping Condition with Initial Buffer ---
+                if len(current_session_posts) >= 25:
                     now_ts = datetime.now().timestamp()
-                    valid_ages_days = []
+                    post_ages = []
                     for p in current_session_posts:
                         ts = p.get("creation_timestamp")
                         if ts and ts <= now_ts:
                             age_d = (now_ts - ts) / (3600.0 * 24.0)
                             if 0 <= age_d <= 365:
-                                valid_ages_days.append(age_d)
-                    
-                    if len(valid_ages_days) >= 15:
-                        valid_ages_days.sort(reverse=True)
-                        check_idx = int(len(valid_ages_days) * 0.05)
-                        robust_oldest_age = valid_ages_days[check_idx]
-                        if robust_oldest_age >= 30.0:
-                            print(f"🛑 Reached consistent posts older than 30 days ({round(robust_oldest_age, 1)} days old at threshold). Stopping scan early for this group.")
-                            break
+                                post_ages.append(age_d)
+                            else:
+                                post_ages.append(None)
+                        else:
+                            post_ages.append(None)
+
+                    # Allow room at the beginning: skip the first 5 posts to avoid 
+                    # pinned listings or historical anomalies sitting right at the top.
+                    buffer_count = 5
+                    evaluated_ages = post_ages[buffer_count:] if len(post_ages) > buffer_count else []
+
+                    consecutive_old_streak = 0
+                    max_streak = 0
+                    for age in evaluated_ages:
+                        if age is not None and age > 30.0:
+                            consecutive_old_streak += 1
+                            if consecutive_old_streak > max_streak:
+                                max_streak = consecutive_old_streak
+                        else:
+                            consecutive_old_streak = 0  # Reset streak on fresh post or missing metadata
+
+                    # Require at least 10 consecutive old posts after the buffer to trigger termination
+                    required_streak = 10
+                    if max_streak >= required_streak:
+                        print(f"🛑 Reached consecutive streak of {max_streak} posts older than 30 days (allowing initial buffer). Stopping scan early for this group.")
+                        break
 
                 elapsed_sec = time.time() - session_start_time
                 elapsed_formatted = format_elapsed_time(elapsed_sec)

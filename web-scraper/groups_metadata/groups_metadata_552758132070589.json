@@ -1,29 +1,32 @@
 {
     "name": "Group 552758132070589",
-    "summary_title": "Houses for Sale",
+    "summary_title": "Apartments for Sale",
     "primary_focus": {
         "listing_type": "Sale",
-        "property_category": "House",
-        "percentage": 7.7
+        "property_category": "Apartment",
+        "percentage": 15.6
     },
-    "avg_scroll_time_1_day_sec": 487.0,
+    "avg_scroll_time_1_day_sec": 635.3,
     "distributions": {
-        "Sale - House": 5,
-        "Unknown - General / Unclassified": 24,
-        "Unknown - Media-Only": 9,
-        "Sale - General / Unclassified": 4,
-        "Unknown - Apartment": 8,
-        "Sale - Apartment": 3,
-        "Unknown - House": 8,
-        "Rent - House": 4
+        "Sale - House": 25,
+        "Unknown - General / Unclassified": 142,
+        "Unknown - Media-Only": 63,
+        "Sale - General / Unclassified": 12,
+        "Unknown - Apartment": 20,
+        "Sale - Apartment": 61,
+        "Unknown - House": 16,
+        "Rent - House": 8,
+        "Sale - Land": 29,
+        "Rent - Apartment": 7,
+        "Unknown - Land": 8
     },
     "scroll_benchmarks": {
         "2026-09-15": {
-            "scroll_duration_seconds": 45.652257680892944,
-            "oldest_post_age_hours": 2.25,
-            "posts_scanned": 65
+            "scroll_duration_seconds": 180.7915062904358,
+            "oldest_post_age_hours": 6.83,
+            "posts_scanned": 326
         }
     },
-    "last_scraped": "2026-09-15T20:16:01.326058",
-    "total_collected": 65
+    "last_scraped": "2026-09-15T20:38:11.973727",
+    "total_collected": 391
 }
