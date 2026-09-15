@@ -1,0 +1,31 @@
+{
+    "name": "Group 1976674969740027",
+    "summary_title": "Lands for Sale",
+    "primary_focus": {
+        "listing_type": "Sale",
+        "property_category": "Land",
+        "percentage": 15.1
+    },
+    "avg_scroll_time_1_day_sec": 25.4,
+    "distributions": {
+        "Unknown - House": 3,
+        "Unknown - General / Unclassified": 327,
+        "Sale - Land": 84,
+        "Unknown - Media-Only": 75,
+        "Unknown - Apartment": 10,
+        "Sale - Apartment": 31,
+        "Sale - House": 12,
+        "Rent - House": 2,
+        "Sale - General / Unclassified": 7,
+        "Unknown - Land": 6
+    },
+    "scroll_benchmarks": {
+        "2026-09-15": {
+            "scroll_duration_seconds": 180.00638699531555,
+            "oldest_post_age_hours": 169.9,
+            "posts_scanned": 557
+        }
+    },
+    "last_scraped": "2026-09-15T14:33:11.031489",
+    "total_collected": 557
+}

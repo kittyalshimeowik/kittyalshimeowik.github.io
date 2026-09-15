@@ -1,0 +1,4 @@
+2026/09/15-11:44:52.108 200c5f Reusing MANIFEST /Users/sonavardanyan/Desktop/fb-scraper-project/fb_session/Default/Site Characteristics Database/MANIFEST-000001
+2026/09/15-11:44:52.111 200c5f Recovering log #3
+2026/09/15-11:44:52.111 200c5f (ignoring error) /Users/sonavardanyan/Desktop/fb-scraper-project/fb_session/Default/Site Characteristics Database/000003.log: dropping 3607 bytes; Corruption: checksum mismatch
+2026/09/15-11:44:52.111 200c5f Reusing old log /Users/sonavardanyan/Desktop/fb-scraper-project/fb_session/Default/Site Characteristics Database/000003.log 

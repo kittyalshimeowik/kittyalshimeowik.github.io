@@ -1,0 +1,98 @@
+[
+    {
+        "url": "https://www.facebook.com/groups/1733726720555984/posts/2109364916325494",
+        "group_id": "1733726720555984",
+        "extracted_at": "2026-09-15T14:41:20.336564",
+        "created_at": null,
+        "creation_timestamp": null,
+        "author": "VILLA REALTY SHENGAVIT",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Land",
+        "listing_type": "Sale",
+        "is_negotiable": true,
+        "floor_info": null,
+        "prices": [
+            {
+                "amount": 260,
+                "currency": "Unspecified Currency",
+                "raw_text": "260"
+            },
+            {
+                "amount": 160,
+                "currency": "Unspecified Currency",
+                "raw_text": "160"
+            },
+            {
+                "amount": 135000,
+                "currency": "AMD",
+                "raw_text": "135.000"
+            }
+        ],
+        "sizes_sqm": [],
+        "rooms": [
+            5
+        ],
+        "locations": [
+            "Shengavit"
+        ],
+        "phone_numbers": [
+            "+374 55 300 223"
+        ],
+        "full_text": "Շենգավիթ` Ներքին Չարբախ\nՍեփական տուն\n✅ 5 Սենյակ\n✅️ 2 հարկ\n✅️ ընդհանուր հողատարածքը`260² \n✅️ բնակելի`160² \n✅ կապիտալ վերանորոգված\n✅ ավտոտնակ\n✅ անհատական ջեռուցում\n✅ պարսպապատ\n✅ մեկական խոհանոց ամեն հարկում\n✅ տաղավար\n✅ մրգատու այգի\n✅ ասֆալտապատ փողոց\n✅ 135.000💲\n☎️ 055300223\nՇտապ վաճառք❗️❗️❗️ ՍԱԿԱՐԿԵԼԻ❗️❗️❗️\nՎաճառքը միայն կանխիկ❗️❗️❗️\nԱռանց Միջնորդավճար❗️❗️❗️"
+    },
+    {
+        "url": "https://www.facebook.com/groups/1733726720555984/posts/2109364789658840",
+        "group_id": "1733726720555984",
+        "extracted_at": "2026-09-15T14:41:20.348565",
+        "created_at": "2026-09-15 13:46:03",
+        "creation_timestamp": 1789479963,
+        "author": "Maria Hovsepyan",
+        "has_text": false,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/1733726720555984/posts/122204039216830058",
+        "group_id": "1733726720555984",
+        "extracted_at": "2026-09-15T14:41:20.402733",
+        "created_at": "2026-09-15 13:45:40",
+        "creation_timestamp": 1789479940,
+        "author": null,
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [
+            {
+                "amount": 200000,
+                "currency": "AMD",
+                "raw_text": "200,000"
+            }
+        ],
+        "sizes_sqm": [
+            52
+        ],
+        "rooms": [
+            2
+        ],
+        "locations": [
+            "Davtashen"
+        ],
+        "phone_numbers": [
+            "+374 33 066 040"
+        ],
+        "full_text": "❗️❗️❗️ ՎԱՐՁԱԿԱԼՈՒԹՅՈՒՆ ❗️❗️❗️\n\n🏡 Վարձակալությամբ  է տրվում 2 սենյականոց     բնակարան  Դավթաշեն 1-ին թաղամասում\n\n🏢 Հարկ՝  14/12\n 📐 Մակերես՝ 52 քմ\n💵 Արժեք՝ 200,000 դր\n\n🏡Բնակարանն      կապիտալ  վերանորոգված է, կահավորված է գույքով և տեխնիկայով։\n\n🏡Բնակարանում առկա են բոլոր կոմունալ հարմարությունները։ \n\n📍 Գտնվում է շատ հարմար վայրում՝ մոտ են խանութներ, սուպերմարկետներ, դպրոցներ և տրանսպորտային կանգառներ։\n\n✅ Գործակալության միջնորդավճար՝ 50% \n\n📞 Մանրամասների համար զանգահարեք կամ գրեք 📩 033 066 040 հեռախոսահամարով\n\n#անշարժգույք #բնակարան #վաճառք"
+    }
+]

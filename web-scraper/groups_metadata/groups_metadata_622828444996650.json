@@ -1,0 +1,30 @@
+{
+    "name": "Group 622828444996650",
+    "summary_title": "Apartments for Sale",
+    "primary_focus": {
+        "listing_type": "Sale",
+        "property_category": "Apartment",
+        "percentage": 19.1
+    },
+    "avg_scroll_time_1_day_sec": 57.7,
+    "distributions": {
+        "Sale - Land": 32,
+        "Unknown - General / Unclassified": 258,
+        "Unknown - Media-Only": 78,
+        "Sale - Apartment": 95,
+        "Sale - House": 9,
+        "Rent - Apartment": 11,
+        "Sale - General / Unclassified": 8,
+        "Rent - General / Unclassified": 2,
+        "Unknown - Apartment": 4
+    },
+    "scroll_benchmarks": {
+        "2026-09-15": {
+            "scroll_duration_seconds": 182.93004393577576,
+            "oldest_post_age_hours": 76.08,
+            "posts_scanned": 497
+        }
+    },
+    "last_scraped": "2026-09-15T14:39:15.321090",
+    "total_collected": 497
+}
