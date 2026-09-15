@@ -1,5 +1,8 @@
 import os
 import json
+import re
+import unicodedata
+from difflib import SequenceMatcher
 from datetime import datetime
 
 # --- File Paths & Directories ---
@@ -27,6 +30,77 @@ def sanitize_filename(text):
     if not text:
         return "unknown"
     return "".join([c for c in text if c.isalnum() or c in (' ', '-', '_')]).strip().replace(" ", "_").lower()
+
+def normalize_listing_text(text):
+    """Normalize post text so reposts with formatting changes share a fingerprint."""
+    normalized = unicodedata.normalize("NFKC", text or "").lower()
+    normalized = re.sub(r"https?://\S+|www\.\S+", " ", normalized)
+    normalized = re.sub(r"\s+", " ", normalized)
+    normalized = re.sub(r"[^\w\s]", " ", normalized, flags=re.UNICODE)
+    return re.sub(r"\s+", " ", normalized).strip()
+
+def listing_content_key(post):
+    text = normalize_listing_text(post.get("full_text", ""))
+    if len(text) < 80:
+        return None
+    return "|".join([
+        text,
+        str(post.get("property_category") or ""),
+        str(post.get("listing_type") or "")
+    ])
+
+def merge_duplicate_listings(posts):
+    unique_posts = []
+    exact_matches = {}
+
+    for post in posts:
+        content_key = listing_content_key(post)
+        if content_key and content_key in exact_matches:
+            existing_index = exact_matches[content_key]
+            if listing_completeness_score(post) > listing_completeness_score(unique_posts[existing_index]):
+                unique_posts[existing_index] = post
+            continue
+        if content_key:
+            exact_matches[content_key] = len(unique_posts)
+        unique_posts.append(post)
+
+    final_posts = []
+    fingerprints = []
+    for post in unique_posts:
+        text = normalize_listing_text(post.get("full_text", ""))
+        if len(text) < 120:
+            final_posts.append(post)
+            continue
+
+        duplicate_index = None
+        for index, fingerprint in enumerate(fingerprints):
+            if post.get("property_category") != fingerprint["category"]:
+                continue
+            if SequenceMatcher(None, text, fingerprint["text"]).ratio() >= 0.94:
+                duplicate_index = index
+                break
+
+        if duplicate_index is None:
+            fingerprints.append({
+                "text": text,
+                "category": post.get("property_category")
+            })
+            final_posts.append(post)
+        elif listing_completeness_score(post) > listing_completeness_score(final_posts[duplicate_index]):
+            final_posts[duplicate_index] = post
+
+    return final_posts
+
+def listing_completeness_score(post):
+    return sum([
+        bool(post.get("full_text")),
+        bool(post.get("prices")),
+        bool(post.get("sizes_sqm")),
+        bool(post.get("rooms")),
+        bool(post.get("locations")),
+        bool(post.get("phone_numbers")),
+        bool(post.get("creation_timestamp"))
+    ])
 
 def get_unique_listings_from_all_groups():
     """
@@ -62,8 +136,10 @@ def get_unique_listings_from_all_groups():
                                (not existing_post.get("creation_timestamp") and post.get("creation_timestamp")):
                                 all_unique_posts_by_url[post_url] = post
 
-    print(f"✅ Processed {total_files_processed} files. Found {len(all_unique_posts_by_url)} unique listings.")
-    return list(all_unique_posts_by_url.values())
+    url_unique_posts = list(all_unique_posts_by_url.values())
+    content_unique_posts = merge_duplicate_listings(url_unique_posts)
+    print(f"✅ Processed {total_files_processed} files. Found {len(content_unique_posts)} unique listings after content deduplication.")
+    return content_unique_posts
 
 def categorize_and_save_master_files(all_posts):
     """

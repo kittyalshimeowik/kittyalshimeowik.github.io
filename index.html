@@ -9,28 +9,122 @@
 <body>
 
     <header>
-        <div class="logo">🇦🇲 Armenia Real Estate Hub</div>
-        <p>Scraped & Aggregated Listings from FB & Local Sites</p>
+        <div class="language-toggle" role="group" aria-label="Language">
+            <button class="language-btn active" data-language="en" type="button">English</button>
+            <button class="language-btn" data-language="hy" type="button">Հայերեն</button>
+        </div>
+        <div class="logo" data-i18n="siteTitle">🇦🇲 Armenia Real Estate Hub</div>
+        <p data-i18n="siteSubtitle">Scraped & Aggregated Listings from FB & Local Sites</p>
     </header>
 
     <main>
-        <!-- Filter Controls -->
-        <section class="filters" id="filter-container">
-            <button class="filter-btn active" data-location="All">All Locations</button>
-            <button class="filter-btn" data-location="Kentron / Center">Kentron</button>
-            <button class="filter-btn" data-location="Arabkir">Arabkir</button>
-            <button class="filter-btn" data-location="Malatia-Sebastia">Malatia-Sebastia</button>
-            <button class="filter-btn" data-location="Avan">Avan</button>
-        </section>
+        <div class="catalog-layout">
+            <div class="filter-column">
+                <div class="filter-toolbar">
+                    <span class="filter-toolbar-label" data-i18n="filterResults">Filter results</span>
+                    <div class="filter-actions">
+                        <button class="reset-btn" id="reset-filters" data-i18n="reset" type="button">Reset</button>
+                        <button class="collapse-btn" id="toggle-filters" type="button" aria-expanded="true" aria-controls="filter-content" aria-label="Collapse filters" title="Collapse filters">&lt;</button>
+                    </div>
+                </div>
+                <aside class="filter-panel" aria-labelledby="filter-heading">
+                    <div id="filter-content">
+                        <label class="field-label" for="source-filter" data-i18n="source">Source</label>
+                        <select class="filter-control" id="source-filter">
+                            <option value="All" data-i18n="allSources">All sources</option>
+                            <option value="Facebook">Facebook</option>
+                        </select>
 
-        <!-- Listings Grid -->
-        <section class="listings-grid" id="listings-grid">
-            <!-- Dynamic listings will be injected here automatically by script.js -->
-        </section>
+                        <fieldset class="filter-group">
+                            <div class="filter-group-header">
+                                <legend data-i18n="listingType">Listing type</legend>
+                                <select class="mode-control" id="listing-type-mode" aria-label="Listing type filter mode">
+                                    <option value="include" data-i18n="include">Include</option>
+                                    <option value="exclude" data-i18n="exclude">Exclude</option>
+                                </select>
+                            </div>
+                            <label><input type="checkbox" name="listing-type" value="Sale"><span data-i18n="forSale">For sale</span></label>
+                            <label><input type="checkbox" name="listing-type" value="Rent"><span data-i18n="forRent">For rent</span></label>
+                        </fieldset>
+
+                        <fieldset class="filter-group">
+                            <div class="filter-group-header">
+                                <legend data-i18n="propertyType">Property type</legend>
+                                <select class="mode-control" id="property-type-mode" aria-label="Property type filter mode">
+                                    <option value="include" data-i18n="include">Include</option>
+                                    <option value="exclude" data-i18n="exclude">Exclude</option>
+                                </select>
+                            </div>
+                            <label><input type="checkbox" name="property-type" value="Apartment"><span data-i18n="apartment">Apartment</span></label>
+                            <label><input type="checkbox" name="property-type" value="House"><span data-i18n="house">House</span></label>
+                            <label><input type="checkbox" name="property-type" value="Land"><span data-i18n="land">Land</span></label>
+                        </fieldset>
+
+                        <fieldset class="filter-group location-group">
+                            <div class="filter-group-header">
+                                <legend data-i18n="location">Location</legend>
+                                <select class="mode-control" id="location-mode" aria-label="Location filter mode">
+                                    <option value="include" data-i18n="include">Include</option>
+                                    <option value="exclude" data-i18n="exclude">Exclude</option>
+                                </select>
+                            </div>
+                            <div class="location-options" id="location-options">
+                                <!-- Location checkboxes are populated from script.js -->
+                            </div>
+                        </fieldset>
+
+                        <div class="range-fields">
+                            <div>
+                                <label class="field-label" for="min-price" data-i18n="minPrice">Min price</label>
+                                <input class="filter-control" id="min-price" type="number" min="0" data-i18n-placeholder="any" placeholder="Any">
+                            </div>
+                            <div>
+                                <label class="field-label" for="max-price" data-i18n="maxPrice">Max price</label>
+                                <input class="filter-control" id="max-price" type="number" min="0" data-i18n-placeholder="any" placeholder="Any">
+                            </div>
+                        </div>
+                        <p class="filter-hint" data-i18n="priceHint">Price matching uses the first parsed price.</p>
+
+                        <label class="field-label" for="rooms-filter" data-i18n="rooms">Rooms</label>
+                        <select class="filter-control" id="rooms-filter">
+                            <option value="All" data-i18n="anyNumber">Any number</option>
+                            <option value="1" data-i18n="onePlusRooms">1+ rooms</option>
+                            <option value="2" data-i18n="twoPlusRooms">2+ rooms</option>
+                            <option value="3" data-i18n="threePlusRooms">3+ rooms</option>
+                            <option value="4" data-i18n="fourPlusRooms">4+ rooms</option>
+                            <option value="5" data-i18n="fivePlusRooms">5+ rooms</option>
+                        </select>
+                    </div>
+                </aside>
+            </div>
+
+            <section class="results-panel">
+                <div class="results-toolbar">
+                    <div>
+                        <p class="eyebrow" data-i18n="propertyFeed">Armenia property feed</p>
+                        <h2 data-i18n="availableListings">Available listings</h2>
+                    </div>
+                    <div class="toolbar-controls">
+                        <label class="field-label" for="sort-filter" data-i18n="sort">Sort</label>
+                        <select class="filter-control" id="sort-filter">
+                            <option value="newest" data-i18n="newest">Newest</option>
+                            <option value="price-asc" data-i18n="priceLowHigh">Price: low to high</option>
+                            <option value="price-desc" data-i18n="priceHighLow">Price: high to low</option>
+                            <option value="size-asc" data-i18n="sizeSmallLarge">Size: small to large</option>
+                            <option value="size-desc" data-i18n="sizeLargeSmall">Size: large to small</option>
+                        </select>
+                        <span class="result-count" id="result-count">0 listings</span>
+                    </div>
+                </div>
+                <section class="listings-grid" id="listings-grid">
+                    <!-- Dynamic listings will be injected here automatically by script.js -->
+                </section>
+            </section>
+        </div>
     </main>
 
     <footer>
-        <p>&copy; 2026 Armenia Real Estate Scraper Hub</p>
+        <p data-i18n="footer">&copy; 2026 Armenia Real Estate Scraper Hub</p>
     </footer>
 
     <script src="script.js"></script>
