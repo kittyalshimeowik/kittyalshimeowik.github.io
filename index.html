@@ -15,40 +15,17 @@
 
     <main>
         <!-- Filter Controls -->
-        <section class="filters">
-            <button class="filter-btn active">All Locations</button>
-            <button class="filter-btn">Yerevan</button>
-            <button class="filter-btn">Gyumri</button>
-            <button class="filter-btn">Dilijan</button>
+        <section class="filters" id="filter-container">
+            <button class="filter-btn active" data-location="All">All Locations</button>
+            <button class="filter-btn" data-location="Kentron / Center">Kentron</button>
+            <button class="filter-btn" data-location="Arabkir">Arabkir</button>
+            <button class="filter-btn" data-location="Malatia-Sebastia">Malatia-Sebastia</button>
+            <button class="filter-btn" data-location="Avan">Avan</button>
         </section>
 
         <!-- Listings Grid -->
-        <section class="listings-grid">
-            
-            <!-- Sample Listing 1 -->
-            <div class="property-card">
-                <div class="source-tag fb">Facebook Marketplace</div>
-                <div class="property-img-placeholder">📸 Property Image</div>
-                <div class="property-info">
-                    <h3 class="price">$120,000</h3>
-                    <p class="details">2 Bed • 1 Bath • 75 m²</p>
-                    <p class="location">📍 Kentron, Yerevan</p>
-                    <a href="#" class="view-btn" target="_blank">View Original Post</a>
-                </div>
-            </div>
-
-            <!-- Sample Listing 2 -->
-            <div class="property-card">
-                <div class="source-tag external">List.am Aggregated</div>
-                <div class="property-img-placeholder">📸 Property Image</div>
-                <div class="property-info">
-                    <h3 class="price">$65,000</h3>
-                    <p class="details">1 Bed • 1 Bath • 45 m²</p>
-                    <p class="location">📍 Gyumri, Shirak</p>
-                    <a href="#" class="view-btn" target="_blank">View Original Post</a>
-                </div>
-            </div>
-
+        <section class="listings-grid" id="listings-grid">
+            <!-- Dynamic listings will be injected here automatically by script.js -->
         </section>
     </main>
 
