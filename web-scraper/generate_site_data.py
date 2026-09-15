@@ -6,13 +6,44 @@ from difflib import SequenceMatcher
 from datetime import datetime
 
 # --- File Paths & Directories ---
-# Point directly to the folders present in your web-scraper directory
-OUTPUT_DIR = "housing_posts_data"
-METADATA_DIR = "groups_metadata"
-MASTER_OUTPUT_DIR = "master_listings_json" 
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+OUTPUT_DIR = os.path.join(SCRIPT_DIR, "housing_posts_data")
+METADATA_DIR = os.path.join(SCRIPT_DIR, "groups_metadata")
+MASTER_OUTPUT_DIR = os.path.join(SCRIPT_DIR, "master_listings_json")
 
 # Ensure the master output directory exists
 os.makedirs(MASTER_OUTPUT_DIR, exist_ok=True)
+
+# Standard Exchange Rate (AMD per 1 USD)
+EXCHANGE_RATE_AMD_PER_USD = 364.18
+
+def normalize_and_convert_prices(prices):
+    """Normalizes raw price entries and provides both AMD and USD values."""
+    converted_prices = []
+    if not prices or not isinstance(prices, list):
+        return converted_prices
+    
+    for p in prices:
+        amount = p.get("amount", 0)
+        curr = str(p.get("currency", "AMD")).upper()
+        
+        # Determine amounts based on parsed currency type
+        if curr == "USD":
+            amt_usd = amount
+            amt_amd = round(amount * EXCHANGE_RATE_AMD_PER_USD)
+        else: # Default or AMD
+            amt_amd = amount
+            amt_usd = round(amount / EXCHANGE_RATE_AMD_PER_USD, 2)
+            
+        converted_prices.append({
+            "original_amount": amount,
+            "original_currency": curr,
+            "amount_amd": amt_amd,
+            "amount_usd": amt_usd,
+            "raw_text": p.get("raw_text", str(amount))
+        })
+    return converted_prices
 
 def load_json_file(file_path):
     """Safely loads and returns data from a JSON file."""
@@ -22,7 +53,7 @@ def load_json_file(file_path):
         with open(file_path, 'r', encoding='utf-8') as f:
             return json.load(f)
     except (json.JSONDecodeError, IOError) as e:
-        print(f"⚠️ Error loading {file_path}: {e}")
+        print(f"[WARNING] Error loading {file_path}: {e}")
         return None
 
 def sanitize_filename(text):
@@ -105,32 +136,33 @@ def listing_completeness_score(post):
 def get_unique_listings_from_all_groups():
     """
     Iterates through all extracted files in the OUTPUT_DIR,
-    deduplicates posts based on URL, and returns a list of all unique posts.
+    deduplicates posts based on URL, normalizes prices, and returns unique posts.
     """
     all_unique_posts_by_url = {}
     total_files_processed = 0
 
     if not os.path.exists(OUTPUT_DIR):
-        print(f"❌ Input directory '{OUTPUT_DIR}' not found. Run scraper first.")
+        print(f"[ERROR] Input directory '{OUTPUT_DIR}' not found. Run scraper first.")
         return []
 
     for filename in os.listdir(OUTPUT_DIR):
         if filename.endswith(".json"):
             file_path = os.path.join(OUTPUT_DIR, filename)
-            print(f"📄 Reading file: {filename}")
+            print(f"[INFO] Reading file: {filename}")
             group_posts = load_json_file(file_path)
             
             if group_posts and isinstance(group_posts, list):
                 total_files_processed += 1
                 for post in group_posts:
+                    # Apply price conversion & normalization
+                    if "prices" in post:
+                        post["prices"] = normalize_and_convert_prices(post.get("prices"))
+                        
                     post_url = post.get("url")
                     if post_url:
-                        # Use URL as the primary deduplication key.
-                        # If we see this URL again, we only keep it if it has more data (e.g., text was extracted later).
                         if post_url not in all_unique_posts_by_url:
                             all_unique_posts_by_url[post_url] = post
                         else:
-                            # Simple check to keep the 'fuller' version of a post if available
                             existing_post = all_unique_posts_by_url[post_url]
                             if (not existing_post.get("has_text") and post.get("has_text")) or \
                                (not existing_post.get("creation_timestamp") and post.get("creation_timestamp")):
@@ -138,13 +170,12 @@ def get_unique_listings_from_all_groups():
 
     url_unique_posts = list(all_unique_posts_by_url.values())
     content_unique_posts = merge_duplicate_listings(url_unique_posts)
-    print(f"✅ Processed {total_files_processed} files. Found {len(content_unique_posts)} unique listings after content deduplication.")
+    print(f"[SUCCESS] Processed {total_files_processed} files. Found {len(content_unique_posts)} unique listings after content deduplication.")
     return content_unique_posts
 
 def categorize_and_save_master_files(all_posts):
     """
-    Takes a list of posts, organizes them into categories (Apartments, Houses, Land, Rentals),
-    and saves each category to a master JSON file.
+    Takes a list of posts, organizes them into categories, and saves master JSON files.
     """
     master_categories = {
         "apartments_for_sale.json": {"type": "Sale", "category": "Apartment"},
@@ -152,24 +183,21 @@ def categorize_and_save_master_files(all_posts):
         "land_for_sale.json":      {"type": "Sale", "category": "Land"},
         "apartments_for_rent.json": {"type": "Rent", "category": "Apartment"},
         "houses_for_rent.json":    {"type": "Rent", "category": "House"},
-        "all_for_sale_rent.json":   {"type": "Any", "category": "Any"} # Special file with everything
+        "all_for_sale_rent.json":   {"type": "Any", "category": "Any"}
     }
 
-    # Clear previous master files
     for filename in master_categories.keys():
         file_path = os.path.join(MASTER_OUTPUT_DIR, filename)
         if os.path.exists(file_path):
             os.remove(file_path)
 
-    print(f"\n💾 Saving master listings to '{MASTER_OUTPUT_DIR}/'...")
+    print(f"\n[INFO] Saving master listings to '{MASTER_OUTPUT_DIR}/'...")
 
-    # Organize posts by location
     location_organized_listings = {}
     
     for file_name, filters in master_categories.items():
         filtered_posts = []
         
-        # Apply filters (Rent/Sale and Category)
         for post in all_posts:
             p_type = post.get("listing_type")
             p_cat = post.get("property_category")
@@ -185,7 +213,6 @@ def categorize_and_save_master_files(all_posts):
             if is_match:
                 filtered_posts.append(post)
                 
-                # Collect locations for site filtering
                 locations = post.get("locations", [])
                 if not locations: locations = ["Unknown Location"]
                 
@@ -194,7 +221,6 @@ def categorize_and_save_master_files(all_posts):
                     if clean_loc not in location_organized_listings:
                         location_organized_listings[clean_loc] = []
                     
-                    # Add post to location list if not already there
                     if not any(existing['url'] == post['url'] for existing in location_organized_listings[clean_loc]):
                          location_organized_listings[clean_loc].append({
                             "url": post.get("url"),
@@ -206,21 +232,17 @@ def categorize_and_save_master_files(all_posts):
                             "size": post.get("sizes_sqm")
                          })
         
-        # Sort posts by date (newest first)
         filtered_posts.sort(key=lambda x: x.get("creation_timestamp") or 0, reverse=True)
         
-        # Save the filtered category file
         output_path = os.path.join(MASTER_OUTPUT_DIR, file_name)
         try:
             with open(output_path, 'w', encoding='utf-8') as f:
-                # Use compact JSON format for web performance
                 json.dump(filtered_posts, f, ensure_ascii=False, separators=(',', ':'))
-            print(f"  ✅ Created '{file_name}' ({len(filtered_posts)} listings)")
+            print(f"  [OK] Created '{file_name}' ({len(filtered_posts)} listings)")
         except IOError as e:
-             print(f"  ❌ Error saving '{file_name}': {e}")
+             print(f"  [ERROR] Error saving '{file_name}': {e}")
 
-    # --- Generate location-specific files for the frontend ---
-    print("\n💾 Saving location-specific summary files for visualization...")
+    print("\n[INFO] Saving location-specific summary files for visualization...")
     
     loc_summary_dir = os.path.join(MASTER_OUTPUT_DIR, "by_location")
     os.makedirs(loc_summary_dir, exist_ok=True)
@@ -230,20 +252,19 @@ def categorize_and_save_master_files(all_posts):
         loc_file_path = os.path.join(loc_summary_dir, loc_file_name)
         
         try:
-             # Safely sort by size checking if list has items to prevent IndexError
             listings_data.sort(key=lambda x: x.get("size")[0] if x.get("size") else 0, reverse=True)
             
             with open(loc_file_path, 'w', encoding='utf-8') as f:
                 json.dump(listings_data, f, ensure_ascii=False, separators=(',', ':'))
         except IOError as e:
-            print(f"  ❌ Error saving location file '{loc_file_name}': {e}")
+            print(f"  [ERROR] Error saving location file '{loc_file_name}': {e}")
 
-    print(f"\n🎉 All master and location files generated successfully in '{MASTER_OUTPUT_DIR}/'.")
+    print(f"\n[SUCCESS] All master and location files generated successfully in '{MASTER_OUTPUT_DIR}/'.")
 
 def generate_site_data():
     """Main function to orchestrate data consolidation."""
     print("="*60)
-    print("🚀 Starting Master JSON Generation for Kitty's Visualization")
+    print("Starting Master JSON Generation for Website Visualization")
     print("="*60)
     
     all_unique_data = get_unique_listings_from_all_groups()
@@ -251,7 +272,6 @@ def generate_site_data():
     if all_unique_data:
         categorize_and_save_master_files(all_unique_data)
         
-        # Generate a metadata file with the build time
         meta_file_path = os.path.join(MASTER_OUTPUT_DIR, "meta.json")
         build_meta = {
             "last_build": datetime.now().isoformat(),
@@ -260,13 +280,13 @@ def generate_site_data():
         }
         with open(meta_file_path, 'w', encoding='utf-8') as f:
             json.dump(build_meta, f, indent=2)
-        print(f"\nℹ️ Meta file created: '{meta_file_path}'")
+        print(f"\n[INFO] Meta file created: '{meta_file_path}'")
 
     else:
-        print("⚠️ No data found to consolidate. Ensure the scraper has run successfully.")
+        print("[WARNING] No data found to consolidate. Ensure the scraper has run successfully.")
 
     print("="*60)
-    print("✅ Build Process Finished.")
+    print("Build Process Finished.")
     print("="*60)
 
 if __name__ == "__main__":

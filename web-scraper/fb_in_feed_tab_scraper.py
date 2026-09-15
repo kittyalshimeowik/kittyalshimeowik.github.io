@@ -27,9 +27,11 @@ from datetime import datetime, timedelta
 from playwright.sync_api import sync_playwright
 
 # --- File Paths & Directories ---
-OUTPUT_DIR = "housing_posts_data"
-METADATA_DIR = "groups_metadata"
-GROUPS_CONFIG_FILE = "groups_config.json"
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+OUTPUT_DIR = os.path.join(SCRIPT_DIR, "housing_posts_data")
+METADATA_DIR = os.path.join(SCRIPT_DIR, "groups_metadata")
+GROUPS_CONFIG_FILE = os.path.join(SCRIPT_DIR, "groups_config.json")
 
 BASE_SESSION_DIR = os.path.expanduser("~/Desktop/fb-scraper-project")
 
@@ -533,20 +535,31 @@ def extract_housing_details(text, is_media_only=False):
             continue
             
         if 2020 <= amount <= 2030 and not pre_curr and not post_curr:
-            parsed_prices.append({"amount": amount, "currency": "Possible Year / Unspecified", "raw_text": match.group(0).strip()})
-            continue
+            continue # Skip years incorrectly parsed as prices
             
         symbol = (pre_curr or post_curr or '').strip().lower()
         symbol_clean = re.sub(r'\s+', ' ', symbol)
         currency = CURRENCY_MAP.get(symbol_clean)
         
-        if not currency:
-            if amount >= 10000:
-                currency = 'AMD' if amount >= 50000 else 'USD'
+        # If currency is explicitly specified, enforce AMD/USD check and sanity check low numbers
+        if currency in ['AMD', 'USD']:
+            if currency == 'USD' and amount < 50:
+                continue # Skip super low corrupted numbers for USD
+            if currency == 'AMD' and amount < 5000:
+                continue # Skip super low corrupted numbers for AMD
+            parsed_prices.append({"amount": amount, "currency": currency, "raw_text": match.group(0).strip()})
+        elif not symbol_clean:
+            # Unspecified currency: infer based on amount threshold or discard if ambiguous
+            if amount >= 50000:
+                parsed_prices.append({"amount": amount, "currency": "AMD", "raw_text": match.group(0).strip()})
+            elif 100 <= amount <= 20000:
+                parsed_prices.append({"amount": amount, "currency": "USD", "raw_text": match.group(0).strip()})
             else:
-                currency = 'Unspecified Currency'
-                
-        parsed_prices.append({"amount": amount, "currency": currency, "raw_text": match.group(0).strip()})
+                # Discard ambiguous / extremely low or invalid unspecified amounts
+                continue
+        else:
+            # Drop other currencies (like EUR, RUB, etc.) per requirements
+            continue
 
     found_locations = set()
     for canonical_name, aliases in LOCATION_DICTIONARY.items():
@@ -865,8 +878,12 @@ def try_click_see_more(page, viewport, mouse_pos):
     return False
 
 
-def smooth_scroll(page, direction="down"):
-    distance = random.randint(500, 900) if direction == "down" else -random.randint(300, 500)
+def smooth_scroll(page, direction="down", pixels=None):
+    if pixels is None:
+        distance = random.randint(500, 900) if direction == "down" else -random.randint(300, 500)
+    else:
+        distance = pixels if direction == "down" else -pixels
+
     steps = random.randint(10, 15)
     step_delay = random.randint(12, 20)
 
@@ -917,28 +934,6 @@ def check_global_break(global_timer_state, page, mouse_pos):
             
         global_timer_state["next_break_due"] = time.time() + random.randint(480, 720)
         print(f"▶️ [Global Break] Resuming scraping workflow.")
-
-
-def manage_tabs_and_cleanup(browser_context, open_tabs, current_page, mouse_pos):
-    if CURRENT_OS != "windows" and len(open_tabs) > 2 and random.random() < 0.3:
-        candidates = [t for t in open_tabs if t != current_page and not t.is_closed()]
-        if candidates:
-            tab_to_close = random.choice(candidates)
-            print(f"🧹 [Tab Manager] Closing an old background tab...")
-            
-            viewport = current_page.viewport_size or {"width": 1366, "height": 768}
-            top_target_x = random.randint(100, viewport["width"] - 100)
-            top_target_y = random.randint(2, 12)
-            move_mouse_bezier(current_page, mouse_pos["x"], mouse_pos["y"], top_target_x, top_target_y, steps=random.randint(15, 22))
-            mouse_pos["x"], mouse_pos["y"] = top_target_x, top_target_y
-            time.sleep(random.uniform(0.5, 1.0))
-            
-            try:
-                tab_to_close.close()
-                open_tabs.remove(tab_to_close)
-                print(f"✅ [Tab Manager] Background tab successfully closed.")
-            except Exception:
-                pass
 
 
 def run_facebook_housing_scraper():
@@ -1064,7 +1059,17 @@ def run_facebook_housing_scraper():
 
         browser_context.on("response", handle_response)
 
-        for idx, group in enumerate(target_groups):
+        # Shuffle groups randomly and track visited ones
+        remaining_groups = list(target_groups)
+        visited_groups_count = 0
+        previous_page = None
+
+        while remaining_groups:
+            # Pick a random group from remaining unvisited groups
+            group = random.choice(remaining_groups)
+            remaining_groups.remove(group)
+            visited_groups_count += 1
+
             group_id = str(group["id"])
             group_name = group["name"]
             group_url = f"https://www.facebook.com/groups/{group_id}/?sorting_setting=CHRONOLOGICAL"
@@ -1078,7 +1083,7 @@ def run_facebook_housing_scraper():
                 calculated_runtime, target_days = calculate_dynamic_runtime(group_id)
 
             print(f"\n==============================================")
-            print(f"🎯 Group: {group_name} ({group_id})")
+            print(f"🎯 Group [{visited_groups_count}/{len(target_groups)}]: {group_name} ({group_id})")
             print(f"📁 Posts File: {OUTPUT_DIR}/extracted_housing_posts_{group_id}.json")
             print(f"📁 Metadata File: {METADATA_DIR}/groups_metadata_{group_id}.json")
             print(f"🧠 Strategy: ~{target_days}-day window | Allotted Time: {format_elapsed_time(calculated_runtime)}")
@@ -1087,14 +1092,25 @@ def run_facebook_housing_scraper():
             current_session_posts.clear()
             current_active_group_id["id"] = group_id
 
-            if idx == 0 and initial_blank_page and not initial_blank_page.is_closed() and initial_blank_page.url == "about:blank":
+            # Open a new tab for the current group
+            if visited_groups_count == 1 and initial_blank_page and not initial_blank_page.is_closed() and initial_blank_page.url == "about:blank":
                 page = initial_blank_page
-                open_tabs = [page]
             else:
                 page = browser_context.new_page()
                 page.add_init_script("Object.defineProperty(navigator, 'webdriver', { get: () => undefined });")
-                open_tabs = list(browser_context.pages)
-                manage_tabs_and_cleanup(browser_context, open_tabs, page, mouse_pos)
+
+            # Randomly decide whether to close the old tab or keep it open
+            if previous_page and previous_page != page and not previous_page.is_closed():
+                if random.choice([True, False]):
+                    print(f"🧹 [Tab Manager] Randomly choosing to close the previous group tab...")
+                    try:
+                        previous_page.close()
+                    except Exception:
+                        pass
+                else:
+                    print(f"📌 [Tab Manager] Randomly choosing to keep the previous tab open in the background.")
+
+            previous_page = page
 
             session_start_time = time.time()
             group_end_time = session_start_time + calculated_runtime
@@ -1103,10 +1119,43 @@ def run_facebook_housing_scraper():
             page.goto(group_url)
             time.sleep(random.uniform(4.0, 6.0))
 
+            # --- Fast Stuck & Stagnation Tracking Variables ---
+            last_scroll_height = page.evaluate("document.body.scrollHeight")
+            stagnant_counter = 0
+            last_post_count = len(current_session_posts)
+
             while time.time() < group_end_time:
                 check_global_break(global_timer_state, page, mouse_pos)
                 perform_human_action_chain(page, mouse_pos)
                 
+                # Check current progress metrics
+                current_height = page.evaluate("document.body.scrollHeight")
+                current_post_count = len(current_session_posts)
+
+                # Evaluate if height or post count changed
+                if current_height == last_scroll_height and current_post_count == last_post_count:
+                    stagnant_counter += 1
+                else:
+                    stagnant_counter = 0  # Reset counter on any progress
+                    last_scroll_height = current_height
+                    last_post_count = current_post_count
+
+                # Fast stagnation recovery trigger (~3 idle checks / ~6-9 seconds)
+                if stagnant_counter >= 3:
+                    print(f"⚠️ [{group_name}] Feed paused. Nudging scroll to wake up lazy-load...")
+                    smooth_scroll(page, direction="up", pixels=300)
+                    time.sleep(0.8)
+                    smooth_scroll(page, direction="down", pixels=600)
+                    time.sleep(1.5)
+                    
+                    # Re-check height after recovery jolt
+                    new_height = page.evaluate("document.body.scrollHeight")
+                    if new_height == last_scroll_height:
+                        print(f"🛑 [{group_name}] Page fully stuck or end of feed reached. Moving on early.")
+                        break
+                    else:
+                        stagnant_counter = 0  # Successfully unstuck, reset counter!
+
                 if current_session_posts:
                     now_ts = datetime.now().timestamp()
                     valid_ages_days = []

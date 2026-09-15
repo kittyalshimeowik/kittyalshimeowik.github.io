@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
         en: {
             siteTitle: "🇦🇲 Armenia Real Estate Hub", siteSubtitle: "Scraped & Aggregated Listings from FB & Local Sites", hide: "Hide", show: "Show",
             searchListings: "Search listings", filterResults: "Filter results", reset: "Reset", source: "Source",
-            allSources: "All sources", listingType: "Listing type", propertyType: "Property type", include: "Include", exclude: "Exclude",
+            allSources: "All sources", currencyLabel: "Currency", listingType: "Listing type", propertyType: "Property type", include: "Include", exclude: "Exclude",
             forSale: "For sale", forRent: "For rent", apartment: "Apartment", house: "House", land: "Land", location: "Location",
             minPrice: "Min price", maxPrice: "Max price", any: "Any", priceHint: "Price matching uses the first parsed price.",
             rooms: "Rooms", anyNumber: "Any number", onePlusRooms: "1+ rooms", twoPlusRooms: "2+ rooms", threePlusRooms: "3+ rooms",
@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
         hy: {
             siteTitle: "🇦🇲 Հայաստանի անշարժ գույքի հարթակ", siteSubtitle: "Հայտարարություններ Facebook-ից և տեղական կայքերից", hide: "Թաքցնել", show: "Ցուցադրել",
             searchListings: "Որոնել հայտարարություններ", filterResults: "Զտել արդյունքները", reset: "Մաքրել", source: "Աղբյուր",
-            allSources: "Բոլոր աղբյուրները", listingType: "Գործարքի տեսակ", propertyType: "Գույքի տեսակ", include: "Ներառել", exclude: "Բացառել",
+            allSources: "Բոլոր աղբյուրները", currencyLabel: "Արժույթ", listingType: "Գործարքի տեսակ", propertyType: "Գույքի տեսակ", include: "Ներառել", exclude: "Բացառել",
             forSale: "Վաճառք", forRent: "Վարձակալություն", apartment: "Բնակարան", house: "Տուն", land: "Հողատարածք", location: "Տեղադրություն",
             minPrice: "Նվազագույն գին", maxPrice: "Առավելագույն գին", any: "Ցանկացած", priceHint: "Գնի զտումը օգտագործում է առաջին հասանելի գինը։",
             rooms: "Սենյակներ", anyNumber: "Ցանկացած քանակ", onePlusRooms: "1 և ավելի սենյակ", twoPlusRooms: "2 և ավելի սենյակ", threePlusRooms: "3 և ավելի սենյակ",
@@ -132,8 +132,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function getFirstPrice(item) {
-        const amount = item.prices && item.prices[0] ? Number(item.prices[0].amount) : NaN;
-        return Number.isFinite(amount) ? amount : null;
+        if (!item.prices || item.prices.length === 0) return null;
+        const p = item.prices[0];
+        const currencyChoice = document.getElementById("currency-filter").value;
+        
+        let val = null;
+        if (currencyChoice === "USD") {
+            val = p.amount_usd !== undefined ? Number(p.amount_usd) : Number(p.amount) / 364.18;
+        } else {
+            val = p.amount_amd !== undefined ? Number(p.amount_amd) : Number(p.amount);
+        }
+        return Number.isFinite(val) ? val : null;
     }
 
     function getFirstSize(item) {
@@ -193,6 +202,8 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
+        const currencyChoice = document.getElementById("currency-filter").value;
+
         listings.forEach(item => {
             const card = document.createElement("article");
             card.className = "property-card";
@@ -200,12 +211,17 @@ document.addEventListener("DOMContentLoaded", () => {
             let priceText = text("priceUponRequest");
             if (item.prices && item.prices.length > 0) {
                 const p = item.prices[0];
-                priceText = `${p.raw_text || p.amount} ${p.currency !== "Unspecified Currency" ? p.currency : ''}`.trim();
+                if (currencyChoice === "USD") {
+                    const valUSD = p.amount_usd !== undefined ? p.amount_usd : Math.round(p.amount_amd / 364.18);
+                    priceText = `$${Number(valUSD).toLocaleString()} USD`;
+                } else {
+                    const valAMD = p.amount_amd !== undefined ? p.amount_amd : p.original_amount;
+                    priceText = `${Number(valAMD).toLocaleString()} ֏`;
+                }
             }
 
             let detailsArr = [];
             if (item.rooms && item.rooms.length > 0) {
-                // Fixed: use roomLabel directly with the numeric room value to avoid duplication (e.g. "4 rooms" instead of "4 4 rooms")
                 detailsArr.push(translations[currentLanguage].roomLabel(Number(item.rooms[0])));
             }
             if (item.sizes_sqm && item.sizes_sqm.length > 0) {
@@ -259,6 +275,7 @@ document.addEventListener("DOMContentLoaded", () => {
     resetFilters.addEventListener("click", () => {
         document.querySelectorAll("input[type='checkbox']").forEach(input => input.checked = false);
         document.getElementById("source-filter").value = "All";
+        document.getElementById("currency-filter").value = "AMD";
         document.getElementById("listing-type-mode").value = "include";
         document.getElementById("property-type-mode").value = "include";
         document.querySelectorAll("input[name='location-filter']").forEach(input => input.checked = false);

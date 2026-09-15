@@ -4,7 +4,14 @@ import sys
 import os
 from datetime import datetime
 
-# Define paths to your scripts relative to the root directory
+# Fix for Windows console encoding issues with emojis (only applied on Windows)[cite: 1]
+if os.name == 'nt':
+    if sys.stdout.encoding.lower() != 'utf-8':
+        sys.stdout.reconfigure(encoding='utf-8')
+    if sys.stderr.encoding.lower() != 'utf-8':
+        sys.stderr.reconfigure(encoding='utf-8')
+
+# Define paths to your scripts relative to the root directory[cite: 1]
 SCRAPER_SCRIPT = os.path.join("web-scraper", "fb_in_feed_tab_scraper.py")
 GENERATOR_SCRIPT = os.path.join("web-scraper", "generate_site_data.py")
 
@@ -31,7 +38,7 @@ def run_step(script_path, description, extra_args=None):
         return False
 
 def main():
-    # Set up argument parsing for command-line control
+    # Set up argument parsing for command-line control[cite: 1]
     parser = argparse.ArgumentParser(description="Run the Armenia Real Estate Data Pipeline.")
     parser.add_argument(
         "-t", "--time-limit", 
@@ -49,20 +56,20 @@ def main():
     else:
         print("⏱️ Using default config settings for scraping duration.")
 
-    # Prepare extra arguments for the scraper script if passed
+    # Prepare extra arguments for the scraper script if passed[cite: 1]
     scraper_args = []
     if args.time_limit:
         # Assuming your scraper script accepts '--time-limit' or similar flag. 
         # Adjust '--time-limit' below if your scraper uses a different argument name (e.g., '--duration').
         scraper_args.extend(["--time-limit", str(args.time_limit)])
 
-    # Step 1: Run the Facebook In-Feed Scraper
+    # Step 1: Run the Facebook In-Feed Scraper[cite: 1]
     scraper_success = run_step(SCRAPER_SCRIPT, "Facebook Feed Scraper", extra_args=scraper_args)
     if not scraper_success:
         print("\n❌ Pipeline aborted due to scraper failure.", file=sys.stderr)
         sys.exit(1)
 
-    # Step 2: Run the Website Data Generator
+    # Step 2: Run the Website Data Generator[cite: 1]
     generator_success = run_step(GENERATOR_SCRIPT, "Website Listings Data Generator")
     if not generator_success:
         print("\n❌ Pipeline aborted due to data generation failure.", file=sys.stderr)
