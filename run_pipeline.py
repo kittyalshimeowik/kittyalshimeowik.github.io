@@ -44,7 +44,7 @@ def main():
     parser = argparse.ArgumentParser(description="Run the Armenia Real Estate Data Pipeline.")
     parser.add_argument(
         "-t", "--time-limit", 
-        type=int, 
+        type=float, 
         default=None, 
         help="Max scraping time allowed per Facebook group (in minutes). Uses default config if omitted."
     )
@@ -79,6 +79,9 @@ def main():
     if not generator_success:
         print("\n❌ Pipeline aborted due to data generation failure.", file=sys.stderr)
         sys.exit(1)
+    
+    # 3. Run Post-Processing Cleanup
+    subprocess.run([sys.executable, "scrapers/processors/cleanup_master_listings.py"], check=True)
         
     elapsed = datetime.now() - start_time
     print(f"\n✨ Pipeline finished successfully in {elapsed.total_seconds():.2f} seconds!")

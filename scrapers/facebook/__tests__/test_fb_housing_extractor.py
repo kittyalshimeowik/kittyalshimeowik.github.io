@@ -7,9 +7,8 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from scrapers.facebook.fb_scraper import (
+from scrapers.utilities.housing_parser import (
     extract_housing_details,
-    normalize_price_amount,
     normalize_phone_number,
     extract_property_category,
     extract_negotiation_status,
@@ -166,7 +165,7 @@ class TestHousingExtractor(unittest.TestCase):
         # Test fallback behavior when scroll_benchmarks is empty or missing
         from scrapers.facebook.fb_scraper import calculate_dynamic_runtime
         metadata_empty = {"scroll_benchmarks": []}
-        runtime = calculate_dynamic_runtime(metadata_empty, default_runtime=300)
+        runtime, target_days = calculate_dynamic_runtime(metadata_empty, default_runtime=300)
         self.assertEqual(runtime, 300)
 
     def test_calculate_dynamic_runtime_valid_benchmarks(self):
@@ -178,9 +177,8 @@ class TestHousingExtractor(unittest.TestCase):
                 "2026-09-16": {"scroll_duration_seconds": 180.0}
             }
         }
-        runtime = calculate_dynamic_runtime(metadata_valid, default_runtime=300)
+        runtime, target_days = calculate_dynamic_runtime(metadata_valid, default_runtime=300)
         self.assertGreater(runtime, 0)
-
 
 if __name__ == "__main__":
     unittest.main()

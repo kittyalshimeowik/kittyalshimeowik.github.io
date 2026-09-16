@@ -97,7 +97,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let allListings = [];
 
-    fetch("web-scraper/master_listings_json/all_for_sale_rent.json")
+    fetch("scrapers/processors/master_listings_json/all_for_sale_rent.json")
         .then(response => {
             if (!response.ok) {
                 throw new Error("Failed to load listings data.");

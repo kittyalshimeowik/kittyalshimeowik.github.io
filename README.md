@@ -21,28 +21,40 @@ This project provides an end-to-end solution for collecting, processing, serving
 ---
 
 ## File Structure
-
 armenia-real-estate-website/
+├── .gitignore
+├── groups_config.json            # Configuration for Facebook Group IDs
+├── index.html                    # Web UI layout and filter system
+├── README.md                     # Project documentation
 ├── run_pipeline.py               # Main orchestration script running scraper & processor
 ├── run_tests.py                  # Test runner executing test suites across modules
-├── index.html                    # Web UI layout and filter system
-├── style.css                     # Responsive dashboard styling
 ├── script.js                     # Dynamic data fetching, multi-language & filter logic
-├── groups_config.json            # Configuration for Facebook Group IDs
+├── style.css                     # Responsive dashboard styling
 │
-└── scrapers/                     # Modular scraping engine
+└── scrapers/                     # Modular scraping and data pipeline engine
     ├── base_scraper.py           # Abstract Base Class defining scraper interfaces
+    │
     ├── facebook/                 # Facebook Group Playwright scraper module
-    │   ├── fb_scraper.py         # Playwright-based scraper with human anti-bot behavior
-    │   ├── housing_posts_data/   # Target folder for extracted post JSON files
+    │   ├── fb_scraper.py         # Playwright-based scraper entry point
+    │   ├── fb_session/           # Persistent browser user-data & session profile storage
     │   ├── groups_metadata/     # Per-group analytical metrics & run dynamic benchmarks
+    │   ├── housing_posts_data/   # Target folder for extracted post JSON files
+    │   ├── utilities/            # Facebook-specific storage & ID decoding tools
+    │   │   ├── fb_metadata_storage.py
+    │   │   └── fb_utils.py
     │   └── __tests__/            # Unit test suite for Facebook scraping logic
     │
-    └── processors/               # Master data consolidation engine
-        ├── generate_site_data.py # Merges, deduplicates, and converts price currencies
-        ├── master_listings_json/ # Consolidated JSON files consumed by the Web UI
-        │   └── by_location/      # Sub-summaries organized by city/district
-        └── __tests__/            # Unit test suite for post-processors & normalizers
+    ├── processors/               # Master data consolidation engine
+    │   ├── cleanup_master_listings.py # Post-processing cleanup and validation
+    │   ├── generate_site_data.py # Merges, deduplicates, and converts price currencies
+    │   ├── master_listings_json/ # Consolidated JSON files consumed by the Web UI
+    │   └── __tests__/            # Unit test suite for post-processors & normalizers
+    │
+    └── utilities/                # Shared scraping utilities
+        ├── browser_humanizer.py  # Human-like interaction behavior (scrolling, clicking)
+        ├── housing_parser.py     # Regex & NLP parser for real estate text features
+        ├── location_data.py      # Location dictionary & regex mapping engine
+        └── time_utils.py         # Relative time parsing & timestamp tools
 
 ---
 
