@@ -1,13 +1,21 @@
 import os
+import sys
 import json
 import re
 import unicodedata
 from difflib import SequenceMatcher
 from datetime import datetime
 
+# --- Resolve Project Root so 'scrapers' imports work from anywhere ---
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, '..', '..'))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
+from scrapers.utilities.housing_parser import extract_housing_details
+
 # --- File Paths & Directories (UPDATED FOR MODULAR STRUCTURE) ---
 # SCRIPT_DIR is: scrapers/processors/
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 # SCRAPERS_ROOT is: scrapers/
 SCRAPERS_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, '..'))
 
@@ -177,7 +185,7 @@ def get_unique_listings_from_all_groups():
     """
     Iterates through all scraper directories under RAW_DATA_INPUT_FOLDER,
     deduplicates posts based on canonical_id / URL, normalizes prices,
-    and returns unique posts.
+    re-parses extracted location/attribute details dynamically, and returns unique posts.
     """
     all_unique_posts_by_id = {}
     total_files_processed = 0
@@ -211,12 +219,26 @@ def get_unique_listings_from_all_groups():
             for filename in os.listdir(input_subdir_path):
                 if filename.endswith(".json"):
                     file_path = os.path.join(input_subdir_path, filename)
-                    # print(f"    - Reading file: {filename}")
                     group_posts = load_json_file(file_path)
                     
                     if group_posts and isinstance(group_posts, list):
                         total_files_processed += 1
                         for post in group_posts:
+                            # Dynamically re-parse full text to capture newly added locations/rules
+                            if post.get("full_text"):
+                                reparsed_details = extract_housing_details(
+                                    post["full_text"],
+                                    is_media_only=post.get("is_media_only", False)
+                                )
+                                post["locations"] = reparsed_details.get("locations", [])
+                                post["property_category"] = reparsed_details.get("property_category")
+                                post["listing_type"] = reparsed_details.get("listing_type")
+                                post["rooms"] = reparsed_details.get("rooms")
+                                post["sizes_sqm"] = reparsed_details.get("sizes_sqm")
+                                post["phone_numbers"] = reparsed_details.get("phone_numbers")
+                                if reparsed_details.get("prices"):
+                                    post["prices"] = reparsed_details.get("prices")
+
                             # Apply price conversion & normalization
                             if "prices" in post:
                                 post["prices"] = normalize_and_convert_prices(post.get("prices"))

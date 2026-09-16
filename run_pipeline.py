@@ -4,7 +4,7 @@ import sys
 import os
 from datetime import datetime
 
-# Fix for Windows console encoding issues with emojis (only applied on Windows)[cite: 1]
+# Fix for Windows console encoding issues with emojis (only applied on Windows)
 if os.name == 'nt':
     if sys.stdout.encoding.lower() != 'utf-8':
         sys.stdout.reconfigure(encoding='utf-8')
@@ -12,10 +12,10 @@ if os.name == 'nt':
         sys.stderr.reconfigure(encoding='utf-8')
 
 # Define paths to your scripts relative to the project root directory (armenia-real-estate-website/)
-# UPDATED FOR MODULAR STRUCTURE
 FB_SCRAPER_SCRIPT = os.path.join("scrapers", "facebook", "fb_scraper.py")
-SITE_A_SCRAPER_SCRIPT = os.path.join("scrapers", "site_a", "scraper.py") # Example placeholder
+SITE_A_SCRAPER_SCRIPT = os.path.join("scrapers", "site_a", "scraper.py")  # Example placeholder
 GENERATOR_SCRIPT = os.path.join("scrapers", "processors", "generate_site_data.py")
+CLEANUP_SCRIPT = os.path.join("scrapers", "processors", "cleanup_master_listings.py")
 
 def run_step(script_path, description, extra_args=None):
     """Helper function to run a script using the current Python environment."""
@@ -40,7 +40,7 @@ def run_step(script_path, description, extra_args=None):
         return False
 
 def main():
-    # Set up argument parsing for command-line control[cite: 1]
+    # Set up argument parsing for command-line control
     parser = argparse.ArgumentParser(description="Run the Armenia Real Estate Data Pipeline.")
     parser.add_argument(
         "-t", "--time-limit", 
@@ -48,31 +48,36 @@ def main():
         default=None, 
         help="Max scraping time allowed per Facebook group (in minutes). Uses default config if omitted."
     )
+    parser.add_argument(
+        "-ns", "--no-scrape",
+        action="store_true",
+        help="Skip scraping phase and directly run site data generation, re-parsing, and cleanup."
+    )
     args = parser.parse_args()
 
     start_time = datetime.now()
     print("🚀 Starting Armenia Real Estate Data Pipeline...")
-    
-    if args.time_limit:
-        print(f"⏱️ Time limit configured: {args.time_limit} minutes max per group.")
+
+    # Step 1: Run Scrapers (skipped if --no-scrape flag is provided)
+    if not args.no_scrape:
+        if args.time_limit:
+            print(f"⏱️ Time limit configured: {args.time_limit} minutes max per group.")
+        else:
+            print("⏱️ Using default config settings for scraping duration.")
+
+        scraper_args = []
+        if args.time_limit:
+            scraper_args.extend(["--time-limit", str(args.time_limit)])
+
+        scraper_success = run_step(FB_SCRAPER_SCRIPT, "Facebook Feed Scraper", extra_args=scraper_args)
+        if not scraper_success:
+            print("\n❌ Pipeline aborted due to scraper failure.", file=sys.stderr)
+            sys.exit(1)
+            
+        # Step 1b: Run additional site scrapers (Example)
+        # site_a_success = run_step(SITE_A_SCRAPER_SCRIPT, "Site A standard Scraper")
     else:
-        print("⏱️ Using default config settings for scraping duration.")
-
-    # Prepare extra arguments for the scraper script if passed[cite: 1]
-    scraper_args = []
-    if args.time_limit:
-        # Assuming your scraper script accepts '--time-limit' or similar flag. 
-        # Adjust '--time-limit' below if your scraper uses a different argument name (e.g., '--duration').
-        scraper_args.extend(["--time-limit", str(args.time_limit)])
-
- # Step 1: Run the modular Facebook Scraper
-    scraper_success = run_step(FB_SCRAPER_SCRIPT, "Facebook Feed Scraper", extra_args=scraper_args)
-    if not scraper_success:
-        print("\n❌ Pipeline aborted due to scraper failure.", file=sys.stderr)
-        sys.exit(1)
-        
-    # Step 1b: Run additional site scrapers (Example)
-    # site_a_success = run_step(SITE_A_SCRAPER_SCRIPT, "Site A standard Scraper")
+        print("⏩ Skipping scraping phase (--no-scrape requested).")
 
     # Step 2: Run the Modular Website Data Generator
     generator_success = run_step(GENERATOR_SCRIPT, "Website Listings Data Generator")
@@ -80,8 +85,11 @@ def main():
         print("\n❌ Pipeline aborted due to data generation failure.", file=sys.stderr)
         sys.exit(1)
     
-    # 3. Run Post-Processing Cleanup
-    subprocess.run([sys.executable, "scrapers/processors/cleanup_master_listings.py"], check=True)
+    # Step 3: Run Post-Processing Cleanup
+    cleanup_success = run_step(CLEANUP_SCRIPT, "Post-Processing Cleanup")
+    if not cleanup_success:
+        print("\n❌ Pipeline aborted due to cleanup failure.", file=sys.stderr)
+        sys.exit(1)
         
     elapsed = datetime.now() - start_time
     print(f"\n✨ Pipeline finished successfully in {elapsed.total_seconds():.2f} seconds!")

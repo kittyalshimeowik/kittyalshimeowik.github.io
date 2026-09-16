@@ -80,6 +80,8 @@ Commands to run the data generation pipeline for web scrapers
 #### 1. Executing the pipeline
 ```bash
 python run_pipeline.py -t 1
+
+python run_pipeline.py -ns
 ```
 
 ---

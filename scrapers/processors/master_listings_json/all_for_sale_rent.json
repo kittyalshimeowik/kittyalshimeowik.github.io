@@ -622,8 +622,8 @@
     ],
     "rooms": [],
     "locations": [
-      "Yeghvard",
-      "Ashtarak"
+      "Ashtarak",
+      "Yeghvard"
     ],
     "phone_numbers": [
       "+374 77 337 761"
@@ -1794,7 +1794,9 @@
       1000
     ],
     "rooms": [],
-    "locations": [],
+    "locations": [
+      "Tsaghkadzor"
+    ],
     "phone_numbers": [
       "+374 41 011 100"
     ],
@@ -2163,9 +2165,7 @@
       5000
     ],
     "rooms": [],
-    "locations": [
-      "Shengavit"
-    ],
+    "locations": [],
     "phone_numbers": [],
     "full_text": "Վաճառվում է Հողատարածք Ներքին Չարբախում 5000քմ գրեք կմանրամասնեմ"
   },
@@ -2228,7 +2228,9 @@
     "rooms": [
       2
     ],
-    "locations": [],
+    "locations": [
+      "Abovyan"
+    ],
     "phone_numbers": [
       "+374 77 640 461",
       "+374 98 178 790"
@@ -2345,7 +2347,7 @@
     ],
     "rooms": [],
     "locations": [
-      "Kentron / Center"
+      "Vagharshapat / Etchmiadzin"
     ],
     "phone_numbers": [
       "+374 93 454 249"
@@ -2544,9 +2546,7 @@
       400
     ],
     "rooms": [],
-    "locations": [
-      "Shengavit"
-    ],
+    "locations": [],
     "phone_numbers": [],
     "full_text": "Վաճառվում է 400քմ հող Ներքին Չարբախում անկյունային ճակատ 18,մետր գինը 22000$"
   },
@@ -2577,9 +2577,7 @@
       7600
     ],
     "rooms": [],
-    "locations": [
-      "Shengavit"
-    ],
+    "locations": [],
     "phone_numbers": [],
     "full_text": "Վաճառվում է 1,գիծ 7600քմ հող Ներքին Չարբախում ճակատ 80,մետր երկողմանի փողոց կոմունալները մոտիկ մոտակայքում բնակելի տներ գինը 550000$"
   },
@@ -2631,9 +2629,7 @@
       5000
     ],
     "rooms": [],
-    "locations": [
-      "Shengavit"
-    ],
+    "locations": [],
     "phone_numbers": [],
     "full_text": "Վաճառվում է 5000քմ հող Ներքին Չարբախում գլխավոր փողոցիծ 100,մետր ներս գինը 270000$"
   },
@@ -2701,7 +2697,9 @@
       44
     ],
     "rooms": [],
-    "locations": [],
+    "locations": [
+      "Abovyan"
+    ],
     "phone_numbers": [
       "+374 77 099 497",
       "+374 93 099 897",
@@ -3195,9 +3193,7 @@
     "rooms": [
       3
     ],
-    "locations": [
-      "Kentron / Center"
-    ],
+    "locations": [],
     "phone_numbers": [
       "+374 33 209 191"
     ],
@@ -3308,9 +3304,7 @@
     "rooms": [
       3
     ],
-    "locations": [
-      "Kentron / Center"
-    ],
+    "locations": [],
     "phone_numbers": [
       "+374 33 209 191"
     ],
@@ -3607,9 +3601,7 @@
     "rooms": [
       3
     ],
-    "locations": [
-      "Kentron / Center"
-    ],
+    "locations": [],
     "phone_numbers": [
       "+374 33 209 191"
     ],
@@ -3644,7 +3636,9 @@
     "rooms": [
       2
     ],
-    "locations": [],
+    "locations": [
+      "Jrvezh / Dzoraghbyur"
+    ],
     "phone_numbers": [
       "+374 77 147 277"
     ],
@@ -3671,9 +3665,7 @@
     "rooms": [
       3
     ],
-    "locations": [
-      "Kentron / Center"
-    ],
+    "locations": [],
     "phone_numbers": [
       "+374 33 209 191"
     ],
@@ -3788,8 +3780,7 @@
       10
     ],
     "locations": [
-      "Shengavit",
-      "Avan"
+      "Shengavit"
     ],
     "phone_numbers": [
       "+374 98 906 321"
@@ -4062,7 +4053,9 @@
       1
     ],
     "rooms": [],
-    "locations": [],
+    "locations": [
+      "Yeghvard"
+    ],
     "phone_numbers": [
       "+374 99 044 094"
     ],
@@ -4098,9 +4091,7 @@
     "rooms": [
       2
     ],
-    "locations": [
-      "Avan"
-    ],
+    "locations": [],
     "phone_numbers": [
       "+374 91 222 988"
     ],
@@ -4168,7 +4159,7 @@
     ],
     "rooms": [],
     "locations": [
-      "Avan"
+      "Dilijan"
     ],
     "phone_numbers": [
       "+375 336 611 11 3"
@@ -4368,7 +4359,9 @@
     "rooms": [
       3
     ],
-    "locations": [],
+    "locations": [
+      "Artashat"
+    ],
     "phone_numbers": [
       "+374 98 868 637"
     ],
@@ -4599,9 +4592,7 @@
     "rooms": [
       2
     ],
-    "locations": [
-      "Kentron / Center"
-    ],
+    "locations": [],
     "phone_numbers": [
       "+374 33 209 191"
     ],
@@ -5010,7 +5001,9 @@
       3600
     ],
     "rooms": [],
-    "locations": [],
+    "locations": [
+      "Abovyan"
+    ],
     "phone_numbers": [
       "+374 77 640 461",
       "+374 98 178 790"
@@ -5155,9 +5148,7 @@
       1000
     ],
     "rooms": [],
-    "locations": [
-      "Avan"
-    ],
+    "locations": [],
     "phone_numbers": [
       "+374 77 140 671"
     ],
@@ -5634,9 +5625,7 @@
     "rooms": [
       4
     ],
-    "locations": [
-      "Shengavit"
-    ],
+    "locations": [],
     "phone_numbers": [
       "+374 94 684 200"
     ],
@@ -5794,9 +5783,7 @@
       85
     ],
     "rooms": [],
-    "locations": [
-      "Kentron / Center"
-    ],
+    "locations": [],
     "phone_numbers": [
       "+374 77 533 664"
     ],
@@ -5939,9 +5926,7 @@
       1500
     ],
     "rooms": [],
-    "locations": [
-      "Avan"
-    ],
+    "locations": [],
     "phone_numbers": [],
     "full_text": "Հողատարածք բնակելի շինությունների համար Աղավնավանքում, 1,500 քմ\n\nhttps://www.list.am/item/20214260"
   },
@@ -6027,7 +6012,9 @@
       500
     ],
     "rooms": [],
-    "locations": [],
+    "locations": [
+      "Yeghvard"
+    ],
     "phone_numbers": [
       "+374 94 317 974"
     ],
@@ -7203,7 +7190,9 @@
     "rooms": [
       3
     ],
-    "locations": [],
+    "locations": [
+      "Vedi"
+    ],
     "phone_numbers": [
       "+374 98 868 637"
     ],
@@ -7518,9 +7507,7 @@
     "rooms": [
       4
     ],
-    "locations": [
-      "Kentron / Center"
-    ],
+    "locations": [],
     "phone_numbers": [
       "+374 33 209 191"
     ],
@@ -7626,9 +7613,7 @@
     "rooms": [
       4
     ],
-    "locations": [
-      "Kentron / Center"
-    ],
+    "locations": [],
     "phone_numbers": [
       "+374 33 209 191"
     ],
@@ -7675,7 +7660,8 @@
       5
     ],
     "locations": [
-      "Kentron / Center"
+      "Kentron / Center",
+      "Goris"
     ],
     "phone_numbers": [
       "+374 99 681 631",
@@ -7754,9 +7740,7 @@
     "rooms": [
       2
     ],
-    "locations": [
-      "Kentron / Center"
-    ],
+    "locations": [],
     "phone_numbers": [
       "+374 33 209 191"
     ],
@@ -7792,7 +7776,9 @@
     "rooms": [
       3
     ],
-    "locations": [],
+    "locations": [
+      "Vedi"
+    ],
     "phone_numbers": [
       "+374 94 745 480"
     ],
@@ -7853,7 +7839,9 @@
     "rooms": [
       4
     ],
-    "locations": [],
+    "locations": [
+      "Jrvezh / Dzoraghbyur"
+    ],
     "phone_numbers": [
       "+374 94 371 039"
     ],
@@ -7912,7 +7900,9 @@
     "rooms": [
       2
     ],
-    "locations": [],
+    "locations": [
+      "Tsaghkadzor"
+    ],
     "phone_numbers": [
       "+374 55 300 223"
     ],
@@ -8127,7 +8117,7 @@
     ],
     "rooms": [],
     "locations": [
-      "Avan"
+      "Dilijan"
     ],
     "phone_numbers": [
       "+375 336 611 11 3"
@@ -8299,7 +8289,9 @@
       500
     ],
     "rooms": [],
-    "locations": [],
+    "locations": [
+      "Ajapnyak"
+    ],
     "phone_numbers": [
       "+374 98 100 616"
     ],
@@ -8429,9 +8421,7 @@
       2223
     ],
     "rooms": [],
-    "locations": [
-      "Avan"
-    ],
+    "locations": [],
     "phone_numbers": [
       "+374 99 630 383"
     ],
@@ -8720,8 +8710,8 @@
     "sizes_sqm": [],
     "rooms": [],
     "locations": [
-      "Ajapnyak",
-      "Nor Nork / Massiv"
+      "Nor Nork / Massiv",
+      "Ajapnyak"
     ],
     "phone_numbers": [
       "+374 43 505 255"
@@ -8818,7 +8808,9 @@
       500
     ],
     "rooms": [],
-    "locations": [],
+    "locations": [
+      "Jrvezh / Dzoraghbyur"
+    ],
     "phone_numbers": [
       "+374 94 714 477"
     ],

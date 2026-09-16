@@ -36,19 +36,43 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let currentLanguage = localStorage.getItem("preferredLanguage") || "en";
 
-    const locationTranslations = {
-        "Ajapnyak": "Աջափնյակ",
-        "Arabkir": "Արաբկիր",
-        "Avan": "Ավան",
-        "Davtashen": "Դավթաշեն",
-        "Erebuni": "Էրեբունի",
-        "Kentron / Center": "Կենտրոն",
-        "Malatia-Sebastia": "Մալաթիա-Սեբաստիա",
-        "Nor Nork / Massiv": "Նոր Նորք / Մասիվ",
-        "Nork-Marash": "Նորք-Մարաշ",
-        "Shengavit": "Շենգավիթ",
-        "Zeytun / Kanaker": "Զեյթուն / Քանաքեռ"
-    };
+const locationTranslations = {
+    // Yerevan Districts
+    "Ajapnyak": "Աջափնյակ",
+    "Arabkir": "Արաբկիր",
+    "Avan": "Ավան",
+    "Davtashen": "Դավթաշեն",
+    "Erebuni": "Էրեբունի",
+    "Kentron / Center": "Կենտրոն",
+    "Malatia-Sebastia": "Մալաթիա-Սեբաստիա",
+    "Nor Nork / Massiv": "Նոր Նորք / Մասիվ",
+    "Nork-Marash": "Նորք-Մարաշ",
+    "Nubarashen": "Նուբարաշեն",
+    "Shengavit": "Շենգավիթ",
+    "Zeytun / Kanaker": "Զեյթուն / Քանաքեռ",
+
+    // Kotayk Province & Suburbs
+    "Abovyan": "Աբովյան",
+    "Arinj": "Առինջ",
+    "Jrvezh / Dzoraghbyur": "Ջրվեժ / Ձորաղբյուր",
+    "Kasagh / Proshyan": "Քասախ / Պրոշյան",
+    "Nor Gyugh": "Նոր Գյուղ",
+    "Tsaghkadzor": "Ծաղկաձոր",
+    "Yeghvard": "Եղվարդ",
+
+    // Ararat & Armavir Suburbs
+    "Artashat": "Արտաշատ",
+    "Ashtarak": "Աշտարակ",
+    "Vagharshapat / Etchmiadzin": "Էջմիածին / Վաղարշապատ",
+    "Vedi": "Վեդի",
+
+    // Extended Regions & Cities
+    "Dilijan": "Դիլիջան",
+    "Goris": "Գորիս",
+    "Gyumri": "Գյումրի",
+    "Sevan": "Սևան",
+    "Vanadzor": "Վանաձոր"
+};
 
     const gridContainer = document.getElementById("listings-grid");
     const resultCount = document.getElementById("result-count");
