@@ -172,6 +172,20 @@ def run_facebook_housing_scraper():
         if CURRENT_OS == "windows":
             context_args["ignore_default_args"] = ["--enable-automation"]
             context_args["args"] = ["--disable-blink-features=AutomationControlled", "--no-sandbox", "--disable-infobars"]
+            
+            # Check standard Chrome installation locations (AppData vs Program Files)
+            chrome_path_appdata = os.path.expanduser(r"~\AppData\Local\Google\Chrome\Application\chrome.exe")
+            chrome_path_progfiles = r"C:\Program Files\Google\Chrome\Application\chrome.exe"
+            chrome_path_progfiles86 = r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"
+
+            if os.path.exists(chrome_path_appdata):
+                context_args["executable_path"] = chrome_path_appdata
+            elif os.path.exists(chrome_path_progfiles):
+                context_args["executable_path"] = chrome_path_progfiles
+            elif os.path.exists(chrome_path_progfiles86):
+                context_args["executable_path"] = chrome_path_progfiles86
+            else:
+                print("⚠️ Warning: Could not auto-locate local Chrome executable. Falling back to default path.")
         else:
             context_args["args"] = ["--disable-blink-features=AutomationControlled"]
 

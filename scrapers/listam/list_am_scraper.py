@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import sys
 import io
@@ -76,7 +77,6 @@ def extract_listing_dates(item_soup):
     posted_date = None
     renewed_date = None
     
-    # Look for Posted date: e.g., "Posted 14.09.2026"
     posted_match = re.search(r'Posted\s+(\d{2}\.\d{2}\.\d{4})', text, re.IGNORECASE)
     if posted_match:
         try:
@@ -85,7 +85,6 @@ def extract_listing_dates(item_soup):
         except Exception:
             pass
             
-    # Look for Renewed date: e.g., "Renewed 15.09.2026, 22:28"
     renewed_match = re.search(r'Renewed\s+(\d{2}\.\d{2}\.\d{4})(?:,\s*(\d{2}:\d{2}))?', text, re.IGNORECASE)
     if renewed_match:
         try:
@@ -97,7 +96,6 @@ def extract_listing_dates(item_soup):
         except Exception:
             pass
             
-    # Fallback search for any DD.MM.YYYY date in text if specific labels aren't matched
     if not posted_date and not renewed_date:
         dates = re.findall(r'\b(\d{2}\.\d{2}\.\d{4})\b', text)
         if dates:
@@ -107,8 +105,59 @@ def extract_listing_dates(item_soup):
             except Exception:
                 pass
                 
-    # Prioritize posted_date, fallback to renewed_date
     return posted_date or renewed_date
+
+
+# ==========================================
+# 🧠 HUMANIZED BEHAVIORAL HELPERS
+# ==========================================
+def human_scroll(driver):
+    """Simulates natural human scrolling down a page in random chunks with occasional rereads."""
+    try:
+        total_height = driver.execute_script("return document.body.scrollHeight")
+        current_position = 0
+        target_scroll_limit = total_height * random.uniform(0.5, 0.8)
+        
+        while current_position < target_scroll_limit:
+            scroll_step = random.randint(250, 550)
+            current_position += scroll_step
+            driver.execute_script(f"window.scrollTo(0, {current_position});")
+            time.sleep(random.uniform(0.3, 0.9))
+            
+            # Occasionally scroll back up slightly like a user rereading something
+            if random.random() < 0.15:
+                back_step = random.randint(80, 180)
+                current_position = max(0, current_position - back_step)
+                driver.execute_script(f"window.scrollTo(0, {current_position});")
+                time.sleep(random.uniform(0.4, 0.8))
+    except Exception:
+        pass
+
+
+def simulate_random_tab_activity(driver):
+    """Occasionally opens a blank or neutral tab, dwells briefly, and closes it with high probability (>80%)."""
+    if random.random() < 0.20:  # 20% chance per page iteration to multitask
+        main_window = driver.current_window_handle
+        try:
+            driver.execute_script("window.open('about:blank', '_blank');")
+            time.sleep(random.uniform(0.4, 0.9))
+            
+            all_windows = driver.window_handles
+            if len(all_windows) > 1:
+                new_window = [w for w in all_windows if w != main_window][0]
+                driver.switch_to.window(new_window)
+                
+                # Dwell briefly in the new tab simulating user attention shift
+                time.sleep(random.uniform(1.0, 2.5))
+                
+                # Close with high probability (>80%, e.g., 90%)
+                if random.random() < 0.90:
+                    driver.close()
+        except Exception:
+            pass
+        finally:
+            if main_window in driver.window_handles:
+                driver.switch_to.window(main_window)
 
 
 class SafeFloatContext:
@@ -168,7 +217,6 @@ class DirectBrowserListAmScraper(BaseScraper):
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
         
-        # Disable image loading to drastically speed up page load times
         prefs = {"profile.managed_default_content_settings.images": 2}
         options.experimental_options["prefs"] = prefs
 
@@ -243,7 +291,6 @@ class DirectBrowserListAmScraper(BaseScraper):
                 no_new_streak = 0
 
                 while time.time() < cat_end_time:
-                    # ⏱️ Enforce time limit check at the start of each page iteration
                     if time.time() >= cat_end_time:
                         print(f"⏱️ Time limit reached for category {cat_name}. Stopping.")
                         break
@@ -267,6 +314,11 @@ class DirectBrowserListAmScraper(BaseScraper):
                     try:
                         driver.get(target_url)
                         self.handle_cloudflare_loop()
+                        
+                        # 🧠 Inject human behaviors after page load
+                        human_scroll(driver)
+                        simulate_random_tab_activity(driver)
+                        
                         html_content = driver.page_source
                     except Exception as e:
                         print(f"⚠️ Error loading page: {e}")
@@ -288,7 +340,6 @@ class DirectBrowserListAmScraper(BaseScraper):
                         card_text = card.get_text(separator=" ", strip=True)
                         page_items.append({"url": full_url, "text": card_text})
 
-                    # Deduplicate urls on page
                     unique_page_items = []
                     seen_page_urls = set()
                     for item in page_items:
@@ -309,7 +360,6 @@ class DirectBrowserListAmScraper(BaseScraper):
                         print(f"📦 Captured {len(unique_page_items)} new listing links on page {page_num}. Visiting item pages for full details...")
 
                         for item in unique_page_items:
-                            # ⏱️ Enforce time limit check inside item processing loop
                             if time.time() >= cat_end_time:
                                 print(f"⏱️ Time limit reached during item processing. Stopping category.")
                                 break
@@ -320,10 +370,13 @@ class DirectBrowserListAmScraper(BaseScraper):
                             seen_urls.add(url)
                             item_id = url.split("/item/")[-1].split("?")[0]
 
-                            # 🌐 Visit actual item page to fetch full description, price, location, dates, and metadata
                             try:
                                 driver.get(url)
                                 self.handle_cloudflare_loop()
+                                
+                                # 🧠 Light human scroll on individual listing pages too
+                                human_scroll(driver)
+                                
                                 item_soup = BeautifulSoup(driver.page_source, "html.parser")
 
                                 title_elem = item_soup.find("h1")
@@ -381,7 +434,6 @@ class DirectBrowserListAmScraper(BaseScraper):
                         save_record_to_disk(OUTPUT_DIR, cat_id, category_records)
                         print(f"⏳ Total Captured: {len(category_records)} | {time_str}")
 
-                    # ⏱️ Break out of the page loop immediately if time expired during item processing
                     if time.time() >= cat_end_time:
                         print(f"⏱️ Time limit reached. Ending category run.")
                         break

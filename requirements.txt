@@ -5,3 +5,4 @@ undetected-chromedriver
 webdriver-manager
 selenium-stealth
 setuptools
+playwright

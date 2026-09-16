@@ -13,7 +13,7 @@ if os.name == 'nt':
 
 # Define paths to your scripts relative to the project root directory
 FB_SCRAPER_SCRIPT = os.path.join("scrapers", "facebook", "fb_scraper.py")
-LIST_AM_SCRAPER_SCRIPT = os.path.join("scrapers", "list_am", "list_am_scraper.py") # Adjust to 'listam' if that is your folder name
+LIST_AM_SCRAPER_SCRIPT = os.path.join("scrapers", "listam", "list_am_scraper.py") # Updated folder name here
 GENERATOR_SCRIPT = os.path.join("scrapers", "processors", "generate_site_data.py")
 CLEANUP_SCRIPT = os.path.join("scrapers", "processors", "cleanup_master_listings.py")
 
@@ -68,17 +68,18 @@ def main():
         if args.time_limit:
             scraper_args.extend(["--time-limit", str(args.time_limit)])
 
-        # 1a. Run Facebook Scraper
+        # 1a. Run List.am Scraper
+        list_am_success = run_step(LIST_AM_SCRAPER_SCRIPT, "List.am Scraper", extra_args=scraper_args)
+        if not list_am_success:
+            print("\n❌ Pipeline aborted due to List.am scraper failure.", file=sys.stderr)
+            sys.exit(1)
+
+        # 1b. Run Facebook Scraper
         fb_success = run_step(FB_SCRAPER_SCRIPT, "Facebook Feed Scraper", extra_args=scraper_args)
         if not fb_success:
             print("\n❌ Pipeline aborted due to Facebook scraper failure.", file=sys.stderr)
             sys.exit(1)
             
-        # 1b. Run List.am Scraper
-        list_am_success = run_step(LIST_AM_SCRAPER_SCRIPT, "List.am Scraper", extra_args=scraper_args)
-        if not list_am_success:
-            print("\n❌ Pipeline aborted due to List.am scraper failure.", file=sys.stderr)
-            sys.exit(1)
     else:
         print("⏩ Skipping scraping phase (--no-scrape requested).")
 
