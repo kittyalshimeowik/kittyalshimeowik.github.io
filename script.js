@@ -36,43 +36,43 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let currentLanguage = localStorage.getItem("preferredLanguage") || "en";
 
-const locationTranslations = {
-    // Yerevan Districts
-    "Ajapnyak": "Աջափնյակ",
-    "Arabkir": "Արաբկիր",
-    "Avan": "Ավան",
-    "Davtashen": "Դավթաշեն",
-    "Erebuni": "Էրեբունի",
-    "Kentron / Center": "Կենտրոն",
-    "Malatia-Sebastia": "Մալաթիա-Սեբաստիա",
-    "Nor Nork / Massiv": "Նոր Նորք / Մասիվ",
-    "Nork-Marash": "Նորք-Մարաշ",
-    "Nubarashen": "Նուբարաշեն",
-    "Shengavit": "Շենգավիթ",
-    "Zeytun / Kanaker": "Զեյթուն / Քանաքեռ",
+    const locationTranslations = {
+        // Yerevan Districts
+        "Ajapnyak": "Աջափնյակ",
+        "Arabkir": "Արաբկիր",
+        "Avan": "Ավան",
+        "Davtashen": "Դավթաշեն",
+        "Erebuni": "Էրեբունի",
+        "Kentron / Center": "Կենտրոն",
+        "Malatia-Sebastia": "Մալաթիա-Սեբաստիա",
+        "Nor Nork / Massiv": "Նոր Նորք / Մասիվ",
+        "Nork-Marash": "Նորք-Մարաշ",
+        "Nubarashen": "Նուբարաշեն",
+        "Shengavit": "Շենգավիթ",
+        "Zeytun / Kanaker": "Զեյթուն / Քանաքեռ",
 
-    // Kotayk Province & Suburbs
-    "Abovyan": "Աբովյան",
-    "Arinj": "Առինջ",
-    "Jrvezh / Dzoraghbyur": "Ջրվեժ / Ձորաղբյուր",
-    "Kasagh / Proshyan": "Քասախ / Պրոշյան",
-    "Nor Gyugh": "Նոր Գյուղ",
-    "Tsaghkadzor": "Ծաղկաձոր",
-    "Yeghvard": "Եղվարդ",
+        // Kotayk Province & Suburbs
+        "Abovyan": "Աբովյան",
+        "Arinj": "Առինջ",
+        "Jrvezh / Dzoraghbyur": "Ջրվեժ / Ձորաղբյուր",
+        "Kasagh / Proshyan": "Քասախ / Պրոշյան",
+        "Nor Gyugh": "Նոր Գյուղ",
+        "Tsaghkadzor": "Ծաղկաձոր",
+        "Yeghvard": "Եղվարդ",
 
-    // Ararat & Armavir Suburbs
-    "Artashat": "Արտաշատ",
-    "Ashtarak": "Աշտարակ",
-    "Vagharshapat / Etchmiadzin": "Էջմիածին / Վաղարշապատ",
-    "Vedi": "Վեդի",
+        // Ararat & Armavir Suburbs
+        "Artashat": "Արտաշատ",
+        "Ashtarak": "Աշտարակ",
+        "Vagharshapat / Etchmiadzin": "Էջմիածին / Վաղարշապատ",
+        "Vedi": "Վեդի",
 
-    // Extended Regions & Cities
-    "Dilijan": "Դիլիջան",
-    "Goris": "Գորիս",
-    "Gyumri": "Գյումրի",
-    "Sevan": "Սևան",
-    "Vanadzor": "Վանաձոր"
-};
+        // Extended Regions & Cities
+        "Dilijan": "Դիլիջան",
+        "Goris": "Գորիս",
+        "Gyumri": "Գյումրի",
+        "Sevan": "Սևան",
+        "Vanadzor": "Վանաձոր"
+    };
 
     const gridContainer = document.getElementById("listings-grid");
     const resultCount = document.getElementById("result-count");
@@ -150,29 +150,26 @@ const locationTranslations = {
 
         const locationSearchInput = document.getElementById("location-search");
         
-        // Show search bar if there are more than 10 locations
         if (locations.length > 10 && locationSearchInput) {
             locationSearchInput.style.display = "block";
             
-            // Add real-time input event listener for location filtering
             locationSearchInput.addEventListener("input", (e) => {
                 const query = e.target.value.toLowerCase().trim();
                 const labels = locationOptions.querySelectorAll("label");
                 
                 labels.forEach(label => {
-                    const text = label.textContent.toLowerCase();
-                    label.style.display = text.includes(query) ? "" : "none";
+                    const textContent = label.textContent.toLowerCase();
+                    label.style.display = textContent.includes(query) ? "" : "none";
                 });
             });
         }
 
-        // Populate locations
         locations.forEach(location => {
             const label = document.createElement("label");
             label.innerHTML = `<input type="checkbox" name="location-filter" value="${escapeHtml(location)}"> ${escapeHtml(translateLocation(location))}`;
             locationOptions.appendChild(label);
-            });
-        }
+        });
+    }
 
     function getFirstPrice(item) {
         if (!item.prices || item.prices.length === 0) return null;
@@ -213,7 +210,7 @@ const locationTranslations = {
 
         const filteredListings = allListings.filter(item => {
             const itemPrice = getFirstPrice(item);
-            const sourceMatches = selectedSource === "All" || selectedSource === "Facebook";
+            const sourceMatches = selectedSource === "All" || item.source === selectedSource || (selectedSource === "Facebook" && (!item.source || item.source === "Facebook"));
             const typeMatches = matchesSelection(item.listing_type, selectedTypes, listingTypeMode);
             const propertyTypeMatches = matchesSelection(item.property_category, selectedPropertyTypes, propertyTypeMode);
             const locationMatches = selectedLocations.length === 0 || (locationMode === "exclude"
@@ -281,11 +278,19 @@ const locationTranslations = {
             let typeTagClass = "sale";
             if (listingType === "Rent") typeTagClass = "rent";
 
+            const sourceName = item.source || "Facebook";
+            let sourceClass = "fb";
+            let sourceDisplay = "FB";
+            if (sourceName === "List.am") {
+                sourceClass = "listam";
+                sourceDisplay = "List.am";
+            }
+
             card.innerHTML = `
                 <div class="property-info">
                     <div class="listing-topline">
                         <div class="tags-container">
-                            <span class="source-tag fb">FB</span>
+                            <span class="source-tag ${sourceClass}">${escapeHtml(sourceDisplay)}</span>
                             <span class="source-tag ${typeTagClass}">${escapeHtml(listingTypeLabel)}</span>
                         </div>
                         <span class="property-type">${escapeHtml(translations[currentLanguage].propertyTypes[item.property_category] || text("property"))}</span>
@@ -316,27 +321,26 @@ const locationTranslations = {
     });
 
     resetFilters.addEventListener("click", () => {
-    document.querySelectorAll("input[type='checkbox']").forEach(input => input.checked = false);
-    document.getElementById("source-filter").value = "All";
-    document.getElementById("currency-filter").value = "AMD";
-    document.getElementById("listing-type-mode").value = "include";
-    document.getElementById("property-type-mode").value = "include";
-    document.querySelectorAll("input[name='location-filter']").forEach(input => input.checked = false);
-    document.getElementById("location-mode").value = "include";
-    document.getElementById("min-price").value = "";
-    document.getElementById("max-price").value = "";
-    document.getElementById("rooms-filter").value = "All";
-    document.getElementById("sort-filter").value = "newest";
-    
-    // Clear location search query and show all options
-    const locationSearchInput = document.getElementById("location-search");
-    if (locationSearchInput) {
-        locationSearchInput.value = "";
-        locationOptions.querySelectorAll("label").forEach(label => label.style.display = "");
-    }
+        document.querySelectorAll("input[type='checkbox']").forEach(input => input.checked = false);
+        document.getElementById("source-filter").value = "All";
+        document.getElementById("currency-filter").value = "AMD";
+        document.getElementById("listing-type-mode").value = "include";
+        document.getElementById("property-type-mode").value = "include";
+        document.querySelectorAll("input[name='location-filter']").forEach(input => input.checked = false);
+        document.getElementById("location-mode").value = "include";
+        document.getElementById("min-price").value = "";
+        document.getElementById("max-price").value = "";
+        document.getElementById("rooms-filter").value = "All";
+        document.getElementById("sort-filter").value = "newest";
+        
+        const locationSearchInput = document.getElementById("location-search");
+        if (locationSearchInput) {
+            locationSearchInput.value = "";
+            locationOptions.querySelectorAll("label").forEach(label => label.style.display = "");
+        }
 
-    applyFilters();
-});
+        applyFilters();
+    });
 
     function escapeHtml(str) {
         return str.replace(/[&<>'"]/g, 

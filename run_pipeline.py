@@ -4,16 +4,16 @@ import sys
 import os
 from datetime import datetime
 
-# Fix for Windows console encoding issues with emojis (only applied on Windows)
+# Fix for Windows console encoding issues with emojis
 if os.name == 'nt':
     if sys.stdout.encoding.lower() != 'utf-8':
         sys.stdout.reconfigure(encoding='utf-8')
     if sys.stderr.encoding.lower() != 'utf-8':
         sys.stderr.reconfigure(encoding='utf-8')
 
-# Define paths to your scripts relative to the project root directory (armenia-real-estate-website/)
+# Define paths to your scripts relative to the project root directory
 FB_SCRAPER_SCRIPT = os.path.join("scrapers", "facebook", "fb_scraper.py")
-SITE_A_SCRAPER_SCRIPT = os.path.join("scrapers", "site_a", "scraper.py")  # Example placeholder
+LIST_AM_SCRAPER_SCRIPT = os.path.join("scrapers", "list_am", "list_am_scraper.py") # Adjust to 'listam' if that is your folder name
 GENERATOR_SCRIPT = os.path.join("scrapers", "processors", "generate_site_data.py")
 CLEANUP_SCRIPT = os.path.join("scrapers", "processors", "cleanup_master_listings.py")
 
@@ -40,13 +40,12 @@ def run_step(script_path, description, extra_args=None):
         return False
 
 def main():
-    # Set up argument parsing for command-line control
     parser = argparse.ArgumentParser(description="Run the Armenia Real Estate Data Pipeline.")
     parser.add_argument(
         "-t", "--time-limit", 
         type=float, 
         default=None, 
-        help="Max scraping time allowed per Facebook group (in minutes). Uses default config if omitted."
+        help="Max scraping time allowed per group/category (in minutes)."
     )
     parser.add_argument(
         "-ns", "--no-scrape",
@@ -61,7 +60,7 @@ def main():
     # Step 1: Run Scrapers (skipped if --no-scrape flag is provided)
     if not args.no_scrape:
         if args.time_limit:
-            print(f"⏱️ Time limit configured: {args.time_limit} minutes max per group.")
+            print(f"⏱️ Time limit configured: {args.time_limit} minutes max per target.")
         else:
             print("⏱️ Using default config settings for scraping duration.")
 
@@ -69,13 +68,17 @@ def main():
         if args.time_limit:
             scraper_args.extend(["--time-limit", str(args.time_limit)])
 
-        scraper_success = run_step(FB_SCRAPER_SCRIPT, "Facebook Feed Scraper", extra_args=scraper_args)
-        if not scraper_success:
-            print("\n❌ Pipeline aborted due to scraper failure.", file=sys.stderr)
+        # 1a. Run Facebook Scraper
+        fb_success = run_step(FB_SCRAPER_SCRIPT, "Facebook Feed Scraper", extra_args=scraper_args)
+        if not fb_success:
+            print("\n❌ Pipeline aborted due to Facebook scraper failure.", file=sys.stderr)
             sys.exit(1)
             
-        # Step 1b: Run additional site scrapers (Example)
-        # site_a_success = run_step(SITE_A_SCRAPER_SCRIPT, "Site A standard Scraper")
+        # 1b. Run List.am Scraper
+        list_am_success = run_step(LIST_AM_SCRAPER_SCRIPT, "List.am Scraper", extra_args=scraper_args)
+        if not list_am_success:
+            print("\n❌ Pipeline aborted due to List.am scraper failure.", file=sys.stderr)
+            sys.exit(1)
     else:
         print("⏩ Skipping scraping phase (--no-scrape requested).")
 

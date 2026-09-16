@@ -283,3 +283,31 @@ def extract_housing_details(text, is_media_only=False):
         "sizes_sqm": list(dict.fromkeys(found_sizes)),
         "rooms": list(dict.fromkeys(found_rooms))
     }
+
+    def safe_to_float(val_str):
+        """Safely converts strings with regional separators (dots/commas) to float."""
+        if not val_str:
+            return 0.0
+        val_str = str(val_str).strip()
+        try:
+            if ',' in val_str and '.' in val_str:
+                if val_str.rfind(',') > val_str.rfind('.'):
+                    val_str = val_str.replace('.', '').replace(',', '.')
+                else:
+                    val_str = val_str.replace(',', '')
+            elif val_str.count('.') > 1:
+                # Handle multiple dots like '1.363.6' -> treat previous dots as thousands separators
+                parts = val_str.split('.')
+                val_str = "".join(parts[:-1]) + "." + parts[-1]
+            elif ',' in val_str and val_str.count(',') > 1:
+                parts = val_str.split(',')
+                val_str = "".join(parts[:-1]) + "." + parts[-1]
+            elif ',' in val_str and val_str.count(',') == 1:
+                parts = val_str.split(',')
+                if len(parts[1]) == 3 and len(parts[0]) <= 3:
+                    val_str = val_str.replace(',', '')
+                else:
+                    val_str = val_str.replace(',', '.')
+            return float(val_str)
+        except Exception:
+            return 0.0

@@ -1,1 +1,4 @@
 scrapers/facebook/fb_session/
+scrapers/listam/.browser_session
+scrapers/listam/.chrome_profile
+scrapers/listam/.selenium_profile

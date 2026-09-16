@@ -1,0 +1,26 @@
+[
+  {
+    "id": "60",
+    "name": "Apartments for Sale",
+    "property_category": "Apartment",
+    "listing_type": "Sale"
+  },
+  {
+    "id": "1386",
+    "name": "Houses for Sale",
+    "property_category": "House",
+    "listing_type": "Sale"
+  },
+  {
+    "id": "55",
+    "name": "Land for Sale (General)",
+    "property_category": "Land",
+    "listing_type": "Sale"
+  },
+  {
+    "id": "1447",
+    "name": "Residential Land for Sale",
+    "property_category": "Land",
+    "listing_type": "Sale"
+  }
+]

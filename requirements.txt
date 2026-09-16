@@ -1,0 +1,7 @@
+cloudscraper
+beautifulsoup4
+selenium
+undetected-chromedriver
+webdriver-manager
+selenium-stealth
+setuptools
