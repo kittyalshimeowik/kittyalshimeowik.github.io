@@ -148,12 +148,31 @@ const locationTranslations = {
             .filter(Boolean)
             .sort((a, b) => a.localeCompare(b));
 
+        const locationSearchInput = document.getElementById("location-search");
+        
+        // Show search bar if there are more than 10 locations
+        if (locations.length > 10 && locationSearchInput) {
+            locationSearchInput.style.display = "block";
+            
+            // Add real-time input event listener for location filtering
+            locationSearchInput.addEventListener("input", (e) => {
+                const query = e.target.value.toLowerCase().trim();
+                const labels = locationOptions.querySelectorAll("label");
+                
+                labels.forEach(label => {
+                    const text = label.textContent.toLowerCase();
+                    label.style.display = text.includes(query) ? "" : "none";
+                });
+            });
+        }
+
+        // Populate locations
         locations.forEach(location => {
             const label = document.createElement("label");
             label.innerHTML = `<input type="checkbox" name="location-filter" value="${escapeHtml(location)}"> ${escapeHtml(translateLocation(location))}`;
             locationOptions.appendChild(label);
-        });
-    }
+            });
+        }
 
     function getFirstPrice(item) {
         if (!item.prices || item.prices.length === 0) return null;
@@ -297,19 +316,27 @@ const locationTranslations = {
     });
 
     resetFilters.addEventListener("click", () => {
-        document.querySelectorAll("input[type='checkbox']").forEach(input => input.checked = false);
-        document.getElementById("source-filter").value = "All";
-        document.getElementById("currency-filter").value = "AMD";
-        document.getElementById("listing-type-mode").value = "include";
-        document.getElementById("property-type-mode").value = "include";
-        document.querySelectorAll("input[name='location-filter']").forEach(input => input.checked = false);
-        document.getElementById("location-mode").value = "include";
-        document.getElementById("min-price").value = "";
-        document.getElementById("max-price").value = "";
-        document.getElementById("rooms-filter").value = "All";
-        document.getElementById("sort-filter").value = "newest";
-        applyFilters();
-    });
+    document.querySelectorAll("input[type='checkbox']").forEach(input => input.checked = false);
+    document.getElementById("source-filter").value = "All";
+    document.getElementById("currency-filter").value = "AMD";
+    document.getElementById("listing-type-mode").value = "include";
+    document.getElementById("property-type-mode").value = "include";
+    document.querySelectorAll("input[name='location-filter']").forEach(input => input.checked = false);
+    document.getElementById("location-mode").value = "include";
+    document.getElementById("min-price").value = "";
+    document.getElementById("max-price").value = "";
+    document.getElementById("rooms-filter").value = "All";
+    document.getElementById("sort-filter").value = "newest";
+    
+    // Clear location search query and show all options
+    const locationSearchInput = document.getElementById("location-search");
+    if (locationSearchInput) {
+        locationSearchInput.value = "";
+        locationOptions.querySelectorAll("label").forEach(label => label.style.display = "");
+    }
+
+    applyFilters();
+});
 
     function escapeHtml(str) {
         return str.replace(/[&<>'"]/g, 
