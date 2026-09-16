@@ -1,14 +1,15 @@
 [
     {
-        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550147551802115",
-        "group_id": "2640603172756562",
-        "extracted_at": "2026-09-15T20:12:18.001682",
-        "created_at": "2026-09-15 19:49:20",
-        "creation_timestamp": 1789501760,
-        "author": "Անշարժ Գույք Առք Վաճառք",
+        "url": "https://www.facebook.com/groups/656522145361470/posts/1825783605101979",
+        "canonical_id": "1825783605101979",
+        "group_id": "656522145361470",
+        "extracted_at": "2026-09-16T08:44:44.865122",
+        "created_at": "2026-09-16 08:12:18",
+        "creation_timestamp": 1789546338,
+        "author": "Անշարժ Գույք",
         "has_text": false,
-        "is_media_only": true,
-        "property_category": "Media-Only",
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
         "listing_type": "Unknown",
         "is_negotiable": "Unknown",
         "floor_info": null,
@@ -20,505 +21,92 @@
         "full_text": ""
     },
     {
-        "url": "https://www.facebook.com/groups/2640603172756562/posts/1364081279131239",
-        "group_id": "2640603172756562",
-        "extracted_at": "2026-09-15T20:12:18.003686",
-        "created_at": "2026-09-15 19:33:47",
-        "creation_timestamp": 1789500827,
-        "author": "Անշարժ Գույք Առք Վաճառք",
-        "has_text": true,
+        "url": "https://www.facebook.com/groups/656522145361470/posts/1825782861768720",
+        "canonical_id": "1825782861768720",
+        "group_id": "656522145361470",
+        "extracted_at": "2026-09-16T08:44:44.880121",
+        "created_at": "2026-09-16 08:10:57",
+        "creation_timestamp": 1789546257,
+        "author": "Տներ Աբովյանում",
+        "has_text": false,
         "is_media_only": false,
         "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/656522145361470/posts/1825779561769050",
+        "canonical_id": "1825779561769050",
+        "group_id": "656522145361470",
+        "extracted_at": "2026-09-16T08:44:44.898767",
+        "created_at": "2026-09-16 08:05:08",
+        "creation_timestamp": 1789545908,
+        "author": "Գոռ Ժամկոչյան",
+        "has_text": false,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/552758132070589/posts/2055154645164256",
+        "canonical_id": "2055154645164256",
+        "group_id": "552758132070589",
+        "extracted_at": "2026-09-16T08:44:56.384038",
+        "created_at": "2026-09-16 08:44:21",
+        "creation_timestamp": 1789548261,
+        "author": "Armen Avagyan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
         "listing_type": "Rent",
         "is_negotiable": "Unknown",
-        "floor_info": null,
-        "prices": [],
-        "sizes_sqm": [
-            250
-        ],
-        "rooms": [],
-        "locations": [
-            "Davtashen"
-        ],
-        "phone_numbers": [],
-        "full_text": "Վարձով պահեստ 250քմ , առաջի գիծ , դիմացը 10 մեքենայի կայանատեղիով , հարմար արտադրամասի, քանդուշկի և այլի համար #պահեստ #արտադրամաս #տարածք #եղվարդ #դավթաշեն"
-    },
-    {
-        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550145095135694",
-        "group_id": "2640603172756562",
-        "extracted_at": "2026-09-15T20:12:18.962304",
-        "created_at": "2026-09-15 19:45:55",
-        "creation_timestamp": 1789501555,
-        "author": "Sona Sargsyan",
-        "has_text": false,
-        "is_media_only": false,
-        "property_category": "General / Unclassified",
-        "listing_type": "Unknown",
-        "is_negotiable": "Unknown",
-        "floor_info": null,
-        "prices": [],
-        "sizes_sqm": [],
-        "rooms": [],
-        "locations": [],
-        "phone_numbers": [],
-        "full_text": ""
-    },
-    {
-        "url": "https://www.facebook.com/groups/2640603172756562/posts/28628673373395403",
-        "group_id": "2640603172756562",
-        "extracted_at": "2026-09-15T20:12:20.550502",
-        "created_at": null,
-        "creation_timestamp": null,
-        "author": null,
-        "has_text": true,
-        "is_media_only": false,
-        "property_category": "House",
-        "listing_type": "Unknown",
-        "is_negotiable": "Unknown",
-        "floor_info": null,
+        "floor_info": {
+            "floor": 1,
+            "total_floors": 1
+        },
         "prices": [
             {
                 "amount": 200000,
                 "currency": "AMD",
-                "raw_text": "200000 դրամ"
+                "raw_text": "200.000դրամ"
             }
         ],
-        "sizes_sqm": [],
-        "rooms": [],
-        "locations": [],
-        "phone_numbers": [],
-        "full_text": "Փնտրում եմ 2_3 սենյսկանոց բնակարան մինչև 200000 դրամ, հնսրավոր է Երևանին շատ մոտ առանձնատուն լինի"
-    },
-    {
-        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550143955135808",
-        "group_id": "2640603172756562",
-        "extracted_at": "2026-09-15T20:12:21.618787",
-        "created_at": "2026-09-15 19:44:20",
-        "creation_timestamp": 1789501460,
-        "author": "Petrosyan Anna",
-        "has_text": true,
-        "is_media_only": false,
-        "property_category": "House",
-        "listing_type": "Sale",
-        "is_negotiable": true,
-        "floor_info": null,
-        "prices": [
-            {
-                "amount": 25500000,
-                "currency": "AMD",
-                "raw_text": "25.500.000"
-            }
+        "sizes_sqm": [
+            57
         ],
-        "sizes_sqm": [],
         "rooms": [
-            1
+            2
         ],
         "locations": [
-            "Kentron / Center",
-            "Avan"
+            "Shengavit"
         ],
         "phone_numbers": [
-            "+37 494 44 36"
+            "+374 93 628 482"
         ],
-        "full_text": "Վաճառքի մեծ սեփական տուն Ստեփանավան քաղաքի կենտրոնում\n• Այգու հարեւանությամբ\n• 4 ննջասենյակ 1 հյուրասենյակ\n• 2 հարկանի\n• Առաջին գիծ\n• Բաց պատշգամբ\n• Տանիքը ունի վերանորոգման կարիք հնարավոր է սակարկում \n• Բնակելի վիճակ\n25.500.000(սակարկելի)\n(+374) 94 44 36 74 Арман Петросян"
+        "full_text": "Տրվում է վարձով 2 սենյականոց բնակարան Մանանդյան փողոցում Շենգավիթում, 57 քմ, 1/1 հարկ, բարձր առաստաղներ, քարե շենք \n200.000դրամ \n093-62-84-82 գործակալություն"
     },
     {
-        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550143545135849",
-        "group_id": "2640603172756562",
-        "extracted_at": "2026-09-15T20:12:37.186107",
-        "created_at": "2026-09-15 19:43:50",
-        "creation_timestamp": 1789501430,
-        "author": "Harut Miqayelyan",
-        "has_text": true,
-        "is_media_only": false,
-        "property_category": "Land",
-        "listing_type": "Unknown",
-        "is_negotiable": "Unknown",
-        "floor_info": null,
-        "prices": [],
-        "sizes_sqm": [
-            6000
-        ],
-        "rooms": [],
-        "locations": [],
-        "phone_numbers": [
-            "+374 98 381 849"
-        ],
-        "full_text": "📍Գ.Եղիպատրուշ \n\n📐6000քմ\n\n⛰️Գյուղ.հող.\n\n🛣️Ճանապարհից 3 գիծ\n\n💵Գինը 40$ 1քմ-ի համար\n\n📞098381849"
-    },
-    {
-        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550138521803018",
-        "group_id": "2640603172756562",
-        "extracted_at": "2026-09-15T20:12:37.265982",
-        "created_at": "2026-09-15 19:37:30",
-        "creation_timestamp": 1789501050,
-        "author": "Narek Avetisyan",
-        "has_text": true,
-        "is_media_only": false,
-        "property_category": "General / Unclassified",
-        "listing_type": "Sale",
-        "is_negotiable": "Unknown",
-        "floor_info": null,
-        "prices": [
-            {
-                "amount": 1600000,
-                "currency": "AMD",
-                "raw_text": "1.600.000"
-            },
-            {
-                "amount": 27000000,
-                "currency": "AMD",
-                "raw_text": "27.000.000"
-            }
-        ],
-        "sizes_sqm": [
-            100
-        ],
-        "rooms": [],
-        "locations": [],
-        "phone_numbers": [],
-        "full_text": "Վաճառք/փոխանակում (ավտոմեքենայի հետ) Ավազի Հանք\nՀՀ Կոտայքի մարզ\n\nՉայնիի ոլորաններ չհասած\n\nԱվազի Հանք (Ջրաբերի Սպիտակ ավազ)\n\nՀանքը լիցենզիա ունի, մնում է տեխնիկան բերել ու աշխատացնել \n\n1.600.000 մլն խորանարդ մետր պաշար (արդյունահանվող)\n\nՄոտ (27.000.000մլն $-ի ավազ կա!!)\n\n10 հեկտար (100.000 քառակուսի մետր)"
-    },
-    {
-        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550138415136362",
-        "group_id": "2640603172756562",
-        "extracted_at": "2026-09-15T20:12:37.344559",
-        "created_at": "2026-09-15 19:37:21",
-        "creation_timestamp": 1789501041,
-        "author": "Lipo Hakobyan",
-        "has_text": true,
-        "is_media_only": false,
-        "property_category": "Land",
-        "listing_type": "Sale",
-        "is_negotiable": "Unknown",
-        "floor_info": null,
-        "prices": [
-            {
-                "amount": 1500,
-                "currency": "USD",
-                "raw_text": "1500"
-            }
-        ],
-        "sizes_sqm": [],
-        "rooms": [],
-        "locations": [],
-        "phone_numbers": [
-            "+374 94 727 484"
-        ],
-        "full_text": "🏡 Վաճառվում է հողատարածք՝ Աբովյան\nգ.Արամուսում գյուղ. նշ. Որից բացվում է տեսարան դեպի Հիսուսի արձանը:\n\n📐 Չափերը՝ 20 × 75 մ\n\n📏 Մակերեսը՝ 1500 մ²\n\n💰 Գինը՝ 33,000 ԱՄՆ դոլար\n\n📞 Հեռ.` 094727484"
-    },
-    {
-        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550135075136696",
-        "group_id": "2640603172756562",
-        "extracted_at": "2026-09-15T20:12:53.201519",
-        "created_at": "2026-09-15 19:33:18",
-        "creation_timestamp": 1789500798,
-        "author": "Narek Avetisyan",
-        "has_text": true,
-        "is_media_only": false,
-        "property_category": "General / Unclassified",
-        "listing_type": "Sale",
-        "is_negotiable": "Unknown",
-        "floor_info": null,
-        "prices": [
-            {
-                "amount": 1000000,
-                "currency": "AMD",
-                "raw_text": "1.000.000"
-            },
-            {
-                "amount": 2100000,
-                "currency": "AMD",
-                "raw_text": "2.100.000"
-            }
-        ],
-        "sizes_sqm": [],
-        "rooms": [],
-        "locations": [],
-        "phone_numbers": [],
-        "full_text": "Վաճառք/փոխանակում (ավտոմեքենայի հետ) Բազալտի Հանք\nՀՀ Կոտայքի մարզ \n\nԳառնի-Գեղարդ\n\nԲազալտի հանք (անդեզիտաբազալտ)\n\nՀանքը լիցենզիա ունի, մնում է տեխնիկան բերել ու աշխատացնել \n\n7.1 հեկտարի վրա կա 1.000.000 խորանարդ մետր պաշար (լիցենզիայով)\n\n11.8 հեկտարի վրա 2.100.000 խորանարդ մետր ( լեռնահատկացնան ակտով)\n\n(այսինքն հնարավորություն ունի ընդլայնվելու)"
-    },
-    {
-        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550133605136843",
-        "group_id": "2640603172756562",
-        "extracted_at": "2026-09-15T20:12:53.299281",
-        "created_at": "2026-09-15 19:31:39",
-        "creation_timestamp": 1789500699,
-        "author": "Suro Khachatryan",
-        "has_text": true,
-        "is_media_only": false,
-        "property_category": "Land",
-        "listing_type": "Sale",
-        "is_negotiable": true,
-        "floor_info": null,
-        "prices": [
-            {
-                "amount": 65000,
-                "currency": "USD",
-                "raw_text": "65.000$"
-            }
-        ],
-        "sizes_sqm": [
-            1550
-        ],
-        "rooms": [],
-        "locations": [],
-        "phone_numbers": [],
-        "full_text": "Դսեղ գյուղում վաճառվում է գեղեցիկ տեսարանով հողատարածք.հարմար է բիզնես գործունեության համար։\n1550քմ\nտնամերձ ✅\nջուր✅\nլույս✅\nգազ կպած✅\n65.000$\nկամ փոխանակում մեքենայի հետ ձեր հավելավճարով\nՍԱԿԱՐԿԵԼԻ"
-    },
-    {
-        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550133068470230",
-        "group_id": "2640603172756562",
-        "extracted_at": "2026-09-15T20:12:56.847093",
-        "created_at": "2026-09-15 19:30:54",
-        "creation_timestamp": 1789500654,
-        "author": "Grig Tumanyan",
-        "has_text": false,
-        "is_media_only": true,
-        "property_category": "Media-Only",
-        "listing_type": "Unknown",
-        "is_negotiable": "Unknown",
-        "floor_info": null,
-        "prices": [],
-        "sizes_sqm": [],
-        "rooms": [],
-        "locations": [],
-        "phone_numbers": [],
-        "full_text": ""
-    },
-    {
-        "url": "https://www.facebook.com/groups/2640603172756562/posts/122180364278820942",
-        "group_id": "2640603172756562",
-        "extracted_at": "2026-09-15T20:12:56.850086",
-        "created_at": "2026-09-11 13:57:37",
-        "creation_timestamp": 1789135057,
-        "author": "Grig Tumanyan",
-        "has_text": true,
-        "is_media_only": false,
-        "property_category": "House",
-        "listing_type": "Unknown",
-        "is_negotiable": "Unknown",
-        "floor_info": null,
-        "prices": [],
-        "sizes_sqm": [],
-        "rooms": [],
-        "locations": [
-            "Zeytun / Kanaker"
-        ],
-        "phone_numbers": [],
-        "full_text": "#yerevan #hayastan #zeytun #realestate #yerevancity"
-    },
-    {
-        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550132241803646",
-        "group_id": "2640603172756562",
-        "extracted_at": "2026-09-15T20:22:23.683358",
-        "created_at": "2026-09-15 19:29:55",
-        "creation_timestamp": 1789500595,
-        "author": "Artur Ohanyan",
-        "has_text": false,
-        "is_media_only": true,
-        "property_category": "Media-Only",
-        "listing_type": "Unknown",
-        "is_negotiable": "Unknown",
-        "floor_info": null,
-        "prices": [],
-        "sizes_sqm": [],
-        "rooms": [],
-        "locations": [],
-        "phone_numbers": [],
-        "full_text": ""
-    },
-    {
-        "url": "https://www.facebook.com/groups/2640603172756562/posts/122270775200246135",
-        "group_id": "2640603172756562",
-        "extracted_at": "2026-09-15T20:22:23.686362",
-        "created_at": "2026-09-15 19:26:18",
-        "creation_timestamp": 1789500378,
-        "author": "Artur Ohanyan",
-        "has_text": true,
-        "is_media_only": false,
-        "property_category": "House",
-        "listing_type": "Unknown",
-        "is_negotiable": "Unknown",
-        "floor_info": null,
-        "prices": [],
-        "sizes_sqm": [],
-        "rooms": [],
-        "locations": [],
-        "phone_numbers": [],
-        "full_text": "#rec #armenia #TUN #hay"
-    },
-    {
-        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550128408470696",
-        "group_id": "2640603172756562",
-        "extracted_at": "2026-09-15T20:22:23.735524",
-        "created_at": "2026-09-15 19:24:02",
-        "creation_timestamp": 1789500242,
-        "author": "Armada House",
-        "has_text": false,
-        "is_media_only": true,
-        "property_category": "Media-Only",
-        "listing_type": "Unknown",
-        "is_negotiable": "Unknown",
-        "floor_info": null,
-        "prices": [],
-        "sizes_sqm": [],
-        "rooms": [],
-        "locations": [],
-        "phone_numbers": [],
-        "full_text": ""
-    },
-    {
-        "url": "https://www.facebook.com/groups/2640603172756562/posts/962371636909884",
-        "group_id": "2640603172756562",
-        "extracted_at": "2026-09-15T20:22:23.737957",
-        "created_at": "2026-09-15 18:52:25",
-        "creation_timestamp": 1789498345,
-        "author": "Armada House",
-        "has_text": false,
-        "is_media_only": true,
-        "property_category": "Media-Only",
-        "listing_type": "Unknown",
-        "is_negotiable": "Unknown",
-        "floor_info": null,
-        "prices": [],
-        "sizes_sqm": [],
-        "rooms": [],
-        "locations": [],
-        "phone_numbers": [],
-        "full_text": ""
-    },
-    {
-        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550128398470697",
-        "group_id": "2640603172756562",
-        "extracted_at": "2026-09-15T20:22:23.791806",
-        "created_at": "2026-09-15 19:24:01",
-        "creation_timestamp": 1789500241,
-        "author": "OptimisticPomegranate2613",
-        "has_text": true,
-        "is_media_only": false,
-        "property_category": "Land",
-        "listing_type": "Sale",
-        "is_negotiable": "Unknown",
-        "floor_info": null,
-        "prices": [
-            {
-                "amount": 400,
-                "currency": "USD",
-                "raw_text": "400"
-            },
-            {
-                "amount": 80000,
-                "currency": "USD",
-                "raw_text": "80.000$"
-            }
-        ],
-        "sizes_sqm": [
-            400
-        ],
-        "rooms": [],
-        "locations": [
-            "Ajapnyak"
-        ],
-        "phone_numbers": [
-            "+374 98 983 853"
-        ],
-        "full_text": "📌Վաճառվում է📌  400 քառակուսի տնամերձ հողատարածք. Երեւան, Աջափնյակ վարչական շրջանի, Սիլիկյան թաղամասում\n\n📍 Հասցե՝ Աջափնյակ, Սիլիկյան թաղամաս\n📐 Մակերես՝ 400քմ.                                  \n☀️ Տարածխքը առաջին գիծ է, անկյունային, ունի հարմարավետ և ֆունկցիոնալ հատակագիծ\n\n🔥 ⚡ Առկա են բոլոր կոմունիկացյաները՝ Գազ, լույս, ջուր, կոյուղի      \nԱրժեքը 80.000$\n\n📍 Գտնվում է Սիլիկյանի պահանջված հատվածում, զարգացած ենթակառուցվածքներով՝ մոտակայքում խանութներ, դպրոց, մանկապարտեզ, տրանսպորտ և այլ անհրաժեշտ հարմարություններ։\n\n✅ Հարմար տարբերակ ինչպես բնակվելու, այնպես էլ ներդրման համար։\n\n📞 Մանրամասների և հողատարածքը տեսնելու համար զանգահարեք։\n\n098983853 ( կարող եք նաև գրել ) ( ՍԵՓԱԿԱՆԱՏԵՐ)"
-    },
-    {
-        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550127788470758",
-        "group_id": "2640603172756562",
-        "extracted_at": "2026-09-15T20:22:35.324276",
-        "created_at": "2026-09-15 19:23:20",
-        "creation_timestamp": 1789500200,
-        "author": "Դավիթ Սարգսյան",
-        "has_text": true,
-        "is_media_only": false,
-        "property_category": "Land",
-        "listing_type": "Unknown",
-        "is_negotiable": "Unknown",
-        "floor_info": null,
-        "prices": [],
-        "sizes_sqm": [],
-        "rooms": [],
-        "locations": [],
-        "phone_numbers": [],
-        "full_text": "Բարի օր, ով կարող է ասել, Երևանում   գտնվող հողը բնակելի նշանակությամբ  սեփականացնելու  համար ինչ կարժենա 1 քառ.մ-ը։"
-    },
-    {
-        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550127778470759",
-        "group_id": "2640603172756562",
-        "extracted_at": "2026-09-15T20:22:35.719481",
-        "created_at": "2026-09-15 19:23:19",
-        "creation_timestamp": 1789500199,
-        "author": "Tehmi Ne",
-        "has_text": true,
-        "is_media_only": false,
-        "property_category": "Land",
-        "listing_type": "Sale",
-        "is_negotiable": "Unknown",
-        "floor_info": null,
-        "prices": [
-            {
-                "amount": 1260,
-                "currency": "USD",
-                "raw_text": "1260"
-            }
-        ],
-        "sizes_sqm": [],
-        "rooms": [],
-        "locations": [],
-        "phone_numbers": [
-            "+374 55 441 030"
-        ],
-        "full_text": "Vacharvum e hoxataracq Nor gexium tnamerdz kisakaruyc shinutyunov 1260m Her 055441030"
-    },
-    {
-        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550126551804215",
-        "group_id": "2640603172756562",
-        "extracted_at": "2026-09-15T20:22:37.912496",
-        "created_at": "2026-09-15 19:22:07",
-        "creation_timestamp": 1789500127,
-        "author": "AM construction",
-        "has_text": false,
-        "is_media_only": false,
-        "property_category": "General / Unclassified",
-        "listing_type": "Unknown",
-        "is_negotiable": "Unknown",
-        "floor_info": null,
-        "prices": [],
-        "sizes_sqm": [],
-        "rooms": [],
-        "locations": [],
-        "phone_numbers": [],
-        "full_text": ""
-    },
-    {
-        "url": "https://www.facebook.com/groups/2640603172756562/posts/907889315470042",
-        "group_id": "2640603172756562",
-        "extracted_at": "2026-09-15T20:22:37.971410",
-        "created_at": "2026-03-11 18:21:23",
-        "creation_timestamp": 1773253283,
-        "author": null,
-        "has_text": true,
-        "is_media_only": false,
-        "property_category": "General / Unclassified",
-        "listing_type": "Unknown",
-        "is_negotiable": "Unknown",
-        "floor_info": null,
-        "prices": [],
-        "sizes_sqm": [],
-        "rooms": [],
-        "locations": [],
-        "phone_numbers": [],
-        "full_text": "Անկրկնելի և տարբերվող ձեր ինտերիերում.\nցանկացած բարթության ձեվավորում"
-    },
-    {
-        "url": "https://www.facebook.com/groups/552758132070589/posts/2054515668561487",
+        "url": "https://www.facebook.com/groups/552758132070589/posts/2055152968497757",
+        "canonical_id": "2055152968497757",
         "group_id": "552758132070589",
-        "extracted_at": "2026-09-15T20:47:27.839084",
-        "created_at": "2026-09-15 13:53:00",
-        "creation_timestamp": 1789480380,
+        "extracted_at": "2026-09-16T08:44:56.400386",
+        "created_at": "2026-09-16 08:41:27",
+        "creation_timestamp": 1789548087,
         "author": "Կոստանյան Գրուպ",
         "has_text": true,
         "is_media_only": false,
@@ -528,38 +116,10 @@
         "floor_info": null,
         "prices": [],
         "sizes_sqm": [
-            114
+            103
         ],
         "rooms": [
-            4
-        ],
-        "locations": [
-            "Zeytun / Kanaker"
-        ],
-        "phone_numbers": [
-            "+374 33 209 191"
-        ],
-        "full_text": "‼️‼️ ՇՏԱՊ ՎԱՃԱՌՔ ‼️‼️\n💥 Վաճառվում է 4 սենյականոց բնակարան\n🔑 Կոդ՝ 16616\n🏠 Բնակարանի մասին՝\n📍 Տեղադրություն՝ Քանաքեռ-Զեյթուն, Լեփսիուսի \n📐 Մակերես՝ 114 քմ\n🛏️ 4 սենյակ\n🏢 Հարկ՝ 6 հարկանի շենքի 6-րդ հարկ\n📞 Մանրամասների համար զանգահարել՝ 033 20 91 91\n\n#realestate #business #անշարժգույք #yerevan  #buy #sell #armenia  #առքևվաճառք"
-    },
-    {
-        "url": "https://www.facebook.com/groups/552758132070589/posts/2054512525228468",
-        "group_id": "552758132070589",
-        "extracted_at": "2026-09-15T20:47:28.143762",
-        "created_at": "2026-09-15 13:48:33",
-        "creation_timestamp": 1789480113,
-        "author": "Կոստանյան Գրուպ",
-        "has_text": true,
-        "is_media_only": false,
-        "property_category": "Apartment",
-        "listing_type": "Sale",
-        "is_negotiable": "Unknown",
-        "floor_info": null,
-        "prices": [],
-        "sizes_sqm": [
-            135
-        ],
-        "rooms": [
-            5
+            3
         ],
         "locations": [
             "Kentron / Center"
@@ -567,48 +127,488 @@
         "phone_numbers": [
             "+374 33 209 191"
         ],
-        "full_text": "‼️‼️ ՇՏԱՊ ՎԱՃԱՌՔ ‼️‼️\n💥 Վաճառվում է 5 սենյականոց բնակարան\n🔑 Կոդ՝ 16619\n🏠 Բնակարանի մասին՝\n📍 Տեղադրություն՝ Կենտրոն, Ե.Քոչար\n📐 Մակերես՝ 135 քմ\n🛏️ 5 սենյակ\n🏢 Հարկ՝ 9 հարկանի շենքի 2-րդ հարկ\n📞 Մանրամասների համար զանգահարել՝ 033 20 91 91\n\n#realestate #business #անշարժգույք #yerevan  #buy #sell #armenia  #առքևվաճառք"
+        "full_text": "‼️‼️ ՇՏԱՊ ՎԱՃԱՌՔ ‼️‼️\n💥 Վաճառվում է 3 սենյականոց բնակարան Պարկինգով\n🔑 Կոդ՝ 16756\n🏠 Բնակարանի մասին՝\n📍 Տեղադրություն՝ Կենտրոն, Բուզանդի փողոց \n📐 Մակերես՝ 103 քմ\n🛏️ 3 սենյակ\n🏢 Հարկ՝ 17 հարկանի շենքի 4-րդ հարկ\n📞 Մանրամասների համար զանգահարել՝ 033 20 91 91\n\n#realestate #business #անշարժգույք #yerevan  #buy #sell #armenia  #առքևվաճառք"
     },
     {
-        "url": "https://www.facebook.com/groups/552758132070589/posts/2054510791895308",
+        "url": "https://www.facebook.com/groups/552758132070589/posts/2055151105164610",
+        "canonical_id": "2055151105164610",
         "group_id": "552758132070589",
-        "extracted_at": "2026-09-15T20:47:28.239477",
-        "created_at": "2026-09-15 13:46:52",
-        "creation_timestamp": 1789480012,
-        "author": "VILLA REALTY SHENGAVIT",
+        "extracted_at": "2026-09-16T08:44:56.420492",
+        "created_at": "2026-09-16 08:38:09",
+        "creation_timestamp": 1789547889,
+        "author": "Կոստանյան Գրուպ",
         "has_text": true,
         "is_media_only": false,
-        "property_category": "Land",
+        "property_category": "Apartment",
         "listing_type": "Sale",
-        "is_negotiable": true,
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [
+            105
+        ],
+        "rooms": [
+            3
+        ],
+        "locations": [
+            "Kentron / Center"
+        ],
+        "phone_numbers": [
+            "+374 33 209 191"
+        ],
+        "full_text": "‼️‼️ ՇՏԱՊ ՎԱՃԱՌՔ ‼️‼️\n💥 Վաճառվում է 3 սենյականոց բնակարան\n🔑 Կոդ՝ 16828\n🏠 Բնակարանի մասին՝\n📍 Տեղադրություն՝ Կենտրոն, Լեոյի փողոց\n📐 Մակերես՝ 105 քմ\n🛏️ 3 սենյակ\n🏢 Հարկ՝ 16 հարկանի շենքի 5-րդ հարկ\n📞 Մանրամասների համար զանգահարել՝ 033 20 91 91\n\n#realestate #business #անշարժգույք #yerevan  #buy #sell #armenia  #առքևվաճառք"
+    },
+    {
+        "url": "https://www.facebook.com/groups/552758132070589/posts/2055149855164735",
+        "canonical_id": "2055149855164735",
+        "group_id": "552758132070589",
+        "extracted_at": "2026-09-16T08:44:56.447502",
+        "created_at": "2026-09-16 08:35:38",
+        "creation_timestamp": 1789547738,
+        "author": "Lyudmila Haxverdyan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
         "floor_info": null,
         "prices": [
             {
-                "amount": 260,
+                "amount": 160000,
                 "currency": "USD",
-                "raw_text": "260"
-            },
-            {
-                "amount": 160,
-                "currency": "USD",
-                "raw_text": "160"
-            },
-            {
-                "amount": 135000,
-                "currency": "AMD",
-                "raw_text": "135.000"
+                "raw_text": "160,000$"
             }
         ],
+        "sizes_sqm": [
+            38
+        ],
+        "rooms": [
+            1
+        ],
+        "locations": [
+            "Kentron / Center"
+        ],
+        "phone_numbers": [
+            "+374 33 531 181"
+        ],
+        "full_text": "🏡 ՎԱՃԱՌՎՈՒՄ Է ԲՆԱԿԱՐԱՆ՝ ԿԵՆՏՐՈՆՈՒՄ\n📍 Ամիրյան փողոց Մաշտոց խաչմերուկ\n🏢 9-րդ հարկ\n🛏 1 սենյակ\n📐 38 քմ\n🔑 Պետական վիճակ\n\n💰 160,000$\n\n📞 033 531181\nViber | WhatsApp | Telegram"
+    },
+    {
+        "url": "https://www.facebook.com/groups/552758132070589/posts/2055149035164817",
+        "canonical_id": "2055149035164817",
+        "group_id": "552758132070589",
+        "extracted_at": "2026-09-16T08:44:56.461512",
+        "created_at": "2026-09-16 08:34:16",
+        "creation_timestamp": 1789547656,
+        "author": "Կոստանյան Գրուպ",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [
+            59
+        ],
+        "rooms": [
+            2
+        ],
+        "locations": [
+            "Arabkir"
+        ],
+        "phone_numbers": [
+            "+374 33 209 191"
+        ],
+        "full_text": "‼️‼️ ՇՏԱՊ ՎԱՃԱՌՔ ‼️‼️\n💥 Վաճառվում է 2 սենյականոց բնակարան\n🔑 Կոդ՝ 16820\n🏠 Բնակարանի մասին՝\n📍 Տեղադրություն՝ Արաբկիր, Մամիկոնյանց փողոց \n📐 Մակերես՝ 59 քմ\n🛏️ 2 սենյակ\n🏢 Հարկ՝ 16 հարկանի շենքի 14-րդ հարկ\n📞 Մանրամասների համար զանգահարել՝ 033 20 91 91\n\n#realestate #business #անշարժգույք #yerevan  #buy #sell #armenia  #առքևվաճառք"
+    },
+    {
+        "url": "https://www.facebook.com/groups/552758132070589/posts/2055147418498312",
+        "canonical_id": "2055147418498312",
+        "group_id": "552758132070589",
+        "extracted_at": "2026-09-16T08:44:56.473788",
+        "created_at": "2026-09-16 08:30:57",
+        "creation_timestamp": 1789547457,
+        "author": "Կոստանյան Գրուպ",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [
+            74
+        ],
+        "rooms": [
+            3
+        ],
+        "locations": [
+            "Kentron / Center"
+        ],
+        "phone_numbers": [
+            "+374 33 209 191"
+        ],
+        "full_text": "‼️‼️ ՇՏԱՊ ՎԱՃԱՌՔ ‼️‼️\n💥 Վաճառվում է 3 սենյականոց բնակարան\n🔑 Կոդ՝ 16841\n🏠 Բնակարանի մասին՝\n📍 Տեղադրություն՝ Կենտրոն, Նալբանդյան փողոց\n📐 Մակերես՝ 74 քմ\n🛏️ 3 սենյակ\n🏢 Հարկ՝ 6 հարկանի շենքի 2-րդ հարկ\n\n📞 Մանրամասների համար զանգահարել՝ 033 20 91 91\n\n#realestate #business #անշարժգույք #yerevan  #buy #sell #armenia  #առքևվաճառք"
+    },
+    {
+        "url": "https://www.facebook.com/groups/552758132070589/posts/2055140581832329",
+        "canonical_id": "2055140581832329",
+        "group_id": "552758132070589",
+        "extracted_at": "2026-09-16T08:45:08.224216",
+        "created_at": "2026-09-16 08:19:29",
+        "creation_timestamp": 1789546769,
+        "author": "Anna Nails",
+        "has_text": false,
+        "is_media_only": true,
+        "property_category": "Media-Only",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
         "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/552758132070589/posts/2055140208499033",
+        "canonical_id": "2055140208499033",
+        "group_id": "552758132070589",
+        "extracted_at": "2026-09-16T08:45:08.269219",
+        "created_at": "2026-09-16 08:18:53",
+        "creation_timestamp": 1789546733,
+        "author": "Կոստանյան Գրուպ",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [
+            133.4
+        ],
         "rooms": [
             5
         ],
         "locations": [
-            "Shengavit"
+            "Nor Nork / Massiv"
         ],
         "phone_numbers": [
-            "+374 55 300 223"
+            "+374 33 209 191"
         ],
-        "full_text": "Շենգավիթ` Ներքին Չարբախ\nՍեփական տուն\n\n✅ 5 Սենյակ\n\n✅️ 2 հարկ\n\n✅️ ընդհանուր հողատարածքը`260² \n\n✅️ բնակելի`160² \n\n✅ կապիտալ վերանորոգված\n\n✅ ավտոտնակ\n\n✅ անհատական ջեռուցում\n\n✅ պարսպապատ\n\n✅ մեկական խոհանոց ամեն հարկում\n\n✅ տաղավար\n\n✅ մրգատու այգի\n\n✅ ասֆալտապատ փողոց\n\n✅ 135.000💲\n\n☎️ 055300223\n\nՇտապ վաճառք❗️❗️❗️ ՍԱԿԱՐԿԵԼԻ❗️❗️❗️\n\nՎաճառքը միայն կանխիկ❗️❗️❗️\n\nԱռանց Միջնորդավճար❗️❗️❗️"
+        "full_text": "‼️‼️ ՇՏԱՊ ՎԱՃԱՌՔ ‼️‼️\n💥 Վաճառվում է 5 սենյականոց բնակարան\n🔑 Կոդ՝ 15879\n🏠 Բնակարանի մասին՝\n📍 Տեղադրություն՝  Նոր Նորք, Լվովյան\n📐 Մակերես՝ 133,4 քմ\n🛏️ 5 սենյակ\n🏢 Հարկ՝ 6 հարկանի շենքի 4-րդ հարկ\n📞 Մանրամասների համար զանգահարել՝ 033 20 91 91\n\n#realestate #business #անշարժգույք #yerevan  #buy #sell #armenia  #առքևվաճառք"
+    },
+    {
+        "url": "https://www.facebook.com/groups/552758132070589/posts/2055135638499490",
+        "canonical_id": "2055135638499490",
+        "group_id": "552758132070589",
+        "extracted_at": "2026-09-16T08:45:08.295214",
+        "created_at": "2026-09-16 08:10:42",
+        "creation_timestamp": 1789546242,
+        "author": "Կոստանյան Գրուպ",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [
+            102
+        ],
+        "rooms": [
+            3
+        ],
+        "locations": [
+            "Nor Nork / Massiv"
+        ],
+        "phone_numbers": [
+            "+374 33 209 191"
+        ],
+        "full_text": "‼️‼️ ՇՏԱՊ ՎԱՃԱՌՔ ‼️‼️\n💥 Վաճառվում է 3 սենյականոց բնակարան\n🔑 Կոդ՝ 16277\n🏠 Բնակարանի մասին՝\n📍 Տեղադրություն՝ Նոր Նորք, Գյուլիքևխյան փողոց\n📐 Մակերես՝ 102 քմ\n🛏️ 3 սենյակ\n🏢 Հարկ՝ 11 հարկանի շենքի 4-րդ հարկ\n📞 Մանրամասների համար զանգահարել՝ 033 20 91 91\n\n#realestate #business #անշարժգույք #yerevan  #buy #sell #armenia  #առքևվաճառք"
+    },
+    {
+        "url": "https://www.facebook.com/groups/552758132070589/posts/2055128558500198",
+        "canonical_id": "2055128558500198",
+        "group_id": "552758132070589",
+        "extracted_at": "2026-09-16T08:45:19.465501",
+        "created_at": "2026-09-16 07:59:48",
+        "creation_timestamp": 1789545588,
+        "author": "Peto Petrosyan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Land",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [
+            {
+                "amount": 155000,
+                "currency": "USD",
+                "raw_text": "Գինը՝ 155.000$"
+            }
+        ],
+        "sizes_sqm": [
+            1400
+        ],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [
+            "+374 41 230 331"
+        ],
+        "full_text": "Գործակալություն չի: Վաճառվում է բնակելի հողատարածք Առինջում.(Ա-թաղամաս)\nԸնդհանուր մակերեսը՝ 1400 ք.մ, գտնվում է նոր թաղամասում։ Առկա են բոլոր կոմունիկացիաները (գազ, լույս, ջուր, կոյուղի) ։ Փողոցը ասֆալտապատ։ Հարթ և ուղիղ հողատարածք, 4 կողմից պարիսպ, նախատեսված է մեկ առանձնատուն կառուցելու համար։ Առկա է ՝ և սեփականության վկայական և շինթույլտվություն։ Փոխանակում խելամիտ գնով մեքենայի հետ ձեր հավելավճարով(փոխանակման դեպքում այլ գին կլինի):Մանրամասների համար զանգահարել.\n\nԳինը՝ 155.000$\n\n041-23-03-31"
+    },
+    {
+        "url": "https://www.facebook.com/groups/552758132070589/posts/2055128148500239",
+        "canonical_id": "2055128148500239",
+        "group_id": "552758132070589",
+        "extracted_at": "2026-09-16T08:45:19.475502",
+        "created_at": "2026-09-16 07:59:11",
+        "creation_timestamp": 1789545551,
+        "author": "Peto Petrosyan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [
+            "Avan"
+        ],
+        "phone_numbers": [
+            "+374 41 230 331"
+        ],
+        "full_text": "Վաճառվում է բնակարան Ավանում,նորակառույց շենքում։\nԲնակարանը ունի 3  ընդարձակ սենյակ՝ 2 ննջասենյակ, հյուրասենյակը և խոհանոցը միասին, 2 սանհանգույց և 2 բաց պատշգամբ։ Շենքը գտնվում է Ավանի Աշխաբադի փողոցում ունի 16 հարկ, բնակարանը գտնվում է 12-րդ հարկում: Ունի խաղահրապարակի համար նախատեսված մեծ տարածք, 1-ին հարկում գործելու են սուպերմարկետ Շրջակայքում առկա են բոլոր անհրաժեշտ ենթակառուցվածքները, տարածքում գործում է տրանսպորտ։ Վաճառվում է 0-ական վիճակում: \n\nՄանրամասների համար զանգահարել՝041-23-03-31"
+    },
+    {
+        "url": "https://www.facebook.com/groups/552758132070589/posts/2055124358500618",
+        "canonical_id": "2055124358500618",
+        "group_id": "552758132070589",
+        "extracted_at": "2026-09-16T08:45:19.486502",
+        "created_at": "2026-09-16 07:52:08",
+        "creation_timestamp": 1789545128,
+        "author": "Sargsyan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Land",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [
+            {
+                "amount": 155,
+                "currency": "USD",
+                "raw_text": "155$"
+            }
+        ],
+        "sizes_sqm": [
+            500,
+            1
+        ],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [
+            "+374 96 222 261"
+        ],
+        "full_text": "📢🚨 ՇՏԱՊ ՎԱՃԱՌՎՈՒՄ Է ՏՆԱՄԵՐՁ ՀՈՂԱՏԱՐԱԾՔ 🚨📢\n\n📍 Վաճառվում է Քասախի  Մուշ  թաղամասում 500 քմ տնամերձ հողատարածք  պարսպապատ  25մ ճակատ բոլոր կոմունիկացիաները հողին կից  չկա սենց գին  155$ մ 1քմ.   096222261"
+    },
+    {
+        "url": "https://www.facebook.com/groups/552758132070589/posts/2055124061833981",
+        "canonical_id": "2055124061833981",
+        "group_id": "552758132070589",
+        "extracted_at": "2026-09-16T08:45:32.791564",
+        "created_at": "2026-09-16 07:51:45",
+        "creation_timestamp": 1789545105,
+        "author": "Edgar Mirzoyan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [
+            262,
+            194
+        ],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [
+            "+374 94 171 414"
+        ],
+        "full_text": "‼️‼️ ՇՏԱՊ  ‼️‼️🔶💯Վաճառվում կամ տրվում է վարձով  երկհարկանի բիզնես տարածք Ազատաշենում 1-ի գիծ\n\nԸնդհանուր՝ 262քմ\n\nՇինություն՝ 194քմ\n\n⌛️🔋Մշտական տաք/սառը ջուր տեղադրված է արևային պանելներ\n\nՀարմար է զանկացած գործնեության համար\n\n🚘🚘Ավտոկայանատեղի\n\nՊահեստային տարածք\n\n🔶💯📞☎️Տարածքը գնելու, տեսնելու կամ լիարժեք տեղեկություն ստանալու համար կարող եք զանգահարել նշված հեռախոսահամարին☎️ 094-17-14-14"
+    },
+    {
+        "url": "https://www.facebook.com/groups/552758132070589/posts/2055121831834204",
+        "canonical_id": "2055121831834204",
+        "group_id": "552758132070589",
+        "extracted_at": "2026-09-16T08:45:32.863593",
+        "created_at": "2026-09-16 07:47:44",
+        "creation_timestamp": 1789544864,
+        "author": "Sargsyan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Land",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [
+            {
+                "amount": 30000,
+                "currency": "USD",
+                "raw_text": "30000$"
+            }
+        ],
+        "sizes_sqm": [
+            500
+        ],
+        "rooms": [],
+        "locations": [
+            "Zeytun / Kanaker",
+            "Avan"
+        ],
+        "phone_numbers": [
+            "+374 96 222 261"
+        ],
+        "full_text": "📢🚨 ՇՏԱՊ ՎԱՃԱՌՎՈՒՄ Է ՏՆԱՄԵՐՁ ՀՈՂԱՏԱՐԱԾՔ 🚨📢    Քանաքեռավանում   500քմ  30000$ մի քանի օրա լինելու սենց առաչարկ հարցերի դեպքում զանգահարեք.        096222261"
+    },
+    {
+        "url": "https://www.facebook.com/groups/552758132070589/posts/2055121521834235",
+        "canonical_id": "2055121521834235",
+        "group_id": "552758132070589",
+        "extracted_at": "2026-09-16T08:45:32.910469",
+        "created_at": "2026-09-16 07:47:04",
+        "creation_timestamp": 1789544824,
+        "author": "Էլեն Ռիելթի",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Land",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [
+            {
+                "amount": 100000,
+                "currency": "USD",
+                "raw_text": "100,000 $"
+            }
+        ],
+        "sizes_sqm": [
+            170,
+            117
+        ],
+        "rooms": [
+            3
+        ],
+        "locations": [
+            "Erebuni"
+        ],
+        "phone_numbers": [
+            "+374 33 531 181"
+        ],
+        "full_text": "🏡 Վաճառքի տուն\n📍 Էրեբունի, Այվազովսկու փողոց՝ CPS-ի մոտ\n\n▫️ 1 հարկանի\n\n▫️ 3 սենյակ\n\n▫️ Հողատարածք՝ 170 քմ\n\n▫️ Բնակելի մակերես՝ 117 քմ\n\n▫️ Ավտոտնակ 🚗\n\n💰 100,000 $ Կանխիկ\n\n📞 033 531181 (Viber, WhatsApp, Telegram)\n\n📩 Հետաքրքրվա՞ծ եք։ Զանգահարեք՝ տունը դիտելու և մանրամասներին ծանոթանալու համար։"
+    },
+    {
+        "url": "https://www.facebook.com/groups/552758132070589/posts/2055115321834855",
+        "canonical_id": "2055115321834855",
+        "group_id": "552758132070589",
+        "extracted_at": "2026-09-16T08:45:45.716300",
+        "created_at": "2026-09-16 07:35:14",
+        "creation_timestamp": 1789544114,
+        "author": "Sargsyan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Land",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [
+            {
+                "amount": 67000,
+                "currency": "USD",
+                "raw_text": "67000$"
+            }
+        ],
+        "sizes_sqm": [
+            530,
+            300
+        ],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [
+            "+374 96 222 261"
+        ],
+        "full_text": "📢🚨 ՇՏԱՊ ՎԱՃԱՌՎՈՒՄ Է ՏՆԱՄԵՐՁ ՀՈՂԱՏԱՐԱԾՔ 🚨📢\n📍 Վաճառվում է.530 քմ տնամերձ հողատարածք Քասախի Թումանյան թաղամասում ամենա պահանջված թաղամասում մոտիկ է հոմպլեկսին ընդամենը 200. 300 մետր հյուսիս հարաֆ ճանապարին տեսարան դեպի ճանապար կոմոնիկացիաներ մոտ համարյա տեղում. 15մ ճակատ  վաճառվում է. շատ շտապ 67000$  096222261"
+    },
+    {
+        "url": "https://www.facebook.com/groups/552758132070589/posts/2055113731835014",
+        "canonical_id": "2055113731835014",
+        "group_id": "552758132070589",
+        "extracted_at": "2026-09-16T08:45:45.732225",
+        "created_at": "2026-09-16 07:32:27",
+        "creation_timestamp": 1789543947,
+        "author": "Sargsyan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "House",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [
+            {
+                "amount": 15000,
+                "currency": "USD",
+                "raw_text": "15000$"
+            }
+        ],
+        "sizes_sqm": [
+            400
+        ],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [
+            "+374 96 222 261"
+        ],
+        "full_text": "ԲԱՑԱՌԻԿ ԱՌԱՋԱՐԿ\nԵրևանից 7կմ հեռավորության վրա, քաղաքին մոտ:\nՍկսած՝ 400 քմ-ից, Մրգաշենում:\nԿոմունիկացիաները՝ մոտ (ջուր, գազ, էլեկտրականություն)\nՀարմար է տան, ամառանոցի կամ ներդրման համար — 400քմ 15000$     096222261"
+    },
+    {
+        "url": "https://www.facebook.com/groups/552758132070589/posts/2055113331835054",
+        "canonical_id": "2055113331835054",
+        "group_id": "552758132070589",
+        "extracted_at": "2026-09-16T08:45:45.754437",
+        "created_at": "2026-09-16 07:31:42",
+        "creation_timestamp": 1789543902,
+        "author": "Gevorg Agavardovich",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Land",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [
+            {
+                "amount": 19500,
+                "currency": "USD",
+                "raw_text": "19,500$"
+            }
+        ],
+        "sizes_sqm": [
+            18
+        ],
+        "rooms": [],
+        "locations": [
+            "Ajapnyak"
+        ],
+        "phone_numbers": [
+            "+374 99 553 553",
+            "+374 91 335 335"
+        ],
+        "full_text": "🔥🚨 ՇՏԱՊ ՎԱՃԱՌՎՈՒՄ Է ՔԱՐԵ ԱՎՏՈՏՆԱԿ 🚨🔥\n📍 Աջափնյակ համայնքի լավագույն հատվածում\n🧱 Քարե, ամուր շինություն\n📐 Մակերես՝ 18 քմ\n🚪 Երկաթե ամուր դռներ\n🏠 Ամբողջական բետոնե տանիք\n💎 ՀՈՂԸ ԵՎ ՇԻՆՈՒԹՅՈՒՆԸ ՍԵՓԱԿԱՆԱՇՆՈՐՀՎԱԾ ԵՆ\n📜 Վկայականով, կոնկրետ և հստակ հասցեով\n💰 ՆԱԽՆԱԿԱՆ ԳԻՆ՝ 19,500$\n🤝 Գինը՝ պայմանագրային\n⚡ Լավ տարբերակ է ինչպես սեփական ավտոմեքենայի համար, այնպես էլ ներդրման նպատակով։\n📞 099-553-553\n📞 091-335-335\n‼️ Խնդրում եմ զանգահարել միայն լուրջ և գրագետ հետաքրքրված անձանց։"
     }
 ]

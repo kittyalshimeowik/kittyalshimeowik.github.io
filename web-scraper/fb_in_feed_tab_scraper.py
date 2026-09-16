@@ -40,7 +40,7 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 os.makedirs(METADATA_DIR, exist_ok=True)
 os.makedirs(BASE_SESSION_DIR, exist_ok=True)
 
-# OS-conditional session handling: Keep Mac 100% untouched, fix Windows session permanence
+# OS-conditional session handling
 if CURRENT_OS == "windows":
     USER_DATA_DIR = os.path.join(BASE_SESSION_DIR, "fb_session_windows")
 else:
@@ -48,7 +48,6 @@ else:
     USER_DATA_DIR = os.path.join(BASE_SESSION_DIR, f"fb_session_{MACHINE_HOSTNAME}")
     MACHINE_MARKER_FILE = os.path.join(BASE_SESSION_DIR, "active_machine_marker.txt")
 
-    # Intelligent wipe check: if the specific machine hostname changes, clear old session data (Mac only)
     if os.path.exists(MACHINE_MARKER_FILE):
         try:
             with open(MACHINE_MARKER_FILE, "r", encoding="utf-8") as f:
@@ -61,7 +60,6 @@ else:
         except Exception:
             pass
 
-    # Update marker file with current machine hostname
     with open(MACHINE_MARKER_FILE, "w", encoding="utf-8") as f:
         f.write(MACHINE_HOSTNAME)
 
@@ -77,9 +75,9 @@ PHONE_NUMBER_PATTERN = re.compile(
 )
 
 SIZE_PATTERN = re.compile(
-    r'(?:(?P<size1>\d{2,4}(?:[.,]\d+)?)\s*[-֊:]*\s*(?:քմ|ք\.մ\.|ք․մ․|ք\.\s*մ|քառակուսի\s+մետր|քառ\.\s*մ\.|sq\s*m|sq\.m\.|sqm|m2|m²|ք/մ|qm|q\.m\.|м²|кв\.?\s*м\.?))'
+    r'(?:(?P<size1>\d{1,5}(?:[.,]\d+)?)\s*[-֊:]*\s*(?:քմ|ք\.մ\.|ք․մ․|ք\.\s*մ|քառակուսի\s+մետր|քառ\.\s*մ\.|sq\s*m|sq\.m\.|sqm|m2|m²|ք/մ|qm|q\.m\.|м²|кв\.?\s*м\.?|մ²|մ2|մետր))'
     r'|'
-    r'(?:(?:քմ|ք\.մ\.|ք․մ․|ք\.\s*մ|քառակուսի\s+մետր|քառ\.\s*մ\.|sq\s*m|sq\.m\.|sqm|m2|m²|ք/մ|qm|q\.m\.|м²|кв\.?\s*м\.?)\s*[-֊:]*\s*(?P<size2>\d{2,4}(?:[.,]\d+)?))',
+    r'(?:(?:քմ|ք\.մ\.|ք․մ․|ք\.\s*մ|քառակուսի\s+մետր|քառ\.\s*մ\.|sq\s*m|sq\.m\.|sqm|m2|m²|ք/մ|qm|q\.m\.|м²|кв\.?\s*м\.?|մ²|մ2|մետր)\s*[-֊:]*\s*(?P<size2>\d{1,5}(?:[.,]\d+)?))',
     re.IGNORECASE
 )
 
@@ -90,8 +88,17 @@ ROOM_PATTERN = re.compile(
     re.IGNORECASE
 )
 
+# Updated regex pattern to handle formats like $143,000, 143.000$, 143 000$, $143K, etc.
+PRICE_CURRENCY_PATTERN = re.compile(
+    r'(?:գինը[\s:`՝]*|price[\s:`՝]*|արժեքը[\s:`՝]*)?'
+    r'(?P<pre_curr>\$|֏|€|USD|AMD|EUR|dram|դրամ|դոլար|dollar|տոլար|հհ\s*դրամ|ամն\s*դոլար|руб|рублей)?\s*'
+    r'(?P<amount>[1-9]\d{0,2}(?:[,\s\.]\d{3})+(?!\d)|[1-9]\d{1,8})\s*'
+    r'(?P<post_curr>\$|֏|€|USD|AMD|EUR|dram|դրամ|դոլար|dollar|տոլար|հհ\s*դրամ|ամն\s*դոլար|руб|рублей)?',
+    re.IGNORECASE
+)
+
 FLOOR_PATTERN = re.compile(
-    r'\b(?P<floor>\d{1,2})\s*/\s*(?P<total_floors>\d{1,2})\s*(?:հարկ|этаж|этажа)\b',
+    r'\b(?P<floor>\d{1,2})\s*/\s*(?P<total_floors>\d{1,2})\b',
     re.IGNORECASE
 )
 
@@ -101,21 +108,15 @@ TREE_COUNT_PATTERN = re.compile(r'\b\d+\s+(?:[\wԱ-Ֆա-ֆА-Яа-я]+[\s\-]+){0
 PROPERTY_CODE_PATTERN = re.compile(r'(?:[A-Z]{1,4}\d*[_\\-]*)?(?:կոդ|id|լոտ|համար|код)[\s\./\-—–_,:;՝’\']*\d{3,7}\b|\b[A-Z]{2,4}\d+[_\\-]\d+\b', re.IGNORECASE)
 PERCENT_PATTERN = re.compile(r'\d+(?:[.,]\d+)?\s*%', re.IGNORECASE)
 
-PRICE_CURRENCY_PATTERN = re.compile(
-    r'(?P<pre_curr>\$|֏|€|USD|AMD|EUR|dram|դրամ|դոլար|dollar|տոլար|հհ\s*դրամ|руб|рублей)?\s*'
-    r'(?P<amount>[1-9]\d{0,2}(?:[,\s\.]\d{3})+|[1-9]\d{2,5})\s*'
-    r'(?P<post_curr>\$|֏|€|USD|AMD|EUR|dram|դրամ|դոլար|dollar|տոլար|հհ\s*դրամ|руб|рублей)?',
-    re.IGNORECASE
-)
-
-RELATIVE_TIME_PATTERN = re.compile(r'(\d+)\s*(min|mins|minute|minutes|hr|hrs|hour|hours|d|day|days|ր|րոպե|ժամ|օր)', re.IGNORECASE)
-
 CURRENCY_MAP = {
     '$': 'USD', 'usd': 'USD', 'dollar': 'USD', 'դոլար': 'USD', 'տոլար': 'USD',
+    'ամն դոլար': 'USD', 'ամն դոլարով': 'USD', 'usd dollar': 'USD',
     '֏': 'AMD', 'amd': 'AMD', 'dram': 'AMD', 'դրամ': 'AMD', 'հհ դրամ': 'AMD', 'հհդրամ': 'AMD',
     '€': 'EUR', 'eur': 'EUR', 'euro': 'EUR',
     'руб': 'RUB', 'рублей': 'RUB'
 }
+
+RELATIVE_TIME_PATTERN = re.compile(r'(\d+)\s*(min|mins|minute|minutes|hr|hrs|hour|hours|d|day|days|ր|րոպե|ժամ|օր)', re.IGNORECASE)
 
 LOCATION_DICTIONARY = {
     "Kentron / Center": ["կենտրոն", "կենտրոնում", "kentron", "center", "centr", "downtown", "центр", "центральный", "каскад", "cascade", "հանրապետության", "hanrapetutyan", "ամիրյան", "amiryan"],
@@ -146,6 +147,28 @@ LISTING_TRANSLATION_MAP = {
 }
 
 TIMESTAMP_KEYS = {"creation_time", "publish_time", "created_time", "post_timestamp", "timestamp", "story_creation_time", "system_creation_time", "time"}
+
+
+def extract_canonical_post_id(url, post_id=None):
+    """
+    Extracts the unique numeric Facebook ID without altering the original URL format.
+    Handles /posts/<id>, /permalink/<id>, and query parameter formats.
+    """
+    if post_id:
+        return str(post_id)
+        
+    if not url:
+        return None
+
+    path_match = re.search(r'/(?:posts|permalink|multi_permalink|story\.php)/(\d+)', url)
+    if path_match:
+        return path_match.group(1)
+
+    query_match = re.search(r'(?:story_fbid|fbid)=(\d+)', url)
+    if query_match:
+        return query_match.group(1)
+
+    return None
 
 
 def format_elapsed_time(seconds):
@@ -363,9 +386,14 @@ def parse_creation_time(node):
 
 
 def normalize_price_amount(raw_str):
-    cleaned = re.sub(r'[,\s\.]', '', raw_str)
-    try: return int(cleaned)
-    except ValueError: return None
+    if not raw_str:
+        return None
+    # Strip dots, commas, and whitespace used as thousand separators
+    cleaned = re.sub(r'[,\s\.]', '', raw_str.strip())
+    try:
+        return int(cleaned)
+    except ValueError:
+        return None
 
 
 def normalize_phone_number(raw_phone):
@@ -535,31 +563,29 @@ def extract_housing_details(text, is_media_only=False):
             continue
             
         if 2020 <= amount <= 2030 and not pre_curr and not post_curr:
-            continue # Skip years incorrectly parsed as prices
+            continue
             
         symbol = (pre_curr or post_curr or '').strip().lower()
         symbol_clean = re.sub(r'\s+', ' ', symbol)
         currency = CURRENCY_MAP.get(symbol_clean)
         
-        # If currency is explicitly specified, enforce AMD/USD check and sanity check low numbers
         if currency in ['AMD', 'USD']:
             if currency == 'USD' and amount < 50:
-                continue # Skip super low corrupted numbers for USD
+                continue
             if currency == 'AMD' and amount < 5000:
-                continue # Skip super low corrupted numbers for AMD
-            parsed_prices.append({"amount": amount, "currency": currency, "raw_text": match.group(0).strip()})
+                continue
+            parsed_prices.append({
+                "amount": amount,
+                "currency": currency,
+                "raw_text": match.group(0).strip()
+            })
         elif not symbol_clean:
-            # Unspecified currency: infer based on amount threshold or discard if ambiguous
             if amount >= 50000:
                 parsed_prices.append({"amount": amount, "currency": "AMD", "raw_text": match.group(0).strip()})
-            elif 100 <= amount <= 20000:
-                parsed_prices.append({"amount": amount, "currency": "USD", "raw_text": match.group(0).strip()})
-            else:
-                # Discard ambiguous / extremely low or invalid unspecified amounts
+            elif 3000 <= amount < 50000:
                 continue
-        else:
-            # Drop other currencies (like EUR, RUB, etc.) per requirements
-            continue
+            elif 50 <= amount < 3000:
+                continue
 
     found_locations = set()
     for canonical_name, aliases in LOCATION_DICTIONARY.items():
@@ -780,47 +806,63 @@ def save_post_to_memory_and_disk(group_id, all_posts, processed_urls, post_recor
 
 
 def extract_posts_from_graphql_payload(obj, group_id):
+    """
+    Extracts Facebook group posts retaining their original permalink/post format,
+    while attaching a canonical post ID for non-destructive deduplication.
+    """
     if isinstance(obj, dict):
         if "comet_sections" in obj or "message" in obj:
             try:
                 story = obj.get("comet_sections", {}).get("content", {}).get("story", {}) or obj
-                message_dict = story.get("message", {})
-                text = message_dict.get("text") if isinstance(message_dict, dict) else ""
+                
+                raw_post_id = story.get("post_id") or story.get("id")
+                raw_url = story.get("url")
 
-                attachment_texts = []
-                attachments = story.get("attachments", [])
-                for att in attachments:
-                    media_node = att.get("media", {})
-                    accessibility_caption = media_node.get("accessibility_caption")
-                    if accessibility_caption:
-                        attachment_texts.append(accessibility_caption)
-                    
-                    for subatt in media_node.get("all_subattachments", {}).get("nodes", []):
-                        sub_cap = subatt.get("media", {}).get("accessibility_caption")
-                        if sub_cap:
-                            attachment_texts.append(sub_cap)
+                # Keep full raw URL format if available
+                if raw_url:
+                    if raw_url.startswith("/"):
+                        final_url = "https://www.facebook.com" + raw_url
+                    else:
+                        final_url = raw_url
+                elif raw_post_id:
+                    # Fallback construction only if no URL string exists in payload
+                    real_id = decode_facebook_id(raw_post_id)
+                    final_url = f"https://www.facebook.com/groups/{group_id}/posts/{real_id}"
+                else:
+                    final_url = None
 
-                combined_text = text if text else ""
-                if attachment_texts:
-                    combined_text += "\n" + "\n".join(attachment_texts)
+                # Derive canonical ID for strict deduplication without modifying final_url
+                canonical_id = extract_canonical_post_id(final_url, raw_post_id)
 
-                is_media_only = not bool(text and text.strip()) and bool(attachments)
+                if final_url and f"/groups/{group_id}" in final_url:
+                    message_dict = story.get("message", {})
+                    text = message_dict.get("text") if isinstance(message_dict, dict) else ""
 
-                post_id = story.get("post_id") or story.get("id")
-                url = story.get("url")
+                    attachment_texts = []
+                    attachments = story.get("attachments", [])
+                    for att in attachments:
+                        media_node = att.get("media", {})
+                        accessibility_caption = media_node.get("accessibility_caption")
+                        if accessibility_caption:
+                            attachment_texts.append(accessibility_caption)
+                        
+                        for subatt in media_node.get("all_subattachments", {}).get("nodes", []):
+                            sub_cap = subatt.get("media", {}).get("accessibility_caption")
+                            if sub_cap:
+                                attachment_texts.append(sub_cap)
 
-                if not url and post_id:
-                    real_id = decode_facebook_id(post_id)
-                    url = f"https://www.facebook.com/groups/{group_id}/posts/{real_id}"
+                    combined_text = text if text else ""
+                    if attachment_texts:
+                        combined_text += "\n" + "\n".join(attachment_texts)
 
-                time_data = parse_creation_time(obj)
-                actors = story.get("actors", [])
-                author_name = actors[0].get("name") if actors and isinstance(actors[0], dict) else None
+                    is_media_only = not bool(text and text.strip()) and bool(attachments)
+                    time_data = parse_creation_time(obj)
+                    actors = story.get("actors", [])
+                    author_name = actors[0].get("name") if actors and isinstance(actors[0], dict) else None
 
-                if url:
-                    clean_url = normalize_url(url)
                     yield {
-                        "url": clean_url,
+                        "url": final_url,
+                        "canonical_id": canonical_id,
                         "text": combined_text,
                         "is_media_only": is_media_only,
                         "creation_timestamp": time_data["timestamp"],
@@ -828,6 +870,7 @@ def extract_posts_from_graphql_payload(obj, group_id):
                         "author": author_name,
                         "raw_node": obj
                     }
+                    return 
             except Exception:
                 pass
 
@@ -942,7 +985,6 @@ def run_facebook_housing_scraper():
         print("❌ No target groups found in groups_config.json.")
         return
 
-    # --- Robust Argument Parsing (supports positional style AND flag style) ---
     parser = argparse.ArgumentParser(description="Facebook Housing Posts Scraper")
     parser.add_argument("positional_time", nargs="?", type=float, default=None, help="Time limit in minutes per group (positional)")
     parser.add_argument("-t", "--time-limit", type=float, default=None, help="Time limit in minutes per group (flag)")
@@ -1008,6 +1050,7 @@ def run_facebook_housing_scraper():
                             payload = json.loads(line)
                             for post in extract_posts_from_graphql_payload(payload, target_group_id):
                                 url = post["url"]
+                                canonical_id = post.get("canonical_id")
                                 if f"/groups/{target_group_id}" in url:
                                     active_page = browser_context.pages[0] if browser_context.pages else None
                                     
@@ -1031,6 +1074,7 @@ def run_facebook_housing_scraper():
 
                                     record = {
                                         "url": url,
+                                        "canonical_id": canonical_id,
                                         "group_id": target_group_id,
                                         "extracted_at": datetime.now().isoformat(),
                                         "created_at": time_formatted,
@@ -1059,13 +1103,11 @@ def run_facebook_housing_scraper():
 
         browser_context.on("response", handle_response)
 
-        # Shuffle groups randomly and track visited ones
         remaining_groups = list(target_groups)
         visited_groups_count = 0
         previous_page = None
 
         while remaining_groups:
-            # Pick a random group from remaining unvisited groups
             group = random.choice(remaining_groups)
             remaining_groups.remove(group)
             visited_groups_count += 1
@@ -1092,14 +1134,12 @@ def run_facebook_housing_scraper():
             current_session_posts.clear()
             current_active_group_id["id"] = group_id
 
-            # Open a new tab for the current group
             if visited_groups_count == 1 and initial_blank_page and not initial_blank_page.is_closed() and initial_blank_page.url == "about:blank":
                 page = initial_blank_page
             else:
                 page = browser_context.new_page()
                 page.add_init_script("Object.defineProperty(navigator, 'webdriver', { get: () => undefined });")
 
-            # Randomly decide whether to close the old tab or keep it open
             if previous_page and previous_page != page and not previous_page.is_closed():
                 if random.choice([True, False]):
                     print(f"🧹 [Tab Manager] Randomly choosing to close the previous group tab...")
@@ -1119,7 +1159,6 @@ def run_facebook_housing_scraper():
             page.goto(group_url)
             time.sleep(random.uniform(4.0, 6.0))
 
-            # --- Fast Stuck & Stagnation Tracking Variables ---
             last_scroll_height = page.evaluate("document.body.scrollHeight")
             stagnant_counter = 0
             last_post_count = len(current_session_posts)
@@ -1128,27 +1167,23 @@ def run_facebook_housing_scraper():
                 check_global_break(global_timer_state, page, mouse_pos)
                 perform_human_action_chain(page, mouse_pos)
                 
-                # Check current progress metrics
                 current_height = page.evaluate("document.body.scrollHeight")
                 current_post_count = len(current_session_posts)
 
-                # Only increment stagnation if height didn't expand AND no new posts were collected
                 if current_height <= last_scroll_height and current_post_count == last_post_count:
                     stagnant_counter += 1
                 else:
-                    stagnant_counter = 0  # Reset counter on any progress
+                    stagnant_counter = 0
                     last_scroll_height = max(last_scroll_height, current_height)
                     last_post_count = current_post_count
 
-                # Relaxed stagnation recovery trigger (~6 idle checks / ~15-20 seconds)
                 if stagnant_counter >= 6:
                     print(f"⚠️ [{group_name}] Feed paused. Nudging scroll and waiting for lazy-load...")
                     smooth_scroll(page, direction="up", pixels=300)
                     time.sleep(1.5)
                     smooth_scroll(page, direction="down", pixels=700)
-                    time.sleep(3.0)  # Give network time to fetch GraphQL posts
+                    time.sleep(3.0)
                     
-                    # Re-check height and post count after recovery jolt
                     new_height = page.evaluate("document.body.scrollHeight")
                     current_post_count = len(current_session_posts)
                     
@@ -1157,11 +1192,10 @@ def run_facebook_housing_scraper():
                         break
                     else:
                         print(f"✅ [{group_name}] Feed un-stuck successfully! Resuming scroll.")
-                        stagnant_counter = 0  # Successfully unstuck, reset counter!
+                        stagnant_counter = 0
                         last_scroll_height = new_height
                         last_post_count = current_post_count
 
-                # --- Consecutive Streak Stopping Condition with Initial Buffer ---
                 if len(current_session_posts) >= 25:
                     now_ts = datetime.now().timestamp()
                     post_ages = []
@@ -1176,8 +1210,6 @@ def run_facebook_housing_scraper():
                         else:
                             post_ages.append(None)
 
-                    # Allow room at the beginning: skip the first 5 posts to avoid 
-                    # pinned listings or historical anomalies sitting right at the top.
                     buffer_count = 5
                     evaluated_ages = post_ages[buffer_count:] if len(post_ages) > buffer_count else []
 
@@ -1189,9 +1221,8 @@ def run_facebook_housing_scraper():
                             if consecutive_old_streak > max_streak:
                                 max_streak = consecutive_old_streak
                         else:
-                            consecutive_old_streak = 0  # Reset streak on fresh post or missing metadata
+                            consecutive_old_streak = 0
 
-                    # Require at least 10 consecutive old posts after the buffer to trigger termination
                     required_streak = 10
                     if max_streak >= required_streak:
                         print(f"🛑 Reached consecutive streak of {max_streak} posts older than 30 days (allowing initial buffer). Stopping scan early for this group.")

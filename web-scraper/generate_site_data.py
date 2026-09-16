@@ -18,6 +18,29 @@ os.makedirs(MASTER_OUTPUT_DIR, exist_ok=True)
 # Standard Exchange Rate (AMD per 1 USD)
 EXCHANGE_RATE_AMD_PER_USD = 364.18
 
+
+def extract_canonical_post_id(url, post_id=None):
+    """
+    Extracts the unique numeric Facebook ID without altering the original URL format.
+    Handles /posts/<id>, /permalink/<id>, and query parameter formats.
+    """
+    if post_id:
+        return str(post_id)
+        
+    if not url:
+        return None
+
+    path_match = re.search(r'/(?:posts|permalink|multi_permalink|story\.php)/(\d+)', url)
+    if path_match:
+        return path_match.group(1)
+
+    query_match = re.search(r'(?:story_fbid|fbid)=(\d+)', url)
+    if query_match:
+        return query_match.group(1)
+
+    return None
+
+
 def normalize_and_convert_prices(prices):
     """Normalizes raw price entries and provides both AMD and USD values."""
     converted_prices = []
@@ -45,6 +68,7 @@ def normalize_and_convert_prices(prices):
         })
     return converted_prices
 
+
 def load_json_file(file_path):
     """Safely loads and returns data from a JSON file."""
     if not os.path.exists(file_path):
@@ -56,11 +80,13 @@ def load_json_file(file_path):
         print(f"[WARNING] Error loading {file_path}: {e}")
         return None
 
+
 def sanitize_filename(text):
     """Converts text into a safe filename."""
     if not text:
         return "unknown"
     return "".join([c for c in text if c.isalnum() or c in (' ', '-', '_')]).strip().replace(" ", "_").lower()
+
 
 def normalize_listing_text(text):
     """Normalize post text so reposts with formatting changes share a fingerprint."""
@@ -69,6 +95,7 @@ def normalize_listing_text(text):
     normalized = re.sub(r"\s+", " ", normalized)
     normalized = re.sub(r"[^\w\s]", " ", normalized, flags=re.UNICODE)
     return re.sub(r"\s+", " ", normalized).strip()
+
 
 def listing_content_key(post):
     text = normalize_listing_text(post.get("full_text", ""))
@@ -79,6 +106,7 @@ def listing_content_key(post):
         str(post.get("property_category") or ""),
         str(post.get("listing_type") or "")
     ])
+
 
 def merge_duplicate_listings(posts):
     unique_posts = []
@@ -122,6 +150,7 @@ def merge_duplicate_listings(posts):
 
     return final_posts
 
+
 def listing_completeness_score(post):
     return sum([
         bool(post.get("full_text")),
@@ -133,12 +162,14 @@ def listing_completeness_score(post):
         bool(post.get("creation_timestamp"))
     ])
 
+
 def get_unique_listings_from_all_groups():
     """
     Iterates through all extracted files in the OUTPUT_DIR,
-    deduplicates posts based on URL, normalizes prices, and returns unique posts.
+    deduplicates posts based on canonical_id / URL, normalizes prices,
+    and returns unique posts.
     """
-    all_unique_posts_by_url = {}
+    all_unique_posts_by_id = {}
     total_files_processed = 0
 
     if not os.path.exists(OUTPUT_DIR):
@@ -159,19 +190,25 @@ def get_unique_listings_from_all_groups():
                         post["prices"] = normalize_and_convert_prices(post.get("prices"))
                         
                     post_url = post.get("url")
-                    if post_url:
-                        if post_url not in all_unique_posts_by_url:
-                            all_unique_posts_by_url[post_url] = post
+                    canonical_id = post.get("canonical_id") or extract_canonical_post_id(post_url)
+                    
+                    if canonical_id:
+                        post["canonical_id"] = canonical_id
+                        
+                    dedup_key = canonical_id or post_url
+                    if dedup_key:
+                        if dedup_key not in all_unique_posts_by_id:
+                            all_unique_posts_by_id[dedup_key] = post
                         else:
-                            existing_post = all_unique_posts_by_url[post_url]
-                            if (not existing_post.get("has_text") and post.get("has_text")) or \
-                               (not existing_post.get("creation_timestamp") and post.get("creation_timestamp")):
-                                all_unique_posts_by_url[post_url] = post
+                            existing_post = all_unique_posts_by_id[dedup_key]
+                            if listing_completeness_score(post) > listing_completeness_score(existing_post):
+                                all_unique_posts_by_id[dedup_key] = post
 
-    url_unique_posts = list(all_unique_posts_by_url.values())
-    content_unique_posts = merge_duplicate_listings(url_unique_posts)
+    id_unique_posts = list(all_unique_posts_by_id.values())
+    content_unique_posts = merge_duplicate_listings(id_unique_posts)
     print(f"[SUCCESS] Processed {total_files_processed} files. Found {len(content_unique_posts)} unique listings after content deduplication.")
     return content_unique_posts
+
 
 def categorize_and_save_master_files(all_posts):
     """
@@ -206,7 +243,7 @@ def categorize_and_save_master_files(all_posts):
             if filters["type"] == "Any" and filters["category"] == "Any":
                 is_match = True
             elif p_type == filters["type"] and filters["category"] == "Any":
-                 is_match = True
+                is_match = True
             elif p_type == filters["type"] and p_cat == filters["category"]:
                 is_match = True
 
@@ -221,16 +258,17 @@ def categorize_and_save_master_files(all_posts):
                     if clean_loc not in location_organized_listings:
                         location_organized_listings[clean_loc] = []
                     
-                    if not any(existing['url'] == post['url'] for existing in location_organized_listings[clean_loc]):
-                         location_organized_listings[clean_loc].append({
+                    if not any(existing.get('url') == post.get('url') for existing in location_organized_listings[clean_loc]):
+                        location_organized_listings[clean_loc].append({
                             "url": post.get("url"),
+                            "canonical_id": post.get("canonical_id"),
                             "title": f"{p_cat} in {loc}",
                             "price": post.get("prices"),
                             "category": p_cat,
                             "location": loc,
                             "rooms": post.get("rooms"),
                             "size": post.get("sizes_sqm")
-                         })
+                        })
         
         filtered_posts.sort(key=lambda x: x.get("creation_timestamp") or 0, reverse=True)
         
@@ -240,7 +278,7 @@ def categorize_and_save_master_files(all_posts):
                 json.dump(filtered_posts, f, ensure_ascii=False, separators=(',', ':'))
             print(f"  [OK] Created '{file_name}' ({len(filtered_posts)} listings)")
         except IOError as e:
-             print(f"  [ERROR] Error saving '{file_name}': {e}")
+            print(f"  [ERROR] Error saving '{file_name}': {e}")
 
     print("\n[INFO] Saving location-specific summary files for visualization...")
     
@@ -260,6 +298,7 @@ def categorize_and_save_master_files(all_posts):
             print(f"  [ERROR] Error saving location file '{loc_file_name}': {e}")
 
     print(f"\n[SUCCESS] All master and location files generated successfully in '{MASTER_OUTPUT_DIR}/'.")
+
 
 def generate_site_data():
     """Main function to orchestrate data consolidation."""
@@ -288,6 +327,7 @@ def generate_site_data():
     print("="*60)
     print("Build Process Finished.")
     print("="*60)
+
 
 if __name__ == "__main__":
     generate_site_data()
