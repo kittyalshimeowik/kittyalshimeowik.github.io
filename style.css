@@ -66,6 +66,15 @@ main {
     min-width: 0;
 }
 
+/* Sticky wrapper for the entire left column (toolbar + panel) */
+.filter-column {
+    position: sticky;
+    top: 1rem;
+    max-height: calc(100vh - 2rem);
+    display: flex;
+    flex-direction: column;
+}
+
 /* Filter Toolbar positioned above the panel */
 .filter-toolbar {
     display: flex;
@@ -73,6 +82,7 @@ main {
     align-items: center;
     margin-bottom: 0.6rem;
     padding: 0 0.2rem;
+    flex-shrink: 0;
 }
 
 .filter-toolbar-label {
@@ -126,11 +136,8 @@ main {
     background-color: white;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
-    max-height: calc(100vh - 2rem);
-    overflow-y: auto;
     padding: 1.25rem;
-    position: sticky;
-    top: 1rem;
+    overflow-y: auto;
 }
 
 .filter-panel::-webkit-scrollbar {
@@ -390,7 +397,6 @@ footer {
     margin-bottom: 0;
 }
 
-/* Smoothly rotate the arrow icon to point right ">" when collapsed */
 .filters-collapsed .collapse-btn {
     transform: rotate(180deg);
 }
@@ -401,10 +407,14 @@ footer {
         grid-template-columns: 1fr;
     }
 
+    .filter-column {
+        position: static;
+        max-height: none;
+    }
+
     .filter-panel {
         max-height: none;
         overflow: visible;
-        position: static;
     }
 }
 

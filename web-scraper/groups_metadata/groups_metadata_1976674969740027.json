@@ -4,23 +4,23 @@
     "primary_focus": {
         "listing_type": "Sale",
         "property_category": "Apartment",
-        "percentage": 17.8
+        "percentage": 28.2
     },
-    "avg_scroll_time_1_day_sec": 4980.6,
+    "avg_scroll_time_1_day_sec": 2324.4,
     "distributions": {
-        "Unknown - General / Unclassified": 25,
-        "Sale - Apartment": 8,
-        "Sale - Land": 5,
-        "Unknown - Media-Only": 6,
-        "Unknown - Land": 1
+        "Sale - Land": 2,
+        "Unknown - General / Unclassified": 18,
+        "Sale - Apartment": 11,
+        "Unknown - Media-Only": 7,
+        "Sale - House": 1
     },
     "scroll_benchmarks": {
         "2026-09-16": {
-            "scroll_duration_seconds": 240.72987627983093,
-            "oldest_post_age_hours": 1.16,
-            "posts_scanned": 30
+            "scroll_duration_seconds": 120.09579253196716,
+            "oldest_post_age_hours": 1.24,
+            "posts_scanned": 39
         }
     },
-    "last_scraped": "2026-09-16T09:04:37.876678",
-    "total_collected": 45
+    "last_scraped": "2026-09-16T11:21:32.774971",
+    "total_collected": 39
 }

@@ -49,6 +49,10 @@ def normalize_and_convert_prices(prices):
     
     for p in prices:
         amount = p.get("amount", 0)
+        # Ensure amount is a numeric float or int
+        if not isinstance(amount, (int, float)) or isinstance(amount, bool):
+            continue
+
         curr = str(p.get("currency", "AMD")).upper()
         
         # Determine amounts based on parsed currency type
@@ -68,7 +72,6 @@ def normalize_and_convert_prices(prices):
         })
     return converted_prices
 
-
 def load_json_file(file_path):
     """Safely loads and returns data from a JSON file."""
     if not os.path.exists(file_path):
@@ -85,8 +88,8 @@ def sanitize_filename(text):
     """Converts text into a safe filename."""
     if not text:
         return "unknown"
-    return "".join([c for c in text if c.isalnum() or c in (' ', '-', '_')]).strip().replace(" ", "_").lower()
-
+    cleaned = "".join([c for c in text if c.isalnum() or c in (' ', '-', '_')]).strip().replace(" ", "_").lower()
+    return re.sub(r'_+', '_', cleaned)
 
 def normalize_listing_text(text):
     """Normalize post text so reposts with formatting changes share a fingerprint."""

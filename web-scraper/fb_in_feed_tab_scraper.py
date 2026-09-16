@@ -75,9 +75,9 @@ PHONE_NUMBER_PATTERN = re.compile(
 )
 
 SIZE_PATTERN = re.compile(
-    r'(?:(?P<size1>\d{1,5}(?:[.,]\d+)?)\s*[-֊:]*\s*(?:քմ|ք\.մ\.|ք․մ․|ք\.\s*մ|քառակուսի\s+մետր|քառ\.\s*մ\.|sq\s*m|sq\.m\.|sqm|m2|m²|ք/մ|qm|q\.m\.|м²|кв\.?\s*м\.?|մ²|մ2|մետր))'
+    r'(?:(?P<size1>[1-9]\d{0,2}(?:[.,\s]\d{3})+|\d{1,5}(?:[.,]\d+)+|\d{1,5})\s*[-֊:]*\s*(?:քմ|ք\.մ\.|ք․մ․|ք\.\s*մ|քառակուսի\s+մետր|քառ\.\s*մ\.|sq\s*m|sq\.m\.|sqm|m2|m²|ք/մ|qm|q\.m\.|м²|кв\.?\s*м\.?|մ²|մ2|մետր))'
     r'|'
-    r'(?:(?:քմ|ք\.մ\.|ք․մ․|ք\.\s*մ|քառակուսի\s+մետր|քառ\.\s*մ\.|sq\s*m|sq\.m\.|sqm|m2|m²|ք/մ|qm|q\.m\.|м²|кв\.?\s*м\.?|մ²|մ2|մետր)\s*[-֊:]*\s*(?P<size2>\d{1,5}(?:[.,]\d+)?))',
+    r'(?:(?:քմ|ք\.մ\.|ք․մ․|ք\.\s*մ|քառակուսի\s+մետր|քառ\.\s*մ\.|sq\s*m|sq\.m\.|sqm|m2|m²|ք/մ|qm|q\.m\.|м²|кв\.?\s*м\.?|մ²|մ2|մետր)\s*[-֊:]*\s*(?P<size2>[1-9]\d{0,2}(?:[.,\s]\d{3})+|\d{1,5}(?:[.,]\d+)+|\d{1,5}))',
     re.IGNORECASE
 )
 
@@ -88,7 +88,6 @@ ROOM_PATTERN = re.compile(
     re.IGNORECASE
 )
 
-# Updated regex pattern to handle formats like $143,000, 143.000$, 143 000$, $143K, etc.
 PRICE_CURRENCY_PATTERN = re.compile(
     r'(?:գինը[\s:`՝]*|price[\s:`՝]*|արժեքը[\s:`՝]*)?'
     r'(?P<pre_curr>\$|֏|€|USD|AMD|EUR|dram|դրամ|դոլար|dollar|տոլար|հհ\s*դրամ|ամն\s*դոլար|руб|рублей)?\s*'
@@ -150,10 +149,6 @@ TIMESTAMP_KEYS = {"creation_time", "publish_time", "created_time", "post_timesta
 
 
 def extract_canonical_post_id(url, post_id=None):
-    """
-    Extracts the unique numeric Facebook ID without altering the original URL format.
-    Handles /posts/<id>, /permalink/<id>, and query parameter formats.
-    """
     if post_id:
         return str(post_id)
         
@@ -240,49 +235,33 @@ def update_group_config_status(group_id, new_posts_count):
         json.dump(metadata, f, ensure_ascii=False, indent=4)
 
 
-def calculate_dynamic_runtime(group_id):
+def calculate_dynamic_runtime(group_id_or_meta, default_runtime=180.0):
     max_group_limit_sec = float(random.randint(720, 900))
-    default_fallback_sec = min(180.0, max_group_limit_sec)
-    
-    meta_path = get_group_metadata_file_path(group_id)
-    if not os.path.exists(meta_path):
-        return default_fallback_sec, 3
+    default_fallback_sec = min(default_runtime, max_group_limit_sec)
 
-    try:
-        with open(meta_path, "r", encoding="utf-8") as f:
-            group_meta = json.load(f)
-            
-        benchmarks = group_meta.get("scroll_benchmarks", {})
-        if not benchmarks:
-            return default_fallback_sec, 3
+    if isinstance(group_id_or_meta, dict):
+        group_meta = group_id_or_meta
+    else:
+        meta_path = get_group_metadata_file_path(str(group_id_or_meta))
+        if not os.path.exists(meta_path):
+            return default_fallback_sec
+        try:
+            with open(meta_path, "r", encoding="utf-8") as f:
+                group_meta = json.load(f)
+        except Exception:
+            return default_fallback_sec
 
-        sorted_dates = sorted(benchmarks.keys())
-        last_date_str = sorted_dates[-1] if sorted_dates else None
-        
-        target_days = 3
-        if last_date_str:
-            last_date = datetime.strptime(last_date_str, "%Y-%m-%d").date()
-            days_diff = (datetime.now().date() - last_date).days
-            if days_diff <= 1:
-                target_days = 1
+    benchmarks = group_meta.get("scroll_benchmarks", {})
+    if not benchmarks:
+        return default_fallback_sec
 
-        if target_days == 1 and "avg_scroll_time_1_day_sec" in group_meta:
-            calculated_time = max(group_meta["avg_scroll_time_1_day_sec"], 45.0)
-            return min(calculated_time, max_group_limit_sec), target_days
+    # Perform benchmark calculations...
+    durations = [b.get("scroll_duration_seconds", 0) for b in benchmarks.values() if isinstance(b, dict)]
+    if durations:
+        avg_dur = sum(durations) / len(durations)
+        return min(max(avg_dur, 45.0), max_group_limit_sec)
 
-        matching_durations = [
-            b.get("scroll_duration_seconds", 0) 
-            for b in benchmarks.values() 
-            if b.get("oldest_post_age_hours", 0) >= (target_days * 24 * 0.7)
-        ]
-        if matching_durations:
-            avg_duration = sum(matching_durations) / len(matching_durations)
-            calculated_time = max(avg_duration, 45.0)
-            return min(calculated_time, max_group_limit_sec), target_days
-
-        return default_fallback_sec, 3
-    except Exception:
-        return default_fallback_sec, 3
+    return default_fallback_sec
 
 
 def is_valid_unix_timestamp(val):
@@ -527,10 +506,19 @@ def extract_housing_details(text, is_media_only=False):
     found_sizes = []
     for match in reversed(size_matches):
         size_str = match.group('size1') or match.group('size2')
-        size_val = size_str.replace(',', '.')
-        size_num = float(size_val)
-        if size_num.is_integer(): size_num = int(size_num)
-        found_sizes.append(size_num)
+        if size_str:
+            size_str = size_str.strip()
+            # Check if dot/comma/space is used as a thousands separator (e.g., 1,500, 2.400, or 2 400)
+            if re.search(r'[.,\s]\d{3}$', size_str):
+                cleaned = re.sub(r'[.,\s]', '', size_str)
+                size_num = int(cleaned)
+            else:
+                size_val = size_str.replace(',', '.')
+                size_num = float(size_val)
+                if size_num.is_integer(): 
+                    size_num = int(size_num)
+
+            found_sizes.append(size_num)
         start, end = match.span()
         sanitized_text = sanitized_text[:start] + " [SIZE_REMOVED] " + sanitized_text[end:]
     found_sizes.reverse()
@@ -806,10 +794,6 @@ def save_post_to_memory_and_disk(group_id, all_posts, processed_urls, post_recor
 
 
 def extract_posts_from_graphql_payload(obj, group_id):
-    """
-    Extracts Facebook group posts retaining their original permalink/post format,
-    while attaching a canonical post ID for non-destructive deduplication.
-    """
     if isinstance(obj, dict):
         if "comet_sections" in obj or "message" in obj:
             try:
@@ -818,20 +802,17 @@ def extract_posts_from_graphql_payload(obj, group_id):
                 raw_post_id = story.get("post_id") or story.get("id")
                 raw_url = story.get("url")
 
-                # Keep full raw URL format if available
                 if raw_url:
                     if raw_url.startswith("/"):
                         final_url = "https://www.facebook.com" + raw_url
                     else:
                         final_url = raw_url
                 elif raw_post_id:
-                    # Fallback construction only if no URL string exists in payload
                     real_id = decode_facebook_id(raw_post_id)
                     final_url = f"https://www.facebook.com/groups/{group_id}/posts/{real_id}"
                 else:
                     final_url = None
 
-                # Derive canonical ID for strict deduplication without modifying final_url
                 canonical_id = extract_canonical_post_id(final_url, raw_post_id)
 
                 if final_url and f"/groups/{group_id}" in final_url:

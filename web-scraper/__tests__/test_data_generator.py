@@ -26,25 +26,50 @@ class TestDataGenerator(unittest.TestCase):
         self.assertEqual(extract_canonical_post_id(url1), "987654321")
         self.assertEqual(extract_canonical_post_id(url2), "987654321")
 
-def test_fuzzy_deduplication_completeness(self):
+    def test_fuzzy_deduplication_completeness(self):
+        sample_text = (
+            "Վաճառվում է 3 սենյականոց բնակարան Կենտրոնում: Շատ լավ վիճակում, "
+            "ապահովված է մշտական ջրով և գազով: Մոտակայքում կան խանութներ, "
+            "դպրոց և կանգառ: Գինը պայմանագրային:"
+        )
         post_incomplete = {
-            "full_text": "Վաճառվում է 3 սենյականոց բնակարան Կենտրոնում: Շատ լավ վիճակում:",
+            "full_text": sample_text,
             "property_category": "Apartment",
             "listing_type": "Sale"
         }
         
         post_complete = {
-            "full_text": "Վաճառվում է 3 սենյականոց բնակարան Կենտրոնում: Շատ լավ վիճակում:",
+            "full_text": sample_text,
             "property_category": "Apartment",
             "listing_type": "Sale",
-            "price_usd": 100000,            # Normalized key used by completeness score
-            "phone": "+374 77 000 000",     # Normalized key used by completeness score
-            "location_en": "Kentron"        # Additional structured data
+            "prices": [{"amount": 100000, "currency": "USD"}],
+            "phone_numbers": ["+374 77 000 000"],
+            "locations": ["Kentron"]
         }
         
         merged = merge_duplicate_listings([post_incomplete, post_complete])
         self.assertEqual(len(merged), 1)
-        self.assertEqual(merged[0]["price_usd"], 100000)
+        self.assertTrue(bool(merged[0].get("prices")))
+    
+    def test_price_conversion_boundary_zero_and_negative(self):
+        from generate_site_data import normalize_and_convert_prices
+        # Test $0 price
+        prices_zero = [{"amount": 0, "currency": "USD"}]
+        converted_zero = normalize_and_convert_prices(prices_zero)
+        self.assertEqual(converted_zero[0]["amount_usd"], 0)
+        self.assertEqual(converted_zero[0]["amount_amd"], 0)
+
+        # Test invalid string/non-numeric amount handling
+        prices_invalid = [{"amount": "N/A", "currency": "USD"}]
+        converted_invalid = normalize_and_convert_prices(prices_invalid)
+        self.assertEqual(len(converted_invalid), 0)
+
+    def test_sanitize_filename_special_characters(self):
+        from generate_site_data import sanitize_filename
+        # Ensure non-ASCII, spaces, and path injection characters are sanitized cleanly
+        raw_location = "Kentron / Yerevan #1!"
+        clean_location = sanitize_filename(raw_location)
+        self.assertEqual(clean_location, "kentron_yerevan_1")
 
 if __name__ == "__main__":
     unittest.main()

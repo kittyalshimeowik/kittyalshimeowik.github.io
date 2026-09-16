@@ -1,12 +1,42 @@
 [
     {
-        "url": "https://www.facebook.com/groups/1733726720555984/posts/2110004176261568",
-        "canonical_id": "2110004176261568",
+        "url": "https://www.facebook.com/groups/1733726720555984/posts/2110095506252435",
+        "canonical_id": "2110095506252435",
         "group_id": "1733726720555984",
-        "extracted_at": "2026-09-16T08:39:37.874601",
-        "created_at": "2026-09-16 08:24:10",
-        "creation_timestamp": 1789547050,
-        "author": "Անշարժ գույքի գործակալություն",
+        "extracted_at": "2026-09-16T11:23:33.819001",
+        "created_at": "2026-09-16 10:47:53",
+        "creation_timestamp": 1789555673,
+        "author": "GoodRealtor",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "House",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": {
+            "floor": 3,
+            "total_floors": 5
+        },
+        "prices": [],
+        "sizes_sqm": [
+            38
+        ],
+        "rooms": [
+            1
+        ],
+        "locations": [],
+        "phone_numbers": [
+            "+374 94 684 200"
+        ],
+        "full_text": "💥💥💥ՇՏԱՊ 💥💥💥\n\n🏠Վաճառվում է 1 սենյականոց բնակարան\n\n🏗️ Հարկ՝  3/5 \n\n📍Տեղադրություն՝  Բագրատունյանց փողոց\n\n📐Մակերես՝  38քմ.\n\n💥💥ՍՏԱԼԻՆԿԱ💥💥\n \n☎️Մանրամասների համար զանգահարել՝.  \n🤝094684200🤝"
+    },
+    {
+        "url": "https://www.facebook.com/groups/1733726720555984/posts/2110095242919128",
+        "canonical_id": "2110095242919128",
+        "group_id": "1733726720555984",
+        "extracted_at": "2026-09-16T11:23:33.859887",
+        "created_at": "2026-09-16 10:47:35",
+        "creation_timestamp": 1789555655,
+        "author": "Անշարժ գույքի Գործակալություն",
         "has_text": false,
         "is_media_only": false,
         "property_category": "General / Unclassified",
@@ -21,68 +51,34 @@
         "full_text": ""
     },
     {
-        "url": "https://www.facebook.com/groups/1733726720555984/posts/2110004039594915",
-        "canonical_id": "2110004039594915",
+        "url": "https://www.facebook.com/groups/1733726720555984/posts/2110094776252508",
+        "canonical_id": "2110094776252508",
         "group_id": "1733726720555984",
-        "extracted_at": "2026-09-16T08:39:37.901604",
-        "created_at": "2026-09-16 08:23:57",
-        "creation_timestamp": 1789547037,
-        "author": "Անշարժ Գույք",
-        "has_text": true,
-        "is_media_only": false,
-        "property_category": "Land",
-        "listing_type": "Sale",
+        "extracted_at": "2026-09-16T11:23:33.867532",
+        "created_at": "2026-09-16 10:46:50",
+        "creation_timestamp": 1789555610,
+        "author": "Hovhannes Tigranyan",
+        "has_text": false,
+        "is_media_only": true,
+        "property_category": "Media-Only",
+        "listing_type": "Unknown",
         "is_negotiable": "Unknown",
         "floor_info": null,
         "prices": [],
-        "sizes_sqm": [
-            107.5,
-            892
-        ],
+        "sizes_sqm": [],
         "rooms": [],
         "locations": [],
-        "phone_numbers": [
-            "+374 98 522 055"
-        ],
-        "full_text": "🏡 Վաճառվում է առանձնատուն Նոր Գեղիում՝ Շուշիի փողոցում։\n\n🏷️Արժեքը՝ 143․000$\n\n—————————————\n\n📐 Տան մակերես՝ 107.5քմ\n\n🌿 Հողատարածք՝ 892 քմ\n\n—————————————\n\n✔️ Սենյակներ՝ 3\n\n✔️ Բոլոր կոմունիկացիաներն առկա են\n\n✔️ Առկա է նկուղ\n\n✔️ Տարածքը պարսպապատ է\n\n✔️ Առկա է տաղավար\n\n✔️ Ընդարձակ բակային տարածք\n\n—————————————\n\n🏦 Հնարավոր է ձեռք բերել նաև հիփոթեքային վարկի կամ սերտեֆիկատի միջոցով։\n\n📲  098-522-055 \n\nԿոդ ՝ A519"
+        "phone_numbers": [],
+        "full_text": ""
     },
     {
-        "url": "https://www.facebook.com/groups/1733726720555984/posts/2110003786261607",
-        "canonical_id": "2110003786261607",
-        "group_id": "1733726720555984",
-        "extracted_at": "2026-09-16T08:39:37.942650",
-        "created_at": "2026-09-16 08:23:37",
-        "creation_timestamp": 1789547017,
-        "author": "Sargis Sardaryan",
-        "has_text": true,
-        "is_media_only": false,
-        "property_category": "Apartment",
-        "listing_type": "Sale",
-        "is_negotiable": "Unknown",
-        "floor_info": null,
-        "prices": [],
-        "sizes_sqm": [
-            91
-        ],
-        "rooms": [
-            3
-        ],
-        "locations": [
-            "Shengavit"
-        ],
-        "phone_numbers": [
-            "+374 98 070 106"
-        ],
-        "full_text": "Սեփականատիրոջ կողմից վաճառվում է 3 սենյականոց բնակարան Երևանում, Շենգավիթ համայնքի Չեխովի փողոցում, 3-րդ մասի հրապարակի հարևանությամբ։\nԳտնվում է 4 հարկանի քարե շենքի 2 հարկում, ընդհանուր մակերեսը 91 ք.մ. է։ Բնակարանը գտնվում է ապրելու ենթակա բարվոք վիճակում։ Դռներն ու պատուհանները եվրոպական արտադրության, բաքսի համակարգ, վաճառվում է գույքի և տեխնիկայի հետ միասին։\nՀեռ։ 098070106"
-    },
-    {
-        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550658745084329",
-        "canonical_id": "3550658745084329",
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550815695068634",
+        "canonical_id": "3550815695068634",
         "group_id": "2640603172756562",
-        "extracted_at": "2026-09-16T09:12:41.889116",
-        "created_at": "2026-09-16 08:03:53",
-        "creation_timestamp": 1789545833,
-        "author": "Անշարժ գույքի առք վաճառք",
+        "extracted_at": "2026-09-16T11:23:44.051784",
+        "created_at": "2026-09-16 11:20:55",
+        "creation_timestamp": 1789557655,
+        "author": "Էդգար Գրիգորյան",
         "has_text": true,
         "is_media_only": false,
         "property_category": "Land",
@@ -91,32 +87,41 @@
         "floor_info": null,
         "prices": [
             {
-                "amount": 105000,
+                "amount": 370000,
                 "currency": "USD",
-                "raw_text": "Գինը՝ 105,000 ԱՄՆ դոլար"
+                "raw_text": "370.000 $"
+            },
+            {
+                "amount": 370000,
+                "currency": "USD",
+                "raw_text": "370.000 $"
+            },
+            {
+                "amount": 370000,
+                "currency": "USD",
+                "raw_text": "370.000 $"
             }
         ],
         "sizes_sqm": [
-            358.2,
-            119.4,
-            540
+            1000
         ],
         "rooms": [],
-        "locations": [],
-        "phone_numbers": [
-            "+374 77 640 461",
-            "+374 98 178 790"
+        "locations": [
+            "Nor Nork / Massiv"
         ],
-        "full_text": "🏡 ՎԱՃԱՌՎՈՒՄ Է ԿԻՍԱԿԱՌՈՒՅՑ ԱՌԱՆՁՆԱՏՈՒՆ Ք. ԱԲՈՎՅԱՆՈՒՄ\n\n💰 Գինը՝ 105,000 ԱՄՆ դոլար\n\n📍 Հասցե՝ 8-րդ միկրոշրջան\n\n✨ Եթե ցանկանում եք տուն կառուցել հենց ձեր ճաշակով և առանց վերանորոգման փոխզիջումների, այս առաջարկը ձեզ համար է։\n\n✅ Ընդհանուր շինության մակերես՝ 358.2 քմ\n\n✅ Յուրաքանչյուր հարկի մակերես՝ 119.4 քմ\n\n✅ 3 հարկ, որից մեկը՝ կիսանկուղային\n\n✅ Հողատարածքի մակերես՝ 540 քմ\n\n✅ Ջուր և էլեկտրաէներգիա՝ առկա են\n\n✅ Գազատարը անցնում է հողատարածքի դիմացով\n\n🌿 Ընդարձակ հողատարածք, մեծ բնակելի մակերես և տունն ավարտելու հնարավորություն՝ ամբողջությամբ ձեր նախասիրությամբ։\n\n📞 Հեռ․՝ 077 640 461 , 098 178 790\n\n📌 Կոդ՝ Ա-101"
+        "phone_numbers": [
+            "+374 95 497 146"
+        ],
+        "full_text": "ԲԱԳՐԵՎԱՆԴ \n\nՆոր նորք համայնքում ՝ Բագրևանդում ՝ Ինժիներական քաղաքի հարևանությամբ, վաճառվում է տնամերձ հողատարածք։ Հողատարածքը հարմար է բնակելի տուն կամ թաունհաուս կառուցելու համար։ Մակերեսը - 1000 մ²\nՃակատը - 23.5 մ\nԵրկկողմանի պարիսպապատ:\nԲոլոր կոմունիկացիաները (գազ, լույս, ջուր, կոյուղի) գտնվում են հողատարածքի մոտ։ Գտնվում է գլխավոր ճանապարհի մոտ։\n370.000 $\n+374 95 49 71 46\n\nBAGREVAND \n\nA plot of land is for sale in the Nor Nork (Bagrevand) area, near the engineering town. The plot is suitable for building a residential building or townhouse. Area: 1.000 m²\nFacade: 23.5 m\nFenced on both sides.\nAll utilities (gas, electricity, water, sewer) are nearby. Located near the main road.\n370.000 $\n+374 95 49 71 46\n\nБАГРЕВАНД\n \nВ районе Нор Норк(Багреванд), рядом с инженерным городком, продается земельный участок. Участок подходит для строительства жилого дома или таунхауса. Площадь - 1000 м²\nФасад - 23.5 м\nОгорожен с обеих сторон.\nВсе коммуникации (газ, электричество, вода, канализация) находятся рядом с участком. Расположен недалеко от главной дороги.\n370.000 $\n+374 95 49 71 46\n\n#հող #հողատարածք #բնակելի #տնամերձ #երևան #բագրևանդ #земельный #участок #жилая #застройка #Ереван #багреванд #hom #house #apartments #hoxataracq #tnamerdz #bnakeli #bagrevand #land #plot"
     },
     {
-        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550658528417684",
-        "canonical_id": "3550658528417684",
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550814525068751",
+        "canonical_id": "3550814525068751",
         "group_id": "2640603172756562",
-        "extracted_at": "2026-09-16T09:12:41.930796",
-        "created_at": "2026-09-16 08:03:38",
-        "creation_timestamp": 1789545818,
-        "author": "Գոռ Ժամկոչյան",
+        "extracted_at": "2026-09-16T11:23:44.062765",
+        "created_at": "2026-09-16 11:19:35",
+        "creation_timestamp": 1789557575,
+        "author": "Հողամասի վաճառք",
         "has_text": false,
         "is_media_only": false,
         "property_category": "General / Unclassified",
@@ -131,16 +136,841 @@
         "full_text": ""
     },
     {
-        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550658318417705",
-        "canonical_id": "3550658318417705",
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550813555068848",
+        "canonical_id": "3550813555068848",
         "group_id": "2640603172756562",
-        "extracted_at": "2026-09-16T09:12:41.930796",
-        "created_at": "2026-09-16 08:03:24",
-        "creation_timestamp": 1789545804,
-        "author": "Արծաթյա Վզնոցներ",
+        "extracted_at": "2026-09-16T11:23:44.075540",
+        "created_at": "2026-09-16 11:18:26",
+        "creation_timestamp": 1789557506,
+        "author": "Անշարժ գույքի գործակալություն",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Land",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [
+            {
+                "amount": 50000,
+                "currency": "USD",
+                "raw_text": "արժեքը՝ 50,000 $"
+            }
+        ],
+        "sizes_sqm": [
+            2000,
+            1,
+            3600
+        ],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [
+            "+374 77 640 461",
+            "+374 98 178 790"
+        ],
+        "full_text": "🌳 ՎԱՃԱՌՎՈՒՄ Է ՀՈՂԱՏԱՐԱԾՔ՝ ԱԲՈՎՅԱՆԻ 8-ՐԴ ՄԻԿՐՈՇՐՋԱՆԻՑ ՓՈՔՐ-ԻՆՉ ՎԵՐԵՎ\n📍 Գտնվում է Նոր գյուղի տարածքում, 8-րդ միկրոշրջանից փոքր-ինչ վերև։\n📐 Վաճառքի ենթակա մակերեսը՝ 2,000 ք/մ\n💰 1 ք/մ արժեքը՝ 25 $\n💵 Ընդհանուր արժեքը՝ 50,000 $\n🔹 Ընդհանուր հողատարածքը՝ 3,600 ք/մ, որից սեփականատերը պատրաստ է վաճառել 2,000 ք/մ-ը\n🔹 Նշանակությունը՝ գյուղատնտեսական\n🔹 Հարթ հողատարածք\n🔹 Գտնվում է Նոր գյուղի տարածքում\n🏡 Հարմար տարբերակ է ներդրման և հետագայում օգտագործման համար։\n🔑 Կոդ՝ Հ125\n📞 Մանրամասների և դիտման համար՝\n077 640 461 | 098 178 790"
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550812648402272",
+        "canonical_id": "3550812648402272",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:23:55.787386",
+        "created_at": "2026-09-16 11:17:20",
+        "creation_timestamp": 1789557440,
+        "author": "անշարժ գույքի գործակալ",
         "has_text": false,
         "is_media_only": false,
         "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550812571735613",
+        "canonical_id": "3550812571735613",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:23:56.221531",
+        "created_at": "2026-09-16 11:17:15",
+        "creation_timestamp": 1789557435,
+        "author": "անշարժ գույքի գործակալ",
+        "has_text": false,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550810375069166",
+        "canonical_id": "3550810375069166",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:23:56.240284",
+        "created_at": "2026-09-16 11:14:14",
+        "creation_timestamp": 1789557254,
+        "author": "Նաիրա Մելիքյան",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Land",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [
+            {
+                "amount": 45000,
+                "currency": "USD",
+                "raw_text": "$45,000"
+            }
+        ],
+        "sizes_sqm": [
+            1000
+        ],
+        "rooms": [],
+        "locations": [
+            "Avan"
+        ],
+        "phone_numbers": [
+            "+374 77 140 671"
+        ],
+        "full_text": "Վաճառվում է 1000 քմ հողատարածք Հանքավանի գեղատեսիլ հատվածում։\n📍 Հարմար և գեղեցիկ դիրք՝ բնության գրկում\n🌲 Տարածքի վերևի հատվածում՝ անտառ\n🏞️ Ներքևի մասում՝ գետ\n💧 Մոտակայքում՝ Հանքավանի ջրամբար\n🏡 Շրջակայքում՝ ամառանոցներ\n🔌 Առկա են կոմունիկացիաներ\n✨ Տարածքը հարմար է ամառանոց կառուցելու, հանգստի գոտի, ընտանեկան հանգստավայր կամ զբոսաշրջային փոքրիկ նախագիծ ստեղծելու համար։\nԲնություն, ջուր և անտառ՝ մեկ վայրում։ 🌿\n💵 Գին՝ $45,000\n📞 077 140 671"
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550807305069473",
+        "canonical_id": "3550807305069473",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:24:03.866297",
+        "created_at": "2026-09-16 11:11:39",
+        "creation_timestamp": 1789557099,
+        "author": "Hayk Avetisyan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Land",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [
+            267,
+            1500
+        ],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [
+            "+374 98 308 831"
+        ],
+        "full_text": "Vajarvum e Osakanum 267 qm 2 hark tnamerc hox 1500 qm 098308831"
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550805235069680",
+        "canonical_id": "3550805235069680",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:24:03.870740",
+        "created_at": "2026-09-16 11:09:02",
+        "creation_timestamp": 1789556942,
+        "author": "Davit Kovalenko",
+        "has_text": false,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550802831736587",
+        "canonical_id": "3550802831736587",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:24:03.883941",
+        "created_at": "2026-09-16 11:06:08",
+        "creation_timestamp": 1789556768,
+        "author": "GoodRealtor",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": {
+            "floor": 1,
+            "total_floors": 5
+        },
+        "prices": [],
+        "sizes_sqm": [
+            107,
+            7
+        ],
+        "rooms": [
+            4
+        ],
+        "locations": [
+            "Shengavit"
+        ],
+        "phone_numbers": [
+            "+374 94 684 200"
+        ],
+        "full_text": "💥ՇՏԱՊ 💥💥💥\n\n🏠Վաճառվում է 4 սենյականոց բնակարան\n\n  🔺Հարկ՝ 1/5\n\n💥💥Չեխական💥💥\n\n📍Տեղադրություն՝  Վերին Շենգավիթի փողոց\n\n📐Մակերես՝ 107քմ. + 7 քմ.\n\n💥Նկուղ 💥\n\n☎️Մանրամասների համար զանգահարել՝.  \n🤝094684200🤝"
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550800205070183",
+        "canonical_id": "3550800205070183",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:24:18.738346",
+        "created_at": "2026-09-16 11:03:23",
+        "creation_timestamp": 1789556603,
+        "author": "GoodRealtor",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": {
+            "floor": 6,
+            "total_floors": 9
+        },
+        "prices": [],
+        "sizes_sqm": [
+            77
+        ],
+        "rooms": [
+            3
+        ],
+        "locations": [],
+        "phone_numbers": [
+            "+374 94 684 200"
+        ],
+        "full_text": "💥ՇՏԱՊ 💥💥💥\n\n🏠Վաճառվում է 3 սենյականոց բնակարան\n\n🏗️ Հարկ՝  6/9 հարկ\n\n📍Տեղադրություն՝  Չեխովի փողոց\n\n📐Մակերես՝  77 քմ.\n \n☎️Մանրամասների համար զանգահարել՝.  \n🤝094684200🤝"
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550798815070322",
+        "canonical_id": "3550798815070322",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:24:18.744368",
+        "created_at": "2026-09-16 11:01:33",
+        "creation_timestamp": 1789556493,
+        "author": "Arman Hovakimyan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Land",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [
+            {
+                "amount": 1081,
+                "currency": "USD",
+                "raw_text": "$\n1081"
+            }
+        ],
+        "sizes_sqm": [
+            27
+        ],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [
+            "+374 43 110 230"
+        ],
+        "full_text": "Vajarvum e Parpium shukayakinic  ejan   Tnamerdz  qm 27 dolar$\n1081mq \nShat shtap \nHer043-11-02-30"
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550797548403782",
+        "canonical_id": "3550797548403782",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:24:18.759343",
+        "created_at": "2026-09-16 11:00:21",
+        "creation_timestamp": 1789556421,
+        "author": "GoodRealtor",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": {
+            "floor": 2,
+            "total_floors": 9
+        },
+        "prices": [],
+        "sizes_sqm": [
+            72
+        ],
+        "rooms": [
+            3
+        ],
+        "locations": [],
+        "phone_numbers": [
+            "+374 94 684 200"
+        ],
+        "full_text": "💥ՇՏԱՊ 💥💥💥\n\n🏠Վաճառվում է 3 սենյականոց բնակարան\n\n🏗️ Հարկ՝  2/9 հարկ\n\n📍Տեղադրություն՝  Չեխովի փողոց\n\n📐Մակերես՝  72 քմ.\n \n+ 2 հատ նկուղ\n\n☎️Մանրամասների համար զանգահարել՝.  \n🤝094684200🤝"
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550797005070503",
+        "canonical_id": "3550797005070503",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:24:29.120800",
+        "created_at": "2026-09-16 10:59:42",
+        "creation_timestamp": 1789556382,
+        "author": "Anonymous participant",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Land",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [
+            {
+                "amount": 20214260,
+                "currency": "AMD",
+                "raw_text": "20214260"
+            }
+        ],
+        "sizes_sqm": [
+            1500
+        ],
+        "rooms": [],
+        "locations": [
+            "Avan"
+        ],
+        "phone_numbers": [],
+        "full_text": "Հողատարածք բնակելի շինությունների համար Աղավնավանքում, 1,500 քմ\n\nhttps://www.list.am/item/20214260"
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550795425070661",
+        "canonical_id": "3550795425070661",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:24:29.129896",
+        "created_at": "2026-09-16 10:58:04",
+        "creation_timestamp": 1789556284,
+        "author": "GoodRealtor",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Land",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [
+            220,
+            110
+        ],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [
+            "+374 94 684 200"
+        ],
+        "full_text": "💥💥💥ՇՏԱՊ 💥💥💥\n\n🏠Վաճառվում է Սեփական տուն\n\n📍Տեղադրություն՝  Որմնադիրների   փողոց\n\n📐Մակերես՝ Հող- 220 քմ. , բնակելի- 110 քմ.\n \n☎️Մանրամասների համար զանգահարել՝.  \n🤝094684200🤝"
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550794028404134",
+        "canonical_id": "3550794028404134",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:24:29.136897",
+        "created_at": "2026-09-16 10:56:16",
+        "creation_timestamp": 1789556176,
+        "author": "Անվճար Հայտարարություններ ",
+        "has_text": false,
+        "is_media_only": true,
+        "property_category": "Media-Only",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550793495070854",
+        "canonical_id": "3550793495070854",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:24:38.296225",
+        "created_at": "2026-09-16 10:55:36",
+        "creation_timestamp": 1789556136,
+        "author": "Անշարժ Գույքի Գործակալ",
+        "has_text": false,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550793258404211",
+        "canonical_id": "3550793258404211",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:24:38.311923",
+        "created_at": "2026-09-16 10:55:23",
+        "creation_timestamp": 1789556123,
+        "author": "GoodRealtor",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": {
+            "floor": 2,
+            "total_floors": 3
+        },
+        "prices": [],
+        "sizes_sqm": [
+            65
+        ],
+        "rooms": [
+            3
+        ],
+        "locations": [],
+        "phone_numbers": [
+            "+374 94 684 200"
+        ],
+        "full_text": "💥💥💥ՇՏԱՊ 💥💥💥\n\n🏠Վաճառվում է 2-3 սենյականոց բնակարան\n\n🏗️ Հարկ՝  2/3\n\n📍Տեղադրություն՝  Եղբայրության փողոց\n\n💥💥Հրապարակին կից💥💥\n\n📐Մակերես՝  65 քմ.\n\n \n☎️Մանրամասների համար զանգահարել՝.  \n🤝094684200🤝"
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550792951737575",
+        "canonical_id": "3550792951737575",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:24:38.322512",
+        "created_at": "2026-09-16 10:55:03",
+        "creation_timestamp": 1789556103,
+        "author": "Փափուկ կահույքի Վաճառք վերանորոգում",
+        "has_text": false,
+        "is_media_only": true,
+        "property_category": "Media-Only",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550792731737597",
+        "canonical_id": "3550792731737597",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:24:45.778575",
+        "created_at": "2026-09-16 10:54:51",
+        "creation_timestamp": 1789556091,
+        "author": "Անշարժ Գույքի Գործակալ",
+        "has_text": false,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550792511737619",
+        "canonical_id": "3550792511737619",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:24:45.806784",
+        "created_at": "2026-09-16 10:54:41",
+        "creation_timestamp": 1789556081,
+        "author": "Էլիտ Ռիլթի",
+        "has_text": false,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550792431737627",
+        "canonical_id": "3550792431737627",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:24:45.813036",
+        "created_at": "2026-09-16 10:54:34",
+        "creation_timestamp": 1789556074,
+        "author": "Melania Hovannisyan",
+        "has_text": false,
+        "is_media_only": true,
+        "property_category": "Media-Only",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550792331737637",
+        "canonical_id": "3550792331737637",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:24:54.398297",
+        "created_at": "2026-09-16 10:54:31",
+        "creation_timestamp": 1789556071,
+        "author": "Անշարժ Գույքի Գործակալ",
+        "has_text": false,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550791821737688",
+        "canonical_id": "3550791821737688",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:24:54.411273",
+        "created_at": "2026-09-16 10:53:57",
+        "creation_timestamp": 1789556037,
+        "author": "Փափուկ կահույքի Վաճառք վերանորոգում",
+        "has_text": false,
+        "is_media_only": true,
+        "property_category": "Media-Only",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550789901737880",
+        "canonical_id": "3550789901737880",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:24:54.432260",
+        "created_at": "2026-09-16 10:51:33",
+        "creation_timestamp": 1789555893,
+        "author": "GoodRealtor",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": {
+            "floor": 1,
+            "total_floors": 3
+        },
+        "prices": [],
+        "sizes_sqm": [
+            59
+        ],
+        "rooms": [
+            2
+        ],
+        "locations": [],
+        "phone_numbers": [
+            "+374 94 684 200"
+        ],
+        "full_text": "💥💥💥ՇՏԱՊ 💥💥💥\n\n🏠Վաճառվում է 2 սենյականոց բնակարան\n\n+++ նիշա\n\n🏗️ Հարկ՝  1/3\n\n📍Տեղադրություն՝  Եղբայրության փողոց\n\n💥💥Հրապարակին կից💥💥\n\n📐Մակերես՝  59 քմ.\n\n \n☎️Մանրամասների համար զանգահարել՝.  \n🤝094684200🤝"
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550789731737897",
+        "canonical_id": "3550789731737897",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:25:02.599085",
+        "created_at": "2026-09-16 10:51:26",
+        "creation_timestamp": 1789555886,
+        "author": "Papuk Kahuyqi Arq Vacharq",
+        "has_text": false,
+        "is_media_only": true,
+        "property_category": "Media-Only",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550789641737906",
+        "canonical_id": "3550789641737906",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:25:02.615735",
+        "created_at": "2026-09-16 10:51:21",
+        "creation_timestamp": 1789555881,
+        "author": "Papuk Kahuyqi Arq Vacharq",
+        "has_text": false,
+        "is_media_only": true,
+        "property_category": "Media-Only",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550788748404662",
+        "canonical_id": "3550788748404662",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:25:02.631347",
+        "created_at": "2026-09-16 10:50:26",
+        "creation_timestamp": 1789555826,
+        "author": "Papuk Kahuyqi Arq Vacharq",
+        "has_text": false,
+        "is_media_only": true,
+        "property_category": "Media-Only",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550788691738001",
+        "canonical_id": "3550788691738001",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:25:12.251409",
+        "created_at": "2026-09-16 10:50:23",
+        "creation_timestamp": 1789555823,
+        "author": "Papuk Kahuyqi Arq Vacharq",
+        "has_text": false,
+        "is_media_only": true,
+        "property_category": "Media-Only",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550787895071414",
+        "canonical_id": "3550787895071414",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:25:12.269472",
+        "created_at": "2026-09-16 10:49:35",
+        "creation_timestamp": 1789555775,
+        "author": "AV Realty",
+        "has_text": false,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550787141738156",
+        "canonical_id": "3550787141738156",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:25:12.286170",
+        "created_at": "2026-09-16 10:48:36",
+        "creation_timestamp": 1789555716,
+        "author": "GoodRealtor",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "House",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": {
+            "floor": 3,
+            "total_floors": 5
+        },
+        "prices": [],
+        "sizes_sqm": [
+            38
+        ],
+        "rooms": [
+            1
+        ],
+        "locations": [],
+        "phone_numbers": [
+            "+374 94 684 200"
+        ],
+        "full_text": "💥💥💥ՇՏԱՊ 💥💥💥\n\n🏠Վաճառվում է 1 սենյականոց բնակարան\n\n🏗️ Հարկ՝  3/5 \n\n📍Տեղադրություն՝  Բագրատունյանց փողոց\n\n📐Մակերես՝  38քմ.\n\n💥💥ՍՏԱԼԻՆԿԱ💥💥\n \n☎️Մանրամասների համար զանգահարել՝.  \n🤝094684200🤝"
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550786025071601",
+        "canonical_id": "3550786025071601",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:25:27.022466",
+        "created_at": "2026-09-16 10:47:14",
+        "creation_timestamp": 1789555634,
+        "author": "Անշարժ գույքի գործակալություն",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Land",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [
+            {
+                "amount": 87000,
+                "currency": "USD",
+                "raw_text": "$87,000"
+            }
+        ],
+        "sizes_sqm": [
+            72,
+            288
+        ],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [
+            "+374 98 868 637"
+        ],
+        "full_text": "🏡 ՎԱՃԱՌՎՈՒՄ Է ՏՈՒՆ ՆՈՐ ԽԱՐԲԵՐԴՈՒՄ 🏡\n📌 Կոդ ՝ AH0617\n💰 Գին՝ $87,000 \n🔹 Տան մակերես՝ 72 քմ\n🔹 Հողատարածք՝ 288 քմ 🌳\n🔹 Հարկ՝ 1\n🔹 Ննջասենյակներ՝ 3 \n🔹 Հյուրասենյակ ՝ 1\n🔹 Խոհանոց ՝ 1\n🔹 Սանհանգույց՝ 2 (1 ներսում 1 դրսում 🚿)\n🛋️ Մասնակի գույք\n🔧 Կոսմետիկ վերանորոգում\n🔥 Գազ, 💧 մշտական ջուր, ⚡ էլեկտրականություն\n🚗 Ավտոտնակ (1 մեքենայի համար)\n🌿 Կանաչապատ բակ՝ բերքատու ծառերով, տաղավար \n📞📩Մանրամասների համար՝ գրել կամ զանգահարել 098868637 Մերի \n⏰ Զանգահարել մինչև 19:00\n❌ Գործակալությունը կիրակի օրերին չի աշխատում։"
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550785978404939",
+        "canonical_id": "3550785978404939",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:25:27.037469",
+        "created_at": "2026-09-16 10:47:09",
+        "creation_timestamp": 1789555629,
+        "author": "Hovhannes Tigranyan",
+        "has_text": false,
+        "is_media_only": true,
+        "property_category": "Media-Only",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550785735071630",
+        "canonical_id": "3550785735071630",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:25:27.059339",
+        "created_at": "2026-09-16 10:46:56",
+        "creation_timestamp": 1789555616,
+        "author": "GoodRealtor",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": {
+            "floor": 4,
+            "total_floors": 4
+        },
+        "prices": [],
+        "sizes_sqm": [
+            81
+        ],
+        "rooms": [
+            3
+        ],
+        "locations": [],
+        "phone_numbers": [
+            "+374 94 684 200"
+        ],
+        "full_text": "💥💥💥ՇՏԱՊ 💥💥💥\n\n🏠Վաճառվում է 3 սենյականոց բնակարան\n\n🏗️ Հարկ՝  4/4\n\n📍Տեղադրություն՝  Մանանդյան փողոց\n\n📐Մակերես՝  81քմ.\n \n☎️Մանրամասների համար զանգահարել՝.  \n🤝094684200🤝"
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550783265071877",
+        "canonical_id": "3550783265071877",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:25:35.642233",
+        "created_at": "2026-09-16 10:43:41",
+        "creation_timestamp": 1789555421,
+        "author": "Հողերի Վաճառք",
+        "has_text": false,
+        "is_media_only": true,
+        "property_category": "Media-Only",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550782608405276",
+        "canonical_id": "3550782608405276",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:25:35.674618",
+        "created_at": "2026-09-16 10:42:55",
+        "creation_timestamp": 1789555375,
+        "author": "Հողերի Վաճառք",
+        "has_text": false,
+        "is_media_only": true,
+        "property_category": "Media-Only",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/2640603172756562/posts/3550781411738729",
+        "canonical_id": "3550781411738729",
+        "group_id": "2640603172756562",
+        "extracted_at": "2026-09-16T11:25:35.718447",
+        "created_at": "2026-09-16 10:41:09",
+        "creation_timestamp": 1789555269,
+        "author": "Papuk Kahuyqi Arq Vacharq",
+        "has_text": false,
+        "is_media_only": true,
+        "property_category": "Media-Only",
         "listing_type": "Unknown",
         "is_negotiable": "Unknown",
         "floor_info": null,

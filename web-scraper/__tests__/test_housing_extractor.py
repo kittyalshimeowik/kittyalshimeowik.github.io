@@ -28,13 +28,8 @@ class TestHousingExtractor(unittest.TestCase):
         self.assertEqual(details["prices"][0]["currency"], "USD")
 
     def test_failing_case_dot_separator_and_value_keyword(self):
-        """
-        Tests the post format with dot separator and currency symbol.
-        Updated assertion to expect successful extraction.
-        """
         text = "🏷️ Արժեքը` 93.000$"
         details = extract_housing_details(text)
-        
         self.assertEqual(len(details["prices"]), 1)
         self.assertEqual(details["prices"][0]["amount"], 93000)
         self.assertEqual(details["prices"][0]["currency"], "USD")
@@ -54,24 +49,23 @@ class TestHousingExtractor(unittest.TestCase):
         self.assertEqual(details["prices"][0]["currency"], "AMD")
 
     def test_year_filtering_false_positive(self):
-        """Ensures modern year numbers (2020-2030) without explicit currency tags are ignored."""
         text = "Կապիտալ վերանորոգվել է 2024 թվականին:"
         details = extract_housing_details(text)
         self.assertEqual(len(details["prices"]), 0)
-    
+
     def test_143k_usd_price_extraction(self):
         text = "Վաճառվում է բնակարան: Գինը` 143,000$"
         details = extract_housing_details(text)
         self.assertEqual(len(details["prices"]), 1)
         self.assertEqual(details["prices"][0]["amount"], 143000)
         self.assertEqual(details["prices"][0]["currency"], "USD")
-    
+
     def test_space_separated_prices(self):
-            text = "Գինը` 120 000 $"
-            details = extract_housing_details(text)
-            self.assertEqual(details["prices"][0]["amount"], 120000)
-            self.assertEqual(details["prices"][0]["currency"], "USD")
-    
+        text = "Գինը` 120 000 $"
+        details = extract_housing_details(text)
+        self.assertEqual(details["prices"][0]["amount"], 120000)
+        self.assertEqual(details["prices"][0]["currency"], "USD")
+
     def test_property_code_noise_suppression(self):
         text = "Բնակարան Կենտրոնում, Կոդ: 854921, Գինը` 110000$"
         details = extract_housing_details(text)
@@ -101,6 +95,22 @@ class TestHousingExtractor(unittest.TestCase):
         details = extract_housing_details(text)
         self.assertIn(55, details["sizes_sqm"])
         self.assertIn(3, details["rooms"])
+
+    def test_size_sqm_thousands_separators(self):
+        # Testing comma as thousands separator (e.g., 1,500 sq.m)
+        text_comma = "Բնակարանի մակերեսը՝ 1,500 քմ"
+        details_comma = extract_housing_details(text_comma)
+        self.assertIn(1500, details_comma["sizes_sqm"])
+
+        # Testing dot as thousands separator (e.g., 2.400 sq.m)
+        text_dot = "Վաճառվում է 2.400 քմ հողատարածք"
+        details_dot = extract_housing_details(text_dot)
+        self.assertIn(2400, details_dot["sizes_sqm"])
+
+        # Testing space as thousands separator (e.g., 3 500 sq.m)
+        text_space = "Մակերեսը 3 500 քմ"
+        details_space = extract_housing_details(text_space)
+        self.assertIn(3500, details_space["sizes_sqm"])
 
     def test_room_count_variations(self):
         text_arm = "3 սենյականոց բնակարան"
@@ -146,6 +156,29 @@ class TestHousingExtractor(unittest.TestCase):
         text = "Վաճառվում է կամ տրվում է վարձով 3 սենյականոց բնակարան"
         details = extract_housing_details(text)
         self.assertEqual(details["listing_type"], "Sale")
+
+    # -------------------------------------------------------------------------
+    # 6. Dynamic Scrolling
+    # -------------------------------------------------------------------------
+
+    def test_calculate_dynamic_runtime_corrupted_benchmarks(self):
+        # Test fallback behavior when scroll_benchmarks is empty or missing
+        from fb_in_feed_tab_scraper import calculate_dynamic_runtime
+        metadata_empty = {"scroll_benchmarks": []}
+        runtime = calculate_dynamic_runtime(metadata_empty, default_runtime=300)
+        self.assertEqual(runtime, 300)
+
+    def test_calculate_dynamic_runtime_valid_benchmarks(self):
+        from fb_in_feed_tab_scraper import calculate_dynamic_runtime
+        metadata_valid = {
+            "scroll_benchmarks": {
+                "2026-09-14": {"scroll_duration_seconds": 120.0},
+                "2026-09-15": {"scroll_duration_seconds": 150.0},
+                "2026-09-16": {"scroll_duration_seconds": 180.0}
+            }
+        }
+        runtime = calculate_dynamic_runtime(metadata_valid, default_runtime=300)
+        self.assertGreater(runtime, 0)
 
 
 if __name__ == "__main__":

@@ -1,28 +1,29 @@
 {
     "name": "Group 656522145361470",
-    "summary_title": "Apartments for Sale",
+    "summary_title": "Lands for Sale",
     "primary_focus": {
         "listing_type": "Sale",
-        "property_category": "Apartment",
-        "percentage": 8.0
+        "property_category": "Land",
+        "percentage": 27.3
     },
-    "avg_scroll_time_1_day_sec": 1965.5,
+    "avg_scroll_time_1_day_sec": 1227.5,
     "distributions": {
-        "Unknown - General / Unclassified": 49,
-        "Sale - House": 3,
-        "Sale - Apartment": 6,
-        "Unknown - Media-Only": 10,
-        "Sale - Land": 3,
-        "Unknown - Land": 3,
-        "Rent - Apartment": 1
+        "Sale - Land": 9,
+        "Unknown - Media-Only": 11,
+        "Unknown - General / Unclassified": 8,
+        "Sale - House": 1,
+        "Rent - General / Unclassified": 1,
+        "Unknown - House": 1,
+        "Unknown - Apartment": 1,
+        "Unknown - Land": 1
     },
     "scroll_benchmarks": {
         "2026-09-16": {
-            "scroll_duration_seconds": 241.59372568130493,
-            "oldest_post_age_hours": 2.95,
-            "posts_scanned": 63
+            "scroll_duration_seconds": 120.19672918319702,
+            "oldest_post_age_hours": 2.35,
+            "posts_scanned": 33
         }
     },
-    "last_scraped": "2026-09-16T08:59:46.188033",
-    "total_collected": 75
+    "last_scraped": "2026-09-16T11:17:30.896776",
+    "total_collected": 33
 }
