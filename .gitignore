@@ -2,3 +2,10 @@ scrapers/facebook/fb_session/
 scrapers/listam/.browser_session
 scrapers/listam/.chrome_profile
 scrapers/listam/.selenium_profile
+scrapers/__pycache__
+scrapers/facebook/__pycache__
+scrapers/facebook/__tests__/__pycache__
+scrapers/facebook/utilities/__pycache__
+scrapers/processors/__pycache__
+scrapers/processors/__tests__/__pycache__
+scrapers/utilities/__pycache__

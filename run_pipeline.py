@@ -39,6 +39,27 @@ def run_step(script_path, description, extra_args=None):
         print(f"\n[ERROR] Could not find the script at: {script_path}", file=sys.stderr)
         return False
 
+def auto_git_push(commit_message="Auto-update listings and site data"):
+    """Helper function to stage, commit, and push changes to GitHub."""
+    print(f"\n{'='*50}")
+    print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] STARTING: Git Sync")
+    print(f"{'='*50}\n")
+    try:
+        subprocess.run(["git", "add", "."], check=True)
+        
+        status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
+        if not status.stdout.strip():
+            print("ℹ️ No changes to commit.")
+            return True
+
+        subprocess.run(["git", "commit", "-m", commit_message], check=True)
+        subprocess.run(["git", "push"], check=True)
+        print("\n[SUCCESS] Git repository synced and pushed successfully.")
+        return True
+    except subprocess.CalledProcessError as e:
+        print(f"\n[ERROR] Git automation failed with exit code {e.returncode}.", file=sys.stderr)
+        return False
+
 def main():
     parser = argparse.ArgumentParser(description="Run the Armenia Real Estate Data Pipeline.")
     parser.add_argument(
@@ -94,6 +115,11 @@ def main():
     if not cleanup_success:
         print("\n❌ Pipeline aborted due to cleanup failure.", file=sys.stderr)
         sys.exit(1)
+    
+    # Step 4: Auto Git Push
+    git_success = auto_git_push()
+    if not git_success:
+        print("\n⚠️ Pipeline finished, but Git push failed.", file=sys.stderr)
         
     elapsed = datetime.now() - start_time
     print(f"\n✨ Pipeline finished successfully in {elapsed.total_seconds():.2f} seconds!")

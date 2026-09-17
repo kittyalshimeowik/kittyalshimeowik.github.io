@@ -1,9 +1,17 @@
 import os
+import sys
 import json
+import io
 import argparse
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_TARGET_FILE = os.path.join(SCRIPT_DIR, "master_listings_json", "all_for_sale_rent.json")
+
+# Force stdout/stderr to handle UTF-8 output gracefully on Windows terminals
+if sys.stdout.encoding != 'utf-8':
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
+if sys.stderr.encoding != 'utf-8':
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
 def compute_record_score(item):
     """
@@ -92,7 +100,7 @@ def run_cleanup(filepath=None):
         print(f"❌ Target file not found: {target_path}")
         return
 
-    print(f"📖 Reading listings file: {target_path}")
+    print(f"[INFO] Reading listings file: {target_path}")
     with open(target_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
