@@ -3168,5 +3168,172 @@
         "locations": [],
         "phone_numbers": [],
         "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/656522145361470/posts/1826585408355132",
+        "canonical_id": "1826585408355132",
+        "group_id": "656522145361470",
+        "extracted_at": "2026-09-17T07:12:18.584574",
+        "created_at": "2026-09-17 07:10:50",
+        "creation_timestamp": 1789629050,
+        "author": "Արմիլ Արմիլ",
+        "has_text": false,
+        "is_media_only": true,
+        "property_category": "Media-Only",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/656522145361470/posts/1826585351688471",
+        "canonical_id": "1826585351688471",
+        "group_id": "656522145361470",
+        "extracted_at": "2026-09-17T07:12:18.621518",
+        "created_at": "2026-09-17 07:10:45",
+        "creation_timestamp": 1789629045,
+        "author": "Արմիլ Արմիլ",
+        "has_text": false,
+        "is_media_only": true,
+        "property_category": "Media-Only",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/656522145361470/posts/1826585298355143",
+        "canonical_id": "1826585298355143",
+        "group_id": "656522145361470",
+        "extracted_at": "2026-09-17T07:12:18.646619",
+        "created_at": "2026-09-17 07:10:40",
+        "creation_timestamp": 1789629040,
+        "author": "Արմիլ Արմիլ",
+        "has_text": false,
+        "is_media_only": true,
+        "property_category": "Media-Only",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/656522145361470/posts/1826585098355163",
+        "canonical_id": "1826585098355163",
+        "group_id": "656522145361470",
+        "extracted_at": "2026-09-17T07:12:21.867210",
+        "created_at": "2026-09-17 07:10:00",
+        "creation_timestamp": 1789629000,
+        "author": "Lilit Mirzoyan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": {
+            "floor": 5,
+            "total_floors": 1
+        },
+        "prices": [
+            {
+                "amount": 150000,
+                "currency": "AMD",
+                "raw_text": "արժեքը ՝  150.000"
+            },
+            {
+                "amount": 41400277,
+                "currency": "AMD",
+                "raw_text": "41400277"
+            }
+        ],
+        "sizes_sqm": [
+            72
+        ],
+        "rooms": [
+            3
+        ],
+        "locations": [],
+        "phone_numbers": [
+            "+374 41 400 277"
+        ],
+        "full_text": "🏡 Վաճառվում է 3 սենյականոց բնակարան Նար-Դոսի  փողոցում\n\nՎաճառքի արժեքը ՝  150.000 💲 \n\n📍  5/1 հարկ, Քարե շենք \n📐 72 քմ մակերես, 3 Սենյակ \n\n🪑 Վաճառվում է ամբողջ կահույք տեխնիկայով\n🌇 Փակ պատշգամբ\n\nՄանրամասների համար զանգահարեք՝\n📲041400277 Լիլիթ\n/Viber / Telegram / WhatsAPP / \n\n#vardz #vacharq  #041400277Lilit #realtor"
+    },
+    {
+        "url": "https://www.facebook.com/groups/656522145361470/posts/1826584748355198",
+        "canonical_id": "1826584748355198",
+        "group_id": "656522145361470",
+        "extracted_at": "2026-09-17T07:12:21.914585",
+        "created_at": "2026-09-17 07:09:55",
+        "creation_timestamp": 1789628995,
+        "author": "Perfect World անշարժ գույքի գործակալություն",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Land",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [
+            {
+                "amount": 80000,
+                "currency": "USD",
+                "raw_text": "Գինը՝ 80,000 ԱՄՆ դոլար"
+            }
+        ],
+        "sizes_sqm": [
+            788
+        ],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [
+            "+374 77 640 461",
+            "+374 98 178 790"
+        ],
+        "full_text": "🏡 ՎԱՃԱՌՎՈՒՄ Է ՏՆԱՄԵՐՁ ՀՈՂԱՏԱՐԱԾՔ ԲԱԼԱՀՈՎԻՏ ԳՅՈՒՂՈՒՄ 🌿\n📍 Կոտայքի մարզ, Բալահովիտ գյուղ\n💰 Գինը՝ 80,000 ԱՄՆ դոլար\n✅ Մակերեսը՝ 788 քմ\n✅ Բոլոր անհրաժեշտ կոմունիկացիաները գտնվում են հողատարածքին կից\n✅ Բանուկ և ամբողջությամբ ասֆալտապատ թաղամաս\n✅ Հարմար է առանձնատուն կառուցելու համար\n🌟 Հիանալի հնարավորություն է բնակելի տուն կառուցելու՝ զարգացած և հարմարավետ թաղամասում։\n📞 Հեռ․՝ 077 640 461 , 098 178 790\n📌 Կոդ՝ Հ-107"
+    },
+    {
+        "url": "https://www.facebook.com/groups/656522145361470/posts/1826584451688561",
+        "canonical_id": "1826584451688561",
+        "group_id": "656522145361470",
+        "extracted_at": "2026-09-17T07:12:21.991450",
+        "created_at": "2026-09-17 07:09:26",
+        "creation_timestamp": 1789628966,
+        "author": "Lilit Mirzoyan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [
+            {
+                "amount": 41400277,
+                "currency": "AMD",
+                "raw_text": "41400277"
+            }
+        ],
+        "sizes_sqm": [
+            118
+        ],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [
+            "+374 41 400 277"
+        ],
+        "full_text": "🏡Կապիտալ վերանորոգված բնակարան Կենտրոն համայնքում\n\n📍 Չարենցի  փողոց\n\n📐 118 ՔՄ / 🛋 3 ննջարան | 2 սանհանգույց\n🏢 16 հարկանի մոնոլիտ շենքի 11-րդ հարկ\n\n☀️ Արևկող և լուսավոր\n 🛋 Կահույք և տեխնիկան ներառված է արժեքի մեջ \n\nՀասանելի են բոլոր ենթակառուցվածները` սուպերմարկետներ, այգիներ, ժամանցի վայրեր, դպրոց, մանկապարտեզ ☕️ ☀️\n\n Վաճառքի արժեքը՝ 290․000 $ 💵\n\nՄանրամասների համար զանգահարեք՝\n041400277 Լիլիթ\n/Viber / Telegram / WhatsAPP / \n\n#vardz #vacharq  #041400277Lilit #realtor"
     }
 ]

@@ -111,25 +111,34 @@ def extract_listing_dates(item_soup):
 # ==========================================
 # 🧠 HUMANIZED BEHAVIORAL HELPERS
 # ==========================================
-def human_scroll(driver):
-    """Simulates natural human scrolling down a page in random chunks with occasional rereads."""
+def human_scroll(driver, is_category_page=False):
+    """Simulates natural human scrolling down a page with customizable intensity."""
     try:
         total_height = driver.execute_script("return document.body.scrollHeight")
         current_position = 0
-        target_scroll_limit = total_height * random.uniform(0.5, 0.8)
+        
+        # 🏎️ Category index pages: shallow, quick scroll just enough to trigger dynamic loads/read content
+        if is_category_page:
+            target_scroll_limit = total_height * random.uniform(0.25, 0.45)
+        else:
+            # 📄 Detailed item pages: deeper scroll
+            target_scroll_limit = total_height * random.uniform(0.5, 0.75)
         
         while current_position < target_scroll_limit:
-            scroll_step = random.randint(250, 550)
+            scroll_step = random.randint(350, 700)  # Larger chunks per scroll
             current_position += scroll_step
             driver.execute_script(f"window.scrollTo(0, {current_position});")
-            time.sleep(random.uniform(0.3, 0.9))
             
-            # Occasionally scroll back up slightly like a user rereading something
-            if random.random() < 0.15:
-                back_step = random.randint(80, 180)
+            # Faster delays between scroll steps
+            time.sleep(random.uniform(0.15, 0.35) if is_category_page else random.uniform(0.3, 0.6))
+            
+            # Reduced chance of scrolling back up on category pages (5% vs 15%)
+            back_probability = 0.05 if is_category_page else 0.15
+            if random.random() < back_probability:
+                back_step = random.randint(100, 200)
                 current_position = max(0, current_position - back_step)
                 driver.execute_script(f"window.scrollTo(0, {current_position});")
-                time.sleep(random.uniform(0.4, 0.8))
+                time.sleep(random.uniform(0.2, 0.4))
     except Exception:
         pass
 
@@ -315,8 +324,8 @@ class DirectBrowserListAmScraper(BaseScraper):
                         driver.get(target_url)
                         self.handle_cloudflare_loop()
                         
-                        # 🧠 Inject human behaviors after page load
-                        human_scroll(driver)
+                        # 🧠 Inject light human behavior on category pages
+                        human_scroll(driver, is_category_page=True)
                         simulate_random_tab_activity(driver)
                         
                         html_content = driver.page_source
@@ -374,8 +383,8 @@ class DirectBrowserListAmScraper(BaseScraper):
                                 driver.get(url)
                                 self.handle_cloudflare_loop()
                                 
-                                # 🧠 Light human scroll on individual listing pages too
-                                human_scroll(driver)
+                               # 🧠 Deeper scroll for item details page
+                                human_scroll(driver, is_category_page=False)
                                 
                                 item_soup = BeautifulSoup(driver.page_source, "html.parser")
 

@@ -4020,5 +4020,282 @@
         "locations": [],
         "phone_numbers": [],
         "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/1733726720555984/posts/2110834229511896",
+        "canonical_id": "2110834229511896",
+        "group_id": "1733726720555984",
+        "extracted_at": "2026-09-17T07:10:45.518962",
+        "created_at": "2026-09-17 07:09:46",
+        "creation_timestamp": 1789628986,
+        "author": "Vache Galstyan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": {
+            "floor": 16,
+            "total_floors": 14
+        },
+        "prices": [
+            {
+                "amount": 86000,
+                "currency": "USD",
+                "raw_text": "Գինը 86.000$"
+            }
+        ],
+        "sizes_sqm": [],
+        "rooms": [
+            2
+        ],
+        "locations": [
+            "Ajapnyak"
+        ],
+        "phone_numbers": [
+            "+374 94 946 115"
+        ],
+        "full_text": "🔑Վաճառվում 2 սենյականոց բնակարան\n📍Աջափնյակ, Նորաշեն թաղամաս\n📐63.մ.\n🪜16/14-րդ հարկ  \n💰Գինը 86.000$ \n📞 Մանրամասների համար՝\n094 94 61 15"
+    },
+    {
+        "url": "https://www.facebook.com/groups/1733726720555984/posts/2110833952845257",
+        "canonical_id": "2110833952845257",
+        "group_id": "1733726720555984",
+        "extracted_at": "2026-09-17T07:10:45.599061",
+        "created_at": "2026-09-17 07:09:15",
+        "creation_timestamp": 1789628955,
+        "author": "Vache Galstyan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": {
+            "floor": 16,
+            "total_floors": 14
+        },
+        "prices": [
+            {
+                "amount": 86000,
+                "currency": "USD",
+                "raw_text": "Գինը 86.000$"
+            }
+        ],
+        "sizes_sqm": [],
+        "rooms": [
+            2
+        ],
+        "locations": [
+            "Ajapnyak"
+        ],
+        "phone_numbers": [
+            "+374 94 946 115"
+        ],
+        "full_text": "🔑Վաճառվում 2 սենյականոց բնակարան\n📍Աջափնյակ, Նորաշեն թաղամաս\n📐63.մ.\n🪜16/14-րդ հարկ  \n💰Գինը 86.000$ \n📞 Մանրամասների համար՝\n094 94 61 15"
+    },
+    {
+        "url": "https://www.facebook.com/groups/1733726720555984/posts/2110833866178599",
+        "canonical_id": "2110833866178599",
+        "group_id": "1733726720555984",
+        "extracted_at": "2026-09-17T07:10:45.726006",
+        "created_at": "2026-09-17 07:09:08",
+        "creation_timestamp": 1789628948,
+        "author": "Էյ-Թին անշարժ գույքի գործակալություն",
+        "has_text": false,
+        "is_media_only": true,
+        "property_category": "Media-Only",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/1733726720555984/posts/2110832752845377",
+        "canonical_id": "2110832752845377",
+        "group_id": "1733726720555984",
+        "extracted_at": "2026-09-17T07:10:45.927777",
+        "created_at": "2026-09-17 07:07:09",
+        "creation_timestamp": 1789628829,
+        "author": "Vache Galstyan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": {
+            "floor": 16,
+            "total_floors": 14
+        },
+        "prices": [
+            {
+                "amount": 86000,
+                "currency": "USD",
+                "raw_text": "Գինը 86.000$"
+            }
+        ],
+        "sizes_sqm": [],
+        "rooms": [
+            2
+        ],
+        "locations": [
+            "Ajapnyak"
+        ],
+        "phone_numbers": [
+            "+374 94 946 115"
+        ],
+        "full_text": "🔑Վաճառվում 2 սենյականոց բնակարան\n📍Աջափնյակ, Նորաշեն թաղամաս\n📐63.մ.\n🪜16/14-րդ հարկ  \n💰Գինը 86.000$ \n📞 Մանրամասների համար՝\n094 94 61 15"
+    },
+    {
+        "url": "https://www.facebook.com/groups/1733726720555984/posts/2110832686178717",
+        "canonical_id": "2110832686178717",
+        "group_id": "1733726720555984",
+        "extracted_at": "2026-09-17T07:10:45.991666",
+        "created_at": "2026-09-17 07:07:03",
+        "creation_timestamp": 1789628823,
+        "author": "Vache Galstyan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": {
+            "floor": 16,
+            "total_floors": 14
+        },
+        "prices": [
+            {
+                "amount": 86000,
+                "currency": "USD",
+                "raw_text": "Գինը 86.000$"
+            }
+        ],
+        "sizes_sqm": [],
+        "rooms": [
+            2
+        ],
+        "locations": [
+            "Ajapnyak"
+        ],
+        "phone_numbers": [
+            "+374 94 946 115"
+        ],
+        "full_text": "🔑Վաճառվում 2 սենյականոց բնակարան\n📍Աջափնյակ, Նորաշեն թաղամաս\n📐63.մ.\n🪜16/14-րդ հարկ  \n💰Գինը 86.000$ \n📞 Մանրամասների համար՝\n094 94 61 15"
+    },
+    {
+        "url": "https://www.facebook.com/groups/1733726720555984/posts/2110831669512152",
+        "canonical_id": "2110831669512152",
+        "group_id": "1733726720555984",
+        "extracted_at": "2026-09-17T07:10:46.045531",
+        "created_at": "2026-09-17 07:05:15",
+        "creation_timestamp": 1789628715,
+        "author": "Maria Hovsepyan",
+        "has_text": false,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/1733726720555984/posts/2110831189512200",
+        "canonical_id": "2110831189512200",
+        "group_id": "1733726720555984",
+        "extracted_at": "2026-09-17T07:11:00.718762",
+        "created_at": "2026-09-17 07:04:29",
+        "creation_timestamp": 1789628669,
+        "author": "Vache Galstyan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": {
+            "floor": 16,
+            "total_floors": 14
+        },
+        "prices": [
+            {
+                "amount": 86000,
+                "currency": "USD",
+                "raw_text": "Գինը 86.000$"
+            }
+        ],
+        "sizes_sqm": [],
+        "rooms": [
+            2
+        ],
+        "locations": [
+            "Ajapnyak"
+        ],
+        "phone_numbers": [
+            "+374 94 946 115"
+        ],
+        "full_text": "🔑Վաճառվում 2 սենյականոց բնակարան\n📍Աջափնյակ, Նորաշեն թաղամաս\n📐63.մ.\n🪜16/14-րդ հարկ  \n💰Գինը 86.000$ \n📞 Մանրամասների համար՝\n094 94 61 15"
+    },
+    {
+        "url": "https://www.facebook.com/groups/1733726720555984/posts/2110831096178876",
+        "canonical_id": "2110831096178876",
+        "group_id": "1733726720555984",
+        "extracted_at": "2026-09-17T07:11:00.755001",
+        "created_at": "2026-09-17 07:04:20",
+        "creation_timestamp": 1789628660,
+        "author": "Perfect World անշարժ գույքի գործակալություն",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Land",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [
+            {
+                "amount": 80000,
+                "currency": "USD",
+                "raw_text": "Գինը՝ 80,000 ԱՄՆ դոլար"
+            }
+        ],
+        "sizes_sqm": [
+            788
+        ],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [
+            "+374 77 640 461",
+            "+374 98 178 790"
+        ],
+        "full_text": "🏡 ՎԱՃԱՌՎՈՒՄ Է ՏՆԱՄԵՐՁ ՀՈՂԱՏԱՐԱԾՔ ԲԱԼԱՀՈՎԻՏ ԳՅՈՒՂՈՒՄ 🌿\n📍 Կոտայքի մարզ, Բալահովիտ գյուղ\n💰 Գինը՝ 80,000 ԱՄՆ դոլար\n✅ Մակերեսը՝ 788 քմ\n✅ Բոլոր անհրաժեշտ կոմունիկացիաները գտնվում են հողատարածքին կից\n✅ Բանուկ և ամբողջությամբ ասֆալտապատ թաղամաս\n✅ Հարմար է առանձնատուն կառուցելու համար\n🌟 Հիանալի հնարավորություն է բնակելի տուն կառուցելու՝ զարգացած և հարմարավետ թաղամասում։\n📞 Հեռ․՝ 077 640 461 , 098 178 790\n📌 Կոդ՝ Հ-107"
+    },
+    {
+        "url": "https://www.facebook.com/groups/1733726720555984/posts/2110830876178898",
+        "canonical_id": "2110830876178898",
+        "group_id": "1733726720555984",
+        "extracted_at": "2026-09-17T07:11:00.785527",
+        "created_at": "2026-09-17 07:03:54",
+        "creation_timestamp": 1789628634,
+        "author": "Maria Hovsepyan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [
+            "+374 33 711 177"
+        ],
+        "full_text": "📲 033-711-177"
     }
 ]

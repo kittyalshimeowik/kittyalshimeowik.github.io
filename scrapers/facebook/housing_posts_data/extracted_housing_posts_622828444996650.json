@@ -3654,5 +3654,242 @@
         "locations": [],
         "phone_numbers": [],
         "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/622828444996650/posts/2170238703588942",
+        "canonical_id": "2170238703588942",
+        "group_id": "622828444996650",
+        "extracted_at": "2026-09-17T07:13:53.360803",
+        "created_at": "2026-09-17 07:01:21",
+        "creation_timestamp": 1789628481,
+        "author": "Seyran Mkhitaryan",
+        "has_text": false,
+        "is_media_only": true,
+        "property_category": "Media-Only",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/622828444996650/posts/2170238636922282",
+        "canonical_id": "2170238636922282",
+        "group_id": "622828444996650",
+        "extracted_at": "2026-09-17T07:13:53.414728",
+        "created_at": "2026-09-17 07:01:13",
+        "creation_timestamp": 1789628473,
+        "author": "Անշարժ գուքի վաճառք Աբովյանի տարացքում",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Land",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [
+            {
+                "amount": 15000000,
+                "currency": "AMD",
+                "raw_text": "Արժեքը՝ 15,000,000 դրամ"
+            }
+        ],
+        "sizes_sqm": [
+            3194
+        ],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [
+            "+374 77 640 461",
+            "+374 98 178 790"
+        ],
+        "full_text": "🌿 ՎԱՃԱՌՎՈՒՄ Է ԳՅՈՒՂԱՏՆՏԵՍԱԿԱՆ ՀՈՂԱՏԱՐԱԾՔ՝ ԱՐԱՄՈՒՍՈՒՄ\n\n📍 Կոտայքի մարզ, Արամուս գյուղ\n\n📐 Հողատարածքի մակերես՝ 3,194 քմ\n🌱 Նպատակային նշանակություն՝ գյուղատնտեսական\n\n✨ Լավ տարբերակ է գյուղատնտեսական գործունեության, մշակության կամ ներդրումային նպատակների համար։\n\nԳեղեգիկ տեսարան դեպի Հատիս և Մասիս լեռներ\n\n💰 Արժեքը՝ 15,000,000 դրամ\n\n📌 Կոդ՝ Հ122\n📞 Հեռ․՝ 077 640 461 , 098 178 790\n\n🏡 PERFECT WORLD\nՁեր գույքի վաճառքի վստահելի գործընկերը։"
+    },
+    {
+        "url": "https://www.facebook.com/groups/622828444996650/posts/2170237523589060",
+        "canonical_id": "2170237523589060",
+        "group_id": "622828444996650",
+        "extracted_at": "2026-09-17T07:13:53.444492",
+        "created_at": "2026-09-17 06:59:31",
+        "creation_timestamp": 1789628371,
+        "author": "Gor Hovhannisyan",
+        "has_text": false,
+        "is_media_only": true,
+        "property_category": "Media-Only",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/622828444996650/posts/2170233190256160",
+        "canonical_id": "2170233190256160",
+        "group_id": "622828444996650",
+        "extracted_at": "2026-09-17T07:13:56.795819",
+        "created_at": "2026-09-17 06:55:47",
+        "creation_timestamp": 1789628147,
+        "author": "Kamar Realty",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Land",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [
+            1230,
+            295,
+            20
+        ],
+        "rooms": [
+            4
+        ],
+        "locations": [
+            "Dilijan"
+        ],
+        "phone_numbers": [
+            "+374 98 713 132",
+            "+374 96 743 132",
+            "+374 91 322 376",
+            "+374 55 322 376"
+        ],
+        "full_text": "💢ԿՈԴ 5564\n🏢Վաճառվում է առանձնատուն Դիլիջանում\n📐հող 1230 քմ, բնակելի 295 քմ, 4 սենյակ, 1 հարկ\n      անաստանշենք՝ 20 քմ \n--------------------------------------------------------------\n♻️Մանրամասների համար զանգահարել՝                                       \n☎️+37498713132\n☎️096 743132\n☎️+37491322376\n📞viber +37455322376\n#KAMARREALTYվաճառվումէ #բնակարան #տուն #առքվաճառք #bnakaran"
+    },
+    {
+        "url": "https://www.facebook.com/groups/622828444996650/posts/2170232030256276",
+        "canonical_id": "2170232030256276",
+        "group_id": "622828444996650",
+        "extracted_at": "2026-09-17T07:13:56.838147",
+        "created_at": "2026-09-17 06:54:07",
+        "creation_timestamp": 1789628047,
+        "author": "Narek Aleqsanyan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [
+            55,
+            10
+        ],
+        "rooms": [
+            1
+        ],
+        "locations": [
+            "Nor Nork / Massiv"
+        ],
+        "phone_numbers": [
+            "+374 94 371 039"
+        ],
+        "full_text": "🏡 ՎԱՃԱՌՎՈՒՄ Է 2+1 ՍԵՆՅԱԿԱՆ ԲՆԱԿԱՐԱՆ\n📐 55 քմ մակերեսով\n🏢 Նոր Նորքի 9-րդ զանգված\n🔹 2+1 ձևաչափ\n🔹 2 սանհանգույց\n🔹 Առանձին 8–10 քմ պահեստային տարածք, որը կարող է օգտագործվել նաև որպես պահեստ/գործնական տարածք\n🔹 Լուսավոր և արևկող սենյակներ\n🔹 Բնակարանը գտնվում է վերանորոգված վիճակում\n🔹 Հարմար է ինչպես բնակության, այնպես էլ ներդրման համար\n📞 094 371 039\n🏢 Navi Realty"
+    },
+    {
+        "url": "https://www.facebook.com/groups/622828444996650/posts/2170226506923495",
+        "canonical_id": "2170226506923495",
+        "group_id": "622828444996650",
+        "extracted_at": "2026-09-17T07:13:56.877122",
+        "created_at": "2026-09-17 06:45:53",
+        "creation_timestamp": 1789627553,
+        "author": "Բեռնափոխադրումներ Բեռնակիրներով",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": "✅ Տան և գրասենյակի տեղափոխում\n✅ Կահույքի քանդում և հավաքում\n✅ Ծանր գույքի տեղափոխում\n💰 Մատչելի արժեք և բարձր որակ։"
+    },
+    {
+        "url": "https://www.facebook.com/groups/622828444996650/posts/2170225670256912",
+        "canonical_id": "2170225670256912",
+        "group_id": "622828444996650",
+        "extracted_at": "2026-09-17T07:14:12.259161",
+        "created_at": "2026-09-17 06:44:36",
+        "creation_timestamp": 1789627476,
+        "author": "Բեռնափոխադրումներ Բեռնակիրներով",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": "✅ Տան և գրասենյակի տեղափոխում\n✅ Կահույքի քանդում և հավաքում\n\n✅ Ծանր գույքի տեղափոխում\n\n💰 Մատչելի արժեք և բարձր որակ։"
+    },
+    {
+        "url": "https://www.facebook.com/groups/622828444996650/posts/2170225600256919",
+        "canonical_id": "2170225600256919",
+        "group_id": "622828444996650",
+        "extracted_at": "2026-09-17T07:14:12.307670",
+        "created_at": "2026-09-17 06:44:25",
+        "creation_timestamp": 1789627465,
+        "author": "Arshak Alexanyan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "House",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [
+            "+374 95 020 477"
+        ],
+        "full_text": "Փնտրում ենք մեկ աղջիկ  համատեղությամբ տանը բնակվելու համար։։ Վարձը 45.000։ Տունը վերանորոգված է, կահավորված, անհրաժեշտ տեխնիկայով։ Գտնվում է մետրոյի մոտ։ Տրվում է միայն աղջիկների։  Դեպոզիտ, միջնորդավճար չկա։ Հեռ. 095020477 (viber, whats app, messenger).\nԱյլ տարբերակներ չառաջարկել։"
+    },
+    {
+        "url": "https://www.facebook.com/groups/622828444996650/posts/2170225430256936",
+        "canonical_id": "2170225430256936",
+        "group_id": "622828444996650",
+        "extracted_at": "2026-09-17T07:14:12.354431",
+        "created_at": "2026-09-17 06:44:17",
+        "creation_timestamp": 1789627457,
+        "author": "Ապրեսյան Անշարժ Գույքի Գործակալություն ",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Land",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [
+            {
+                "amount": 68000,
+                "currency": "USD",
+                "raw_text": "68,000 ԱՄՆ դոլար"
+            }
+        ],
+        "sizes_sqm": [
+            70,
+            1000
+        ],
+        "rooms": [
+            3
+        ],
+        "locations": [],
+        "phone_numbers": [
+            "+374 94 745 480"
+        ],
+        "full_text": "🏡 Վաճառվում է քարե տուն Արտաշատի Արևշատ գյուղում\n📌 Կոդ՝ AH0721\n💰 Գին՝68,000 ԱՄՆ դոլար\n📐 Տան մակերես՝ 70 քմ\n🌿 Հողատարածք՝ 1000 քմ \n🛏️ 3 սենյակ\n🚿 1 սանհանգույց\n🚗 Ավտոտնակ՝ 1 մեքենայի համար\n🛋️ Մասնակի գույք\n✅ Կոմունիկացիաներ՝\n⚡ Էլեկտրականություն\n💧 Ջրամատակարարում\n🔥 Գազ\n🚰 Կոյուղի\n📞📩Մանրամասների համար՝ գրել կամ զանգահարել 094 74 54 80 \n⏰ Զանգահարել մինչև 19:00\n❌ Գործակալությունը կիրակի օրերին չի աշխատում։"
     }
 ]

@@ -13,7 +13,7 @@ if os.name == 'nt':
 
 # Define paths to your scripts relative to the project root directory
 FB_SCRAPER_SCRIPT = os.path.join("scrapers", "facebook", "fb_scraper.py")
-LIST_AM_SCRAPER_SCRIPT = os.path.join("scrapers", "listam", "list_am_scraper.py") # Updated folder name here
+LIST_AM_SCRAPER_SCRIPT = os.path.join("scrapers", "listam", "list_am_scraper.py")
 GENERATOR_SCRIPT = os.path.join("scrapers", "processors", "generate_site_data.py")
 CLEANUP_SCRIPT = os.path.join("scrapers", "processors", "cleanup_master_listings.py")
 
@@ -73,6 +73,11 @@ def main():
         action="store_true",
         help="Skip scraping phase and directly run site data generation, re-parsing, and cleanup."
     )
+    parser.add_argument(
+        "-np", "--no-push",
+        action="store_true",
+        help="Skip staging, committing, and pushing changes to GitHub."
+    )
     args = parser.parse_args()
 
     start_time = datetime.now()
@@ -116,10 +121,13 @@ def main():
         print("\n❌ Pipeline aborted due to cleanup failure.", file=sys.stderr)
         sys.exit(1)
     
-    # Step 4: Auto Git Push
-    git_success = auto_git_push()
-    if not git_success:
-        print("\n⚠️ Pipeline finished, but Git push failed.", file=sys.stderr)
+    # Step 4: Auto Git Push (skipped if --no-push flag is provided)
+    if not args.no_push:
+        git_success = auto_git_push()
+        if not git_success:
+            print("\n⚠️ Pipeline finished, but Git push failed.", file=sys.stderr)
+    else:
+        print("\n⏩ Skipping Git sync (--no-push requested).")
         
     elapsed = datetime.now() - start_time
     print(f"\n✨ Pipeline finished successfully in {elapsed.total_seconds():.2f} seconds!")

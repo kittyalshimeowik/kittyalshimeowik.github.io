@@ -79,9 +79,11 @@ Commands to run the data generation pipeline for web scrapers
 
 #### 1. Executing the pipeline
 ```bash
-python run_pipeline.py -t 1
+python run_pipeline.py -t <float timelimit>
 
-python run_pipeline.py -ns
+python run_pipeline.py -ns or --no-scrape
+
+python run_pipeline.py -np or --no-push
 ```
 
 ---
