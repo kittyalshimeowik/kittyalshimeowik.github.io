@@ -3588,5 +3588,157 @@
         "locations": [],
         "phone_numbers": [],
         "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/656522145361470/posts/1837898087223864",
+        "canonical_id": "1837898087223864",
+        "group_id": "656522145361470",
+        "extracted_at": "2026-09-30T02:51:30.021190",
+        "created_at": "2026-09-29 19:34:13",
+        "creation_timestamp": 1790710453,
+        "author": "Maxim Butusov",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "House",
+        "listing_type": "Rent",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [
+            {
+                "amount": 400000,
+                "currency": "AMD",
+                "raw_text": "400 000 AMD"
+            }
+        ],
+        "sizes_sqm": [
+            184,
+            500
+        ],
+        "rooms": [],
+        "locations": [
+            "Dilijan"
+        ],
+        "phone_numbers": [
+            "+374 91 119 045"
+        ],
+        "full_text": "#Дилижан \nСдается 6-и комнатный дом (5 спален)\n📍 Адрес: Дилижан, улица Андраника \n📐 Площадь дома: 184 кв.м. \n      Площадь участка: 500 кв.м.\n🛠 Ремонт: евро, есть вся бытовая техника\n➕ Есть бассейн, 4 санузла, 2 балкона, посудомойка \n🐕🐈 Pet friendly \n💵 Цена: 400 000 AMD \nМаксим \nTelegram: @Butusovstudio\nWhat's app: +37491119045\nViber: +37491119045\n\nhttps://t.me/studionedvishimosty"
+    },
+    {
+        "url": "https://www.facebook.com/groups/656522145361470/posts/1837895063890833",
+        "canonical_id": "1837895063890833",
+        "group_id": "656522145361470",
+        "extracted_at": "2026-09-30T02:51:30.025316",
+        "created_at": "2026-09-29 19:29:29",
+        "creation_timestamp": 1790710169,
+        "author": "Էջմիածին Ռիելթի - Ejmiatsin Realty",
+        "has_text": false,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/656522145361470/posts/1837893573890982",
+        "canonical_id": "1837893573890982",
+        "group_id": "656522145361470",
+        "extracted_at": "2026-09-30T02:51:30.028820",
+        "created_at": "2026-09-29 19:26:58",
+        "creation_timestamp": 1790710018,
+        "author": "Էջմիածին Ռիելթի - Ejmiatsin Realty",
+        "has_text": false,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/656522145361470/posts/1837887797224893",
+        "canonical_id": "1837887797224893",
+        "group_id": "656522145361470",
+        "extracted_at": "2026-09-30T02:51:43.128457",
+        "created_at": "2026-09-29 19:17:13",
+        "creation_timestamp": 1790709433,
+        "author": "Lusine  Ghazaryan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": "Մահճակալ ճոճաթոռը նվեր"
+    },
+    {
+        "url": "https://www.facebook.com/groups/656522145361470/posts/1837884593891880",
+        "canonical_id": "1837884593891880",
+        "group_id": "656522145361470",
+        "extracted_at": "2026-09-30T02:51:43.133393",
+        "created_at": "2026-09-29 19:12:16",
+        "creation_timestamp": 1790709136,
+        "author": "Lusine  Ghazaryan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [
+            {
+                "amount": 10000,
+                "currency": "AMD",
+                "raw_text": "10 000֏"
+            },
+            {
+                "amount": 8000,
+                "currency": "AMD",
+                "raw_text": "8000֏"
+            }
+        ],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": "Ծածկոցներ 10 000֏\nԲրդյա վերմակ 210/200_8000֏"
+    },
+    {
+        "url": "https://www.facebook.com/groups/656522145361470/posts/1837881510558855",
+        "canonical_id": "1837881510558855",
+        "group_id": "656522145361470",
+        "extracted_at": "2026-09-30T02:51:43.141298",
+        "created_at": "2026-09-29 19:07:49",
+        "creation_timestamp": 1790708869,
+        "author": "Севак Мкртчян",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [
+            "+374 41 950 770"
+        ],
+        "full_text": "Առանձնատների  և բիզնես շենքերի կառուցում մատչելի արժեքով մենք առաջարկում ենք կառուցման ամբողջական գործընթացը 0 ից մինչև ավարտական ակտի ստացում ամբողջ գործընթացը վերահսկվում և կազմակերպվում է հմուտ ճարտարապետների կողմից առանց նախագծերից շեղվելու վստահեք ոլորտի լավագույններին դիմեք մեզ և ստացեք անհատական մոտեցում և գնառաջարկ ձեր նախագծի համար մանրամասների համար զանգահարեք 041950770"
     }
 ]

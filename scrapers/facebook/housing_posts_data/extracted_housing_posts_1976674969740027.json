@@ -4803,5 +4803,223 @@
         "locations": [],
         "phone_numbers": [],
         "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/1976674969740027/posts/2972096703531177",
+        "canonical_id": "2972096703531177",
+        "group_id": "1976674969740027",
+        "extracted_at": "2026-09-30T02:58:07.894911",
+        "created_at": "2026-09-30 00:29:30",
+        "creation_timestamp": 1790728170,
+        "author": "Սաթիկ Խաչատրյան",
+        "has_text": false,
+        "is_media_only": true,
+        "property_category": "Media-Only",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/1976674969740027/posts/2971953253545522",
+        "canonical_id": "2971953253545522",
+        "group_id": "1976674969740027",
+        "extracted_at": "2026-09-30T02:58:32.389348",
+        "created_at": "2026-09-29 21:01:54",
+        "creation_timestamp": 1790715714,
+        "author": "Samo Hayrapetyan",
+        "has_text": false,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/1976674969740027/posts/2971949306879250",
+        "canonical_id": "2971949306879250",
+        "group_id": "1976674969740027",
+        "extracted_at": "2026-09-30T02:58:32.394234",
+        "created_at": "2026-09-29 20:57:23",
+        "creation_timestamp": 1790715443,
+        "author": "Naira Margaryan",
+        "has_text": false,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/1976674969740027/posts/2971947993546048",
+        "canonical_id": "2971947993546048",
+        "group_id": "1976674969740027",
+        "extracted_at": "2026-09-30T02:58:50.885130",
+        "created_at": "2026-09-29 20:55:40",
+        "creation_timestamp": 1790715340,
+        "author": "Arsen Nikoghosyan",
+        "has_text": false,
+        "is_media_only": true,
+        "property_category": "Media-Only",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/1976674969740027/posts/2971939573546890",
+        "canonical_id": "2971939573546890",
+        "group_id": "1976674969740027",
+        "extracted_at": "2026-09-30T02:58:50.891108",
+        "created_at": "2026-09-29 20:43:38",
+        "creation_timestamp": 1790714618,
+        "author": "Emma Karapetyan",
+        "has_text": false,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/1976674969740027/posts/2971915140216000",
+        "canonical_id": "2971915140216000",
+        "group_id": "1976674969740027",
+        "extracted_at": "2026-09-30T02:58:50.897690",
+        "created_at": "2026-09-29 20:07:56",
+        "creation_timestamp": 1790712476,
+        "author": "Mon House Mon House",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": {
+            "floor": 3,
+            "total_floors": 9
+        },
+        "prices": [
+            {
+                "amount": 147000,
+                "currency": "USD",
+                "raw_text": "Գինը $147.000"
+            }
+        ],
+        "sizes_sqm": [
+            72
+        ],
+        "rooms": [
+            3
+        ],
+        "locations": [
+            "Avan"
+        ],
+        "phone_numbers": [
+            "+374 91 971 474",
+            "+374 94 000 274"
+        ],
+        "full_text": "3 սենյականոց բնակարան Պետրոս Դուրյանի 3-րդ փողոցում Ավանում, 72 քմ, 3/9 հարկ, քարե շենք\nԳինը $147.000\n\nՄանրամասների համար կարող եք զանգահարել  091971474, 094000274"
+    },
+    {
+        "url": "https://www.facebook.com/groups/1976674969740027/posts/2971897703551077",
+        "canonical_id": "2971897703551077",
+        "group_id": "1976674969740027",
+        "extracted_at": "2026-09-30T03:01:40.665113",
+        "created_at": "2026-09-29 19:43:53",
+        "creation_timestamp": 1790711033,
+        "author": "Ero Grigoryan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": {
+            "floor": 12,
+            "total_floors": 12
+        },
+        "prices": [
+            {
+                "amount": 250000,
+                "currency": "AMD",
+                "raw_text": "250.000"
+            }
+        ],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [
+            "+374 93 762 737"
+        ],
+        "full_text": "Trvum e varcov 2- senyakanoc bnakaran Nor norki 1- zangvacum 12/12 hark 250.000 093762737"
+    },
+    {
+        "url": "https://www.facebook.com/groups/1976674969740027/posts/2971896670217847",
+        "canonical_id": "2971896670217847",
+        "group_id": "1976674969740027",
+        "extracted_at": "2026-09-30T03:01:40.671172",
+        "created_at": "2026-09-29 19:42:24",
+        "creation_timestamp": 1790710944,
+        "author": "Վաճառքի Բնակարաններ",
+        "has_text": false,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/1976674969740027/posts/2971893326884848",
+        "canonical_id": "2971893326884848",
+        "group_id": "1976674969740027",
+        "extracted_at": "2026-09-30T03:01:40.676695",
+        "created_at": "2026-09-29 19:37:58",
+        "creation_timestamp": 1790710678,
+        "author": "Միքայել Ստելլա",
+        "has_text": false,
+        "is_media_only": true,
+        "property_category": "Media-Only",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
     }
 ]
