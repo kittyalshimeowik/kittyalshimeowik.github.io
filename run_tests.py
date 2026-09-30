@@ -2,65 +2,63 @@ import unittest
 import sys
 import os
 
-# Fix for Windows console encoding issues with emojis
-if os.name == 'nt':
-    if sys.stdout.encoding and sys.stdout.encoding.lower() != 'utf-8':
-        sys.stdout.reconfigure(encoding='utf-8')
-    if sys.stderr.encoding and sys.stderr.encoding.lower() != 'utf-8':
-        sys.stderr.reconfigure(encoding='utf-8')
+# Ensure current working directory / project root is in Python path
+project_root = os.path.dirname(os.path.abspath(__file__))
+if project_root not in sys.path:
+    sys.path.insert(0, project_root)
+
+from scrapers.utilities.env_utils import ensure_utf8_output, get_venv_python
+
+ensure_utf8_output()
 
 def run_all_tests():
-    # Ensure current working directory / project root is in Python path
-    project_root = os.path.dirname(os.path.abspath(__file__))
-    if project_root not in sys.path:
-        sys.path.insert(0, project_root)
-
-    print("=" * 60)
-    print(" 🧪 Running Unit Test Suites Across All Modules")
-    print("=" * 60)
+    print("=" * 65)
+    print(" 🧪 Running Comprehensive Unit Test Suites Across All Modules")
+    print("=" * 65)
 
     loader = unittest.TestLoader()
-    
-    # Explicitly discover test suites inside both __tests__ subdirectories
-    fb_tests = loader.discover(
-        start_dir=os.path.join(project_root, "scrapers", "facebook", "__tests__"),
-        pattern="test_*.py",
-        top_level_dir=project_root
-    )
-    
-    processor_tests = loader.discover(
-        start_dir=os.path.join(project_root, "scrapers", "processors", "__tests__"),
-        pattern="test_*.py",
-        top_level_dir=project_root
-    )
+    test_suites = []
 
-    # Combine into a single test suite
-    master_suite = unittest.TestSuite([fb_tests, processor_tests])
+    # Dynamically discover all '__tests__' directories under project root
+    discovered_dirs = []
+    for root, dirs, files in os.walk(os.path.join(project_root, "scrapers")):
+        if os.path.basename(root) == "__tests__":
+            discovered_dirs.append(root)
+
+    discovered_dirs.sort()
+
+    print(f"📦 Discovered {len(discovered_dirs)} test suites:")
+    for test_dir in discovered_dirs:
+        rel_path = os.path.relpath(test_dir, project_root)
+        suite = loader.discover(
+            start_dir=test_dir,
+            pattern="test_*.py",
+            top_level_dir=project_root
+        )
+        test_suites.append(suite)
+        print(f"  • {rel_path} ({suite.countTestCases()} test cases)")
+
+    # Combine into a single master test suite
+    master_suite = unittest.TestSuite(test_suites)
+    total_count = master_suite.countTestCases()
+    print("-" * 65)
+    print(f"🚀 Executing {total_count} total tests...")
+    print("-" * 65)
 
     runner = unittest.TextTestRunner(verbosity=2)
     result = runner.run(master_suite)
 
-    print("=" * 60)
+    print("=" * 65)
     if result.wasSuccessful():
-        print(" SUCCESS: All test suites passed cleanly!")
+        print(f"✅ SUCCESS: All {total_count} tests across all modules passed cleanly!")
         sys.exit(0)
     else:
         print(f"❌ FAILURE: {len(result.failures)} test(s) failed, {len(result.errors)} error(s).")
         sys.exit(1)
 
-def get_project_python():
-    """Returns the project virtual environment Python if available, else current sys.executable."""
-    proj_root = os.path.dirname(os.path.abspath(__file__))
-    venv_py_win = os.path.join(proj_root, ".venv", "Scripts", "python.exe")
-    venv_py_nix = os.path.join(proj_root, ".venv", "bin", "python")
-    if os.name == 'nt' and os.path.isfile(venv_py_win):
-        return venv_py_win
-    elif os.path.isfile(venv_py_nix):
-        return venv_py_nix
-    return sys.executable
 
 if __name__ == "__main__":
-    proj_py = get_project_python()
+    proj_py = get_venv_python(__file__)
     if os.path.abspath(sys.executable).lower() != os.path.abspath(proj_py).lower():
         import subprocess
         result = subprocess.run([proj_py] + sys.argv, check=False)

@@ -4,12 +4,9 @@ import sys
 import os
 from datetime import datetime
 
-# Fix for Windows console encoding issues with emojis
-if os.name == 'nt':
-    if sys.stdout.encoding.lower() != 'utf-8':
-        sys.stdout.reconfigure(encoding='utf-8')
-    if sys.stderr.encoding.lower() != 'utf-8':
-        sys.stderr.reconfigure(encoding='utf-8')
+from scrapers.utilities.env_utils import ensure_utf8_output, get_venv_python
+
+ensure_utf8_output()
 
 # Define paths to your scripts relative to the project root directory
 FB_SCRAPER_SCRIPT = os.path.join("scrapers", "facebook", "fb_scraper.py")
@@ -17,20 +14,9 @@ LIST_AM_SCRAPER_SCRIPT = os.path.join("scrapers", "listam", "list_am_scraper.py"
 GENERATOR_SCRIPT = os.path.join("scrapers", "processors", "generate_site_data.py")
 CLEANUP_SCRIPT = os.path.join("scrapers", "processors", "cleanup_master_listings.py")
 
-def get_project_python():
-    """Returns the project virtual environment Python if available, else current sys.executable."""
-    proj_root = os.path.dirname(os.path.abspath(__file__))
-    venv_py_win = os.path.join(proj_root, ".venv", "Scripts", "python.exe")
-    venv_py_nix = os.path.join(proj_root, ".venv", "bin", "python")
-    if os.name == 'nt' and os.path.isfile(venv_py_win):
-        return venv_py_win
-    elif os.path.isfile(venv_py_nix):
-        return venv_py_nix
-    return sys.executable
-
 def run_step(script_path, description, extra_args=None):
     """Helper function to run a script using the virtual environment or current Python."""
-    cmd = [get_project_python(), script_path]
+    cmd = [get_venv_python(), script_path]
     if extra_args:
         cmd.extend(extra_args)
 

@@ -1,44 +1,24 @@
 import os
 import sys
-import io
 import platform
-
-CURRENT_OS = platform.system().lower()
-
-if CURRENT_OS == "windows":
-    if hasattr(sys.stdout, "reconfigure"):
-        sys.stdout.reconfigure(encoding="utf-8", line_buffering=True)
-    if hasattr(sys.stderr, "reconfigure"):
-        sys.stderr.reconfigure(encoding="utf-8", line_buffering=True)
-else:
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
-
-os.environ["TZ"] = "UTC"
-
-import subprocess
-
-# Auto re-exec in virtual environment if available and not already inside it
-_proj_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
-_venv_py_win = os.path.join(_proj_root, ".venv", "Scripts", "python.exe")
-_venv_py_nix = os.path.join(_proj_root, ".venv", "bin", "python")
-_target_py = _venv_py_win if (os.name == "nt" and os.path.isfile(_venv_py_win)) else (_venv_py_nix if os.path.isfile(_venv_py_nix) else None)
-if _target_py and os.path.abspath(sys.executable).lower() != os.path.abspath(_target_py).lower():
-    _res = subprocess.run([_target_py] + sys.argv, check=False)
-    sys.exit(_res.returncode)
-
-import time
-import json
-import random
-import argparse
-from datetime import datetime
-from playwright.sync_api import sync_playwright
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJ_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, '..', '..'))
 if PROJ_ROOT not in sys.path:
     sys.path.insert(0, PROJ_ROOT)
 
+from scrapers.utilities.env_utils import ensure_utf8_output, ensure_virtualenv
+ensure_utf8_output()
+
+os.environ["TZ"] = "UTC"
+
+import time
+import json
+import random
+import argparse
+from datetime import datetime
+
+CURRENT_OS = platform.system().lower()
 OUTPUT_DIR = os.path.join(SCRIPT_DIR, "housing_posts_data")
 METADATA_DIR = os.path.join(SCRIPT_DIR, "groups_metadata") 
 GROUPS_CONFIG_FILE = os.path.join(SCRIPT_DIR, "groups_config.json")
@@ -71,7 +51,13 @@ else:
         f.write(MACHINE_HOSTNAME)
 
 # --- Modular Imports ---
-from scrapers.facebook.utilities.fb_utils import extract_canonical_post_id, decode_facebook_id
+from scrapers.facebook.utilities.fb_utils import (
+    extract_canonical_post_id,
+    decode_facebook_id,
+    extract_posts_from_graphql_payload,
+    is_facebook_logged_in,
+    wait_for_facebook_login
+)
 from scrapers.utilities.time_utils import format_elapsed_time, parse_relative_time, find_relative_string_in_dict, parse_creation_time
 from scrapers.utilities.housing_parser import extract_housing_details
 from scrapers.utilities.browser_humanizer import perform_human_action_chain, check_global_break, extract_timestamp_from_dom, smooth_scroll
@@ -79,151 +65,6 @@ from scrapers.facebook.utilities.fb_metadata_storage import (
     load_target_groups, update_group_config_status, calculate_dynamic_runtime,
     load_dataset_for_group, save_post_to_memory_and_disk, update_group_metadata
 )
-
-
-def extract_posts_from_graphql_payload(obj, group_id):
-    if isinstance(obj, dict):
-        if "comet_sections" in obj or "message" in obj:
-            try:
-                story = obj.get("comet_sections", {}).get("content", {}).get("story", {}) or obj
-                
-                raw_post_id = story.get("post_id") or story.get("id")
-                raw_url = story.get("url")
-
-                if raw_url:
-                    final_url = "https://www.facebook.com" + raw_url if raw_url.startswith("/") else raw_url
-                elif raw_post_id:
-                    real_id = decode_facebook_id(raw_post_id)
-                    final_url = f"https://www.facebook.com/groups/{group_id}/posts/{real_id}"
-                else:
-                    final_url = None
-
-                canonical_id = extract_canonical_post_id(final_url, raw_post_id)
-
-                if final_url and f"/groups/{group_id}" in final_url:
-                    message_dict = story.get("message", {})
-                    text = message_dict.get("text") if isinstance(message_dict, dict) else ""
-
-                    attachment_texts = []
-                    attachments = story.get("attachments", [])
-                    for att in attachments:
-                        media_node = att.get("media", {})
-                        accessibility_caption = media_node.get("accessibility_caption")
-                        if accessibility_caption:
-                            attachment_texts.append(accessibility_caption)
-                        
-                        for subatt in media_node.get("all_subattachments", {}).get("nodes", []):
-                            sub_cap = subatt.get("media", {}).get("accessibility_caption")
-                            if sub_cap:
-                                attachment_texts.append(sub_cap)
-
-                    combined_text = text if text else ""
-                    if attachment_texts:
-                        combined_text += "\n" + "\n".join(attachment_texts)
-
-                    is_media_only = not bool(text and text.strip()) and bool(attachments)
-                    time_data = parse_creation_time(obj)
-                    actors = story.get("actors", [])
-                    author_name = actors[0].get("name") if actors and isinstance(actors[0], dict) else None
-
-                    yield {
-                        "url": final_url,
-                        "canonical_id": canonical_id,
-                        "text": combined_text,
-                        "is_media_only": is_media_only,
-                        "creation_timestamp": time_data["timestamp"],
-                        "created_at": time_data["formatted"],
-                        "author": author_name,
-                        "raw_node": obj
-                    }
-                    return 
-            except Exception:
-                pass
-
-        for value in obj.values():
-            yield from extract_posts_from_graphql_payload(value, group_id)
-
-    elif isinstance(obj, list):
-        for item in obj:
-            yield from extract_posts_from_graphql_payload(item, group_id)
-
-
-def is_facebook_logged_in(browser_context, page=None):
-    """Returns True if user has an active session cookie or logged-in indicators."""
-    try:
-        if page and not page.is_closed():
-            current_url = page.url.lower()
-            if "/login" in current_url or "checkpoint" in current_url:
-                return False
-            if page.locator("input[name='email'], input#email, input[name='pass'], input#pass, input[name='approvals_code']").count() > 0:
-                return False
-    except Exception:
-        pass
-
-    try:
-        cookies = browser_context.cookies(["https://www.facebook.com", "https://facebook.com"])
-        for c in cookies:
-            if c.get("name") == "c_user" and c.get("value"):
-                return True
-    except Exception:
-        pass
-
-    return False
-
-
-def wait_for_facebook_login(browser_context, page):
-    """Checks if logged into Facebook; if not, pauses and waits for user to log in."""
-    print("🔍 Checking Facebook authentication status...")
-    if is_facebook_logged_in(browser_context, page):
-        print("✅ Active Facebook session detected.")
-        return
-
-    print("🌐 Navigating to Facebook to verify login state...")
-    try:
-        page.goto("https://www.facebook.com/", wait_until="domcontentloaded")
-        time.sleep(2.5)
-    except Exception as e:
-        print(f"⚠️ Notice while loading Facebook: {e}")
-
-    if is_facebook_logged_in(browser_context, page):
-        print("✅ Active Facebook session verified.")
-        return
-
-    print("\n" + "=" * 65)
-    print("🔑 FACEBOOK LOGIN REQUIRED")
-    print("👉 Please log into your Facebook account in the open browser window.")
-    print("👉 Enter your credentials, complete 2FA if prompted, and stay on Facebook.")
-    print("⏳ The scraper will automatically detect your login and proceed...")
-    print("=" * 65 + "\n")
-
-    try:
-        page.bring_to_front()
-    except Exception:
-        pass
-
-    wait_start = time.time()
-    last_prompt = time.time()
-
-    while True:
-        try:
-            # Handle user closing the active tab while logging in
-            if page.is_closed():
-                pages = browser_context.pages
-                page = pages[0] if pages else browser_context.new_page()
-
-            if is_facebook_logged_in(browser_context, page):
-                print("\n🎉 Facebook login successfully detected!")
-                print("💾 Waiting 4 seconds for session tokens to persist...")
-                time.sleep(4.0)
-                break
-        except Exception:
-            pass
-
-        time.sleep(1.5)
-        if time.time() - last_prompt >= 15:
-            elapsed = int(time.time() - wait_start)
-            print(f"⏳ Waiting for Facebook login in browser window... ({elapsed}s elapsed)")
-            last_prompt = time.time()
 
 
 def run_facebook_housing_scraper():
@@ -250,6 +91,7 @@ def run_facebook_housing_scraper():
     mouse_pos = {"x": 680, "y": 400}
     global_timer_state = {"next_break_due": time.time() + random.randint(480, 720)}
 
+    from playwright.sync_api import sync_playwright
     with sync_playwright() as p:
         context_args = {
             "user_data_dir": USER_DATA_DIR,
@@ -308,6 +150,18 @@ def run_facebook_housing_scraper():
                                 if f"/groups/{target_group_id}" in url:
                                     active_page = browser_context.pages[0] if browser_context.pages else None
                                     details = extract_housing_details(post["text"], is_media_only=post["is_media_only"])
+
+                                    # Discard empty GraphQL nodes with zero text (< 15 chars) and zero extracted attributes
+                                    post_text = (post.get("text") or "").strip()
+                                    has_attributes = bool(
+                                        details.get("prices") or 
+                                        details.get("sizes_sqm") or 
+                                        details.get("rooms") or 
+                                        details.get("phone_numbers")
+                                    )
+                                    if len(post_text) < 15 and not has_attributes:
+                                        continue
+
                                     time_formatted = post["created_at"]
                                     time_epoch = post["creation_timestamp"]
 
@@ -328,6 +182,7 @@ def run_facebook_housing_scraper():
                                     record = {
                                         "url": url,
                                         "canonical_id": canonical_id,
+                                        "source": "Facebook",
                                         "group_id": target_group_id,
                                         "extracted_at": datetime.now().isoformat(),
                                         "created_at": time_formatted,
@@ -494,4 +349,5 @@ def run_facebook_housing_scraper():
         print(f"\nAll groups scanned. Data stored in '{OUTPUT_DIR}/' and '{METADATA_DIR}/'.")
 
 if __name__ == "__main__":
+    ensure_virtualenv(__file__)
     run_facebook_housing_scraper()

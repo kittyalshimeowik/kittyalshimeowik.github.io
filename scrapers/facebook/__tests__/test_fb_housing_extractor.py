@@ -72,6 +72,13 @@ class TestHousingExtractor(unittest.TestCase):
         self.assertEqual(len(details["prices"]), 1)
         self.assertEqual(details["prices"][0]["amount"], 110000)
 
+    def test_gps_coordinates_noise_suppression(self):
+        text = "Location: 40.635019, 44.482753, Հանքավան գյուղ\nPrice: $98,000"
+        details = extract_housing_details(text)
+        self.assertEqual(len(details["prices"]), 1)
+        self.assertEqual(details["prices"][0]["amount"], 98000)
+        self.assertEqual(details["prices"][0]["currency"], "USD")
+
     # -------------------------------------------------------------------------
     # 2. PHONE NUMBER NORMALIZATION TESTS
     # -------------------------------------------------------------------------
@@ -163,13 +170,13 @@ class TestHousingExtractor(unittest.TestCase):
 
     def test_calculate_dynamic_runtime_corrupted_benchmarks(self):
         # Test fallback behavior when scroll_benchmarks is empty or missing
-        from scrapers.facebook.fb_scraper import calculate_dynamic_runtime
+        from scrapers.facebook.utilities.fb_metadata_storage import calculate_dynamic_runtime
         metadata_empty = {"scroll_benchmarks": []}
         runtime, target_days = calculate_dynamic_runtime(metadata_empty, default_runtime=300)
         self.assertEqual(runtime, 300)
 
     def test_calculate_dynamic_runtime_valid_benchmarks(self):
-        from scrapers.facebook.fb_scraper import calculate_dynamic_runtime
+        from scrapers.facebook.utilities.fb_metadata_storage import calculate_dynamic_runtime
         metadata_valid = {
             "scroll_benchmarks": {
                 "2026-09-14": {"scroll_duration_seconds": 120.0},

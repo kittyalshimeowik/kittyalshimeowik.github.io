@@ -3,18 +3,25 @@
 LOCATION_DICTIONARY_REGEX = {
     # --- Yerevan Districts ---
     "Kentron / Center": [
-        r'\bկենտրոնում\b', r'\bկենտրոնի\b', r'\bв\s+центре\b', r'\bв\s+центр\b', 
+        r'\bկենտրոն\b', r'\bկենտրոնում\b', r'\bկենտրոնի\b', r'\bկենտրոնական\b', r'\bв\s+центре\b', r'\bв\s+центр\b', 
         r'\bin\s+kentron\b', r'\bin\s+(?:the\s+)?center\b', r'\bnear\s+(?:the\s+)?center\b',
         r'\bcascade\b', r'\bкаскад\b', r'\bկասկադ\b', 
-        r'\bhanrapetutyan\b', r'\bհանրապետության\b', r'\bamiryan\b', r'\bամիրյան\b'
+        r'\bhanrapetutyan\b', r'\bհանրապետության\b', r'\bamiryan\b', r'\bամիրյան\b',
+        r'\bմաշտոց\b', r'\bմաշտոցի\b', r'\bmashtots\b',
+        r'\bսայաթ[\s-]նովա\b', r'\bթումանյան\b', r'\bնալբանդյան\b', r'\bպուշկին\b', r'\bարգիշտի\b', r'\bհյուսիսային\b',
+        r'\bխորենացի\b', r'\bխորենացու\b', r'\bտիգրան\s+մեծ\b'
     ],
     "Arabkir": [
         r'\bարաբկիր\b', r'\bարաբկիրում\b', r'\barabkir\b', r'\bарабкир\b', 
         r'\bкомитас\b', r'\bկոմիտաս\b', r'\bկոմիտասում\b', r'\bkomitas\b', 
-        r'\bбарекамутюн\b', r'\bբարեկամություն\b', r'\bbarekamutyun\b'
+        r'\bбарекамутюн\b', r'\bբարեկամություն\b', r'\bbarekamutyun\b',
+        r'\bվրացական\b', r'\bադոնց\b', r'\bմամիկոնյանց\b', r'\bազատության\b',
+        r'\bբաբայան\b', r'\bկասյան\b'
     ],
     "Davtashen": [
-        r'\bդավթաշեն\b', r'\bդավթաշենում\b', r'\bդավթաշենի\b', r'\bdavtashen\b', r'\bdavitashen\b', r'\bдавиташен\b'
+        r'\bդավթաշեն\b', r'\bդավթաշենում\b', r'\bդավթաշենի\b', r'\bդավիթաշեն\b', r'\bդավիթաշենում\b', r'\bդավիթաշենի\b',
+        r'\bdavtashen\b', r'\bdavitashen\b', r'\bдавиташен\b',
+        r'\bփիրումյան\b', r'\bփիրումյանների\b', r'\bմիկոյան\b'
     ],
     "Zeytun / Kanaker": [
         r'\bզեյթուն\b', r'\bզեյթունում\b', r'\bzeitun\b', r'\bzeytun\b', r'\bзейтун\b', 
@@ -33,11 +40,15 @@ LOCATION_DICTIONARY_REGEX = {
     ],
     "Shengavit": [
         r'\bշենգավիթ\b', r'\bшенгавит\b', r'\bշենգավիթում\b', r'\bshengavit\b', 
-        r'\bчарбах\b', r'\bչարբախ\b', r'\bcharbakh\b', r'\bгарегин\s+нжде\b', r'\bգարեգին\s+նժդեհ\b'
+        r'\bчарбах\b', r'\bչարբախ\b', r'\bcharbakh\b', r'\bгарегин\s+нжде\b', r'\bգարեգին\s+նժդեհ\b',
+        r'\bբագրատունյաց\b', r'\bբագրատունյանց\b', r'\b3-րդ\s+մաս\b', r'\bбагратунянц\b', r'\bbagratunyants\b',
+        r'\bչեխով\b', r'\bչեխովի\b', r'\bմանանդյան\b'
     ],
     "Ajapnyak": [
         r'\bաջափնյակ\b', r'\bачапняк\b', r'\bաջափնյակում\b', r'\bajapnyak\b', 
-        r'\b16-րդ\b', r'\b16rd\b', r'\bназарбекян\b', r'\bնազարբեկյան\b', r'\bhaghtanak\b', r'\bհաղթանակ\b'
+        r'\b16-րդ\b', r'\b16rd\b', r'\b15-րդ\b', r'\bմարգարյան\b', r'\bмаргарян\b',
+        r'\bշինարարներ\b', r'\bշինարարների\b', r'\bհալաբյան\b', r'\bֆուչիկ\b', r'\bֆուչիկի\b',
+        r'\bназарбекян\b', r'\bնազարբեկյան\b', r'\bhaghtanak\b', r'\bհաղթանակ\b'
     ],
     "Erebuni": [
         r'\bէրեբունի\b', r'\bэребуни\b', r'\bէրեբունիում\b', r'\berebuni\b'
@@ -97,9 +108,21 @@ LOCATION_DICTIONARY_REGEX = {
         r'\bգյումրի\b', r'\bգյումրիում\b', r'\bgyumri\b', r'\bгюмри\b'
     ],
     "Vanadzor": [
-        r'\bվանաձոր\b', r'\bվանաձորում\b', r'\bvanadzor\b', r'\bванадзор\b'
+        r'\bվանաձոր\b', r'\bվանաձորում\b', r'\bվանաձորի\b', r'\bvanadzor\b', r'\bванадзор\b'
     ],
     "Sevan": [
         r'\bսևան\b', r'\bսևանում\b', r'\bsevan\b', r'\bсеван\b'
+    ],
+    "Charentsavan": [
+        r'\bչարենցավան\b', r'\bչարենցավանում\b', r'\bcharentsavan\b', r'\bчаренцаван\b'
+    ],
+    "Masis": [
+        r'\bմասիս\b', r'\bմասիսում\b', r'\bմասիսի\b', r'\bmasis\b', r'\bмасис\b'
+    ],
+    "Stepanavan": [
+        r'\bստեփանավան\b', r'\bստեփանավանում\b', r'\bstepanavan\b', r'\bстепанаван\b'
+    ],
+    "Martuni": [
+        r'\bմարտունի\b', r'\bմարտունում\b', r'\bմարտունիում\b', r'\bmartuni\b', r'\bмартуни\b'
     ]
 }

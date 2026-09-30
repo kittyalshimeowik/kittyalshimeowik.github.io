@@ -1,71 +1,53 @@
 import os
 import sys
 import json
-import io
 import argparse
-import unicodedata
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, '..', '..'))
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
+from scrapers.utilities.env_utils import ensure_utf8_output
+from scrapers.processors.dedup_utils import (
+    is_ghost_record,
+    is_valid_display_listing,
+    compute_record_score,
+    get_content_signature,
+    normalize_listing_text as normalize_text
+)
+
+ensure_utf8_output()
+
 DEFAULT_TARGET_FILE = os.path.join(SCRIPT_DIR, "master_listings_json", "all_for_sale_rent.json")
 
-if sys.stdout.encoding != 'utf-8':
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-if sys.stderr.encoding != 'utf-8':
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
 
-def compute_record_score(item):
-    score = 0
-    if item.get("prices"):
-        score += 3
-    if item.get("sizes_sqm"):
-        score += 2
-    if item.get("rooms"):
-        score += 2
-    if item.get("locations"):
-        score += 2
-    if item.get("phone_numbers") or item.get("phone"):
-        score += 3
-    full_text = item.get("full_text") or ""
-    score += len(full_text) / 100.0
-    return score
-
-def normalize_text(text):
-    if not text:
-        return ""
-    text = unicodedata.normalize('NFC', text).lower().strip()
-    return " ".join(text.split())
-
-def get_content_signature(item):
-    phones = sorted(list(set(item.get("phone_numbers") or [])))
-    
-    prices = tuple(sorted([str(p.get("amount_amd")) for p in item.get("prices", []) if p.get("amount_amd")]))
-    sizes = tuple(sorted([str(s) for s in (item.get("sizes_sqm") or [])]))
-    rooms = tuple(sorted([str(r) for r in (item.get("rooms") or [])]))
-    locs = tuple(sorted([str(l) for l in (item.get("locations") or [])]))
-    
-    text_key = normalize_text(item.get("full_text"))
-
-    # Case A: Matches by Phone + Specs
-    if phones and (prices or sizes or rooms):
-        return f"phone_spec:{phones}|{prices}|{sizes}|{rooms}|{locs}"
-    
-    # Case B: Direct Text Hash/String Match
-    if text_key and len(text_key) > 20:
-        return f"text:{text_key}"
-
-    return None
-
-def deduplicate_records(listings):
+def deduplicate_records(listings, filter_unclassified=False):
+    """Merges duplicate listings and optionally filters out unclassified/ghost entries."""
     seen_signatures = {}
     print(f"🔍 Starting deduplication on {len(listings)} records...")
 
+    valid_listings = []
+    dropped_count = 0
     for item in listings:
+        if is_ghost_record(item):
+            dropped_count += 1
+            continue
+        if filter_unclassified and not is_valid_display_listing(item):
+            dropped_count += 1
+            continue
+        valid_listings.append(item)
+
+    if dropped_count > 0:
+        print(f"👻 Discarded {dropped_count} ghost/unclassified records.")
+
+    for item in valid_listings:
         sig = get_content_signature(item)
         score = compute_record_score(item)
 
         if not sig:
             # Preserve items with unique fallback IDs
-            item_id = item.get("id") or id(item)
+            item_id = item.get("id") or item.get("canonical_id") or id(item)
             seen_signatures[f"unmatched_{item_id}"] = (score, item)
             continue
 
@@ -77,11 +59,12 @@ def deduplicate_records(listings):
             seen_signatures[sig] = (score, item)
 
     cleaned_listings = [item for _, item in seen_signatures.values()]
-    print(f"✨ Removed {len(listings) - len(cleaned_listings)} duplicates. Total unique: {len(cleaned_listings)}")
+    print(f"✨ Removed {len(listings) - len(cleaned_listings)} duplicates/ghosts. Total unique: {len(cleaned_listings)}")
 
     return cleaned_listings
 
-def run_cleanup(filepath=None, output_filepath=None):
+
+def run_cleanup(filepath=None, output_filepath=None, filter_unclassified=False):
     target_path = filepath or DEFAULT_TARGET_FILE
     out_path = output_filepath or target_path
 
@@ -93,12 +76,25 @@ def run_cleanup(filepath=None, output_filepath=None):
     with open(target_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    cleaned_data = deduplicate_records(data)
+    cleaned_data = deduplicate_records(data, filter_unclassified=filter_unclassified)
 
     with open(out_path, "w", encoding="utf-8") as f:
-        json.dump(cleaned_data, f, ensure_ascii=False, indent=2)
+        json.dump(cleaned_data, f, ensure_ascii=False, separators=(',', ':'))
 
-    print(f"💾 Clean dataset saved successfully to {out_path}")
+    # Keep meta.json synchronized with actual cleaned count
+    meta_path = os.path.join(os.path.dirname(out_path), "meta.json")
+    if os.path.exists(meta_path):
+        try:
+            with open(meta_path, "r", encoding="utf-8") as mf:
+                meta = json.load(mf)
+            meta["total_listings_count"] = len(cleaned_data)
+            with open(meta_path, "w", encoding="utf-8") as mf:
+                json.dump(meta, mf, indent=2)
+        except Exception:
+            pass
+
+    print(f"💾 Clean dataset saved successfully to {out_path} (compact JSON: {os.path.getsize(out_path) / 1024:.1f} KB)")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Clean up duplicate entries in master listing JSONs.")

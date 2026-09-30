@@ -4,16 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Armenia Real Estate Hub</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
     <header>
-        <div class="language-toggle" role="group" aria-label="Language">
-            <button class="language-btn active" data-language="en" type="button">English</button>
-            <button class="language-btn" data-language="hy" type="button">Հայերեն</button>
+        <div class="header-inner">
+            <div class="header-branding">
+                <h1 class="logo" data-i18n="siteTitle">🇦🇲 Armenia Real Estate Hub</h1>
+                <p class="header-subtitle" data-i18n="siteSubtitle">Live Aggregated Real Estate from Facebook & List.am</p>
+            </div>
+            <div class="language-toggle" role="group" aria-label="Language">
+                <button class="language-btn active" data-language="en" type="button">English</button>
+                <button class="language-btn" data-language="hy" type="button">Հայերեն</button>
+            </div>
         </div>
-        <div class="logo" data-i18n="siteTitle">🇦🇲 Armenia Real Estate Hub</div>
     </header>
 
     <main>
@@ -28,6 +36,10 @@
                 </div>
                 <aside class="filter-panel" aria-labelledby="filter-heading">
                     <div id="filter-content">
+                        <!-- Keyword Search Input -->
+                        <label class="field-label" for="keyword-search" data-i18n="searchKeywords">Keyword search</label>
+                        <input type="search" id="keyword-search" class="filter-control keyword-search" data-i18n-placeholder="searchPlaceholder" placeholder="Search keywords, street...">
+
                         <label class="field-label" for="source-filter" data-i18n="source">Source</label>
                         <select class="filter-control" id="source-filter">
                             <option value="All" data-i18n="allSources">All sources</option>
@@ -35,7 +47,7 @@
                             <option value="List.am">List.am</option>
                         </select>
 
-                        <!-- Currency Selector Added -->
+                        <!-- Currency Selector -->
                         <label class="field-label" for="currency-filter" data-i18n="currencyLabel">Currency</label>
                         <select class="filter-control" id="currency-filter">
                             <option value="AMD">AMD (֏)</option>
@@ -67,6 +79,18 @@
                             <label><input type="checkbox" name="property-type" value="Land"><span data-i18n="land">Land</span></label>
                         </fieldset>
 
+                        <fieldset class="filter-group">
+                            <div class="filter-group-header">
+                                <legend data-i18n="propertyZoning">Purpose / Zoning</legend>
+                                <select class="mode-control" id="property-zoning-mode" aria-label="Property zoning filter mode">
+                                    <option value="include" data-i18n="include">Include</option>
+                                    <option value="exclude" data-i18n="exclude">Exclude</option>
+                                </select>
+                            </div>
+                            <label><input type="checkbox" name="property-zoning" value="Housing"><span data-i18n="zoningHousing">Housing / Residential</span></label>
+                            <label><input type="checkbox" name="property-zoning" value="Agricultural"><span data-i18n="zoningAgricultural">Agricultural / Farming</span></label>
+                        </fieldset>
+
                         <fieldset class="filter-group location-group">
                             <div class="filter-group-header">
                                 <legend data-i18n="location">Location</legend>
@@ -77,7 +101,7 @@
                             </div>
                             
                             <!-- Location Search Bar Input -->
-                            <input type="text" id="location-search" class="filter-control location-search" data-i18n-placeholder="searchListings" placeholder="Search locations..." style="display: none; margin-bottom: 0.5rem;">
+                            <input type="text" id="location-search" class="filter-control location-search" data-i18n-placeholder="searchLocations" placeholder="Search locations...">
                             
                             <div class="location-options" id="location-options">
                                 <!-- Location checkboxes are populated from script.js -->
@@ -111,24 +135,32 @@
 
             <section class="results-panel">
                 <div class="results-toolbar">
-                    <div>
+                    <div class="results-title-wrap">
                         <h2 data-i18n="availableListings">Available listings</h2>
+                        <span class="result-count" id="result-count">0 listings</span>
                     </div>
-                    <div class="toolbar-controls">
-                        <label class="field-label" for="sort-filter" data-i18n="sort">Sort</label>
-                        <select class="filter-control" id="sort-filter">
+                    <div class="toolbar-sort-wrap">
+                        <label class="sort-heading" for="sort-filter" data-i18n="sort">Sort:</label>
+                        <select class="sort-select" id="sort-filter" aria-label="Sort listings">
                             <option value="newest" data-i18n="newest">Newest</option>
                             <option value="price-asc" data-i18n="priceLowHigh">Price: low to high</option>
                             <option value="price-desc" data-i18n="priceHighLow">Price: high to low</option>
-                            <option value="size-asc" data-i18n="sizeSmallLarge">Size: small to large</option>
                             <option value="size-desc" data-i18n="sizeLargeSmall">Size: large to small</option>
+                            <option value="size-asc" data-i18n="sizeSmallLarge">Size: small to large</option>
                         </select>
-                        <span class="result-count" id="result-count">0 listings</span>
                     </div>
                 </div>
+
+                <div class="active-filter-chips" id="active-filter-chips"></div>
+
                 <section class="listings-grid" id="listings-grid">
                     <!-- Dynamic listings will be injected here automatically by script.js -->
                 </section>
+
+                <div class="pagination-wrap" id="pagination-wrap" style="display: none;">
+                    <p class="pagination-info" id="pagination-info"></p>
+                    <button class="load-more-btn" id="load-more-btn" type="button" data-i18n="loadMore">Load More Listings</button>
+                </div>
             </section>
         </div>
     </main>
@@ -137,6 +169,7 @@
         <p data-i18n="footer">&copy; 2026 Armenia Real Estate Scraper Hub</p>
     </footer>
 
+    <script src="translations.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

@@ -21,7 +21,6 @@ SCRAPERS_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, '..'))
 MASTER_OUTPUT_DIR = os.path.join(SCRIPT_DIR, "master_listings_json")
 os.makedirs(MASTER_OUTPUT_DIR, exist_ok=True)
 LOC_SUMMARY_DIR = os.path.join(MASTER_OUTPUT_DIR, "by_location")
-os.makedirs(LOC_SUMMARY_DIR, exist_ok=True)
 
 CACHE_FILE_PATH = os.path.join(SCRIPT_DIR, "dedup_cache.json")
 RAW_DATA_INPUT_FOLDER = SCRAPERS_ROOT
@@ -60,55 +59,22 @@ def save_dedup_cache(cache):
         print(f"\n[WARNING] Failed to save dedup cache: {e}")
 
 
-def compute_listing_hash(post):
-    """Creates a deterministic content signature for state tracking."""
-    raw = f"{post.get('full_text', '')}|{post.get('property_category')}|{post.get('listing_type')}"
-    return hashlib.md5(raw.encode('utf-8')).hexdigest()
+from scrapers.processors.dedup_utils import (
+    DEFAULT_EXCHANGE_RATE_AMD_PER_USD,
+    is_ghost_record,
+    is_valid_display_listing,
+    normalize_listing_text,
+    listing_completeness_score,
+    get_phone_spec_signature,
+    listing_content_key,
+    compute_listing_hash,
+    extract_canonical_post_id,
+    sanitize_filename,
+    normalize_timestamp,
+    normalize_and_convert_prices
+)
 
-
-def extract_canonical_post_id(url, post_id=None):
-    if post_id:
-        return str(post_id)
-    if not url:
-        return None
-
-    path_match = re.search(r'/(?:posts|permalink|multi_permalink|story\.php)/(\d+)', url)
-    if path_match:
-        return path_match.group(1)
-
-    query_match = re.search(r'(?:story_fbid|fbid)=(\d+)', url)
-    if query_match:
-        return query_match.group(1)
-
-    return None
-
-
-def normalize_and_convert_prices(prices):
-    converted_prices = []
-    if not prices or not isinstance(prices, list):
-        return converted_prices
-    
-    for p in prices:
-        amount = p.get("amount", 0)
-        if not isinstance(amount, (int, float)) or isinstance(amount, bool):
-            continue
-
-        curr = str(p.get("currency", "AMD")).upper()
-        if curr == "USD":
-            amt_usd = amount
-            amt_amd = round(amount * EXCHANGE_RATE_AMD_PER_USD)
-        else:
-            amt_amd = amount
-            amt_usd = round(amount / EXCHANGE_RATE_AMD_PER_USD, 2)
-            
-        converted_prices.append({
-            "original_amount": amount,
-            "original_currency": curr,
-            "amount_amd": amt_amd,
-            "amount_usd": amt_usd,
-            "raw_text": p.get("raw_text", str(amount))
-        })
-    return converted_prices
+EXCHANGE_RATE_AMD_PER_USD = DEFAULT_EXCHANGE_RATE_AMD_PER_USD
 
 
 def load_json_file(file_path):
@@ -122,58 +88,31 @@ def load_json_file(file_path):
         return None
 
 
-def sanitize_filename(text):
-    if not text:
-        return "unknown"
-    cleaned = "".join([c for c in text if c.isalnum() or c in (' ', '-', '_')]).strip().replace(" ", "_").lower()
-    return re.sub(r'_+', '_', cleaned)
-
-
-def normalize_listing_text(text):
-    normalized = unicodedata.normalize("NFKC", text or "").lower()
-    normalized = re.sub(r"https?://\S+|www\.\S+", " ", normalized)
-    normalized = re.sub(r"\s+", " ", normalized)
-    normalized = re.sub(r"[^\w\s]", " ", normalized, flags=re.UNICODE)
-    return re.sub(r"\s+", " ", normalized).strip()
-
-
-def listing_completeness_score(post):
-    return sum([
-        bool(post.get("full_text")),
-        bool(post.get("prices")),
-        bool(post.get("sizes_sqm")),
-        bool(post.get("rooms")),
-        bool(post.get("locations")),
-        bool(post.get("phone_numbers")),
-        bool(post.get("creation_timestamp"))
-    ])
-
-
-def listing_content_key(post):
-    text = normalize_listing_text(post.get("full_text", ""))
-    if len(text) < 80:
-        return None
-    return "|".join([
-        text,
-        str(post.get("property_category") or ""),
-        str(post.get("listing_type") or "")
-    ])
-
-
 def merge_duplicate_listings(posts):
     unique_posts = []
     exact_matches = {}
 
-    print("[INFO] Step 1/2: Performing exact content deduplication...")
+    print("[INFO] Step 1/2: Performing exact content and phone+specs deduplication...")
     for post in posts:
         content_key = listing_content_key(post)
+        phone_key = get_phone_spec_signature(post)
+        matched_idx = None
+
         if content_key and content_key in exact_matches:
-            existing_index = exact_matches[content_key]
-            if listing_completeness_score(post) > listing_completeness_score(unique_posts[existing_index]):
-                unique_posts[existing_index] = post
+            matched_idx = exact_matches[content_key]
+        elif phone_key and phone_key in exact_matches:
+            matched_idx = exact_matches[phone_key]
+
+        if matched_idx is not None:
+            if listing_completeness_score(post) > listing_completeness_score(unique_posts[matched_idx]):
+                unique_posts[matched_idx] = post
             continue
+
+        new_idx = len(unique_posts)
         if content_key:
-            exact_matches[content_key] = len(unique_posts)
+            exact_matches[content_key] = new_idx
+        if phone_key:
+            exact_matches[phone_key] = new_idx
         unique_posts.append(post)
 
     print("[INFO] Step 2/2: Performing bucketed fuzzy duplicate matching...")
@@ -234,6 +173,9 @@ def merge_duplicate_listings(posts):
     return final_posts
 
 
+
+
+
 def get_unique_listings_from_all_groups():
     all_unique_posts_by_id = {}
     json_files = []
@@ -265,22 +207,64 @@ def get_unique_listings_from_all_groups():
 
         if group_posts and isinstance(group_posts, list):
             for post in group_posts:
+                # Pre-filter empty ghost records before heavy parsing
+                raw_text = (post.get("full_text") or post.get("text") or "").strip()
+                has_initial_attrs = bool(
+                    post.get("prices") or post.get("sizes_sqm") or 
+                    post.get("rooms") or post.get("phone_numbers")
+                )
+                if len(raw_text) < 15 and not has_initial_attrs:
+                    continue
+
+                # Normalize source
+                if not post.get("source"):
+                    post["source"] = "List.am" if "list.am" in str(post.get("url") or "").lower() else "Facebook"
+
                 if post.get("full_text"):
                     reparsed_details = extract_housing_details(
                         post["full_text"],
                         is_media_only=post.get("is_media_only", False)
                     )
-                    post["locations"] = reparsed_details.get("locations", [])
-                    post["property_category"] = reparsed_details.get("property_category")
-                    post["listing_type"] = reparsed_details.get("listing_type")
-                    post["rooms"] = reparsed_details.get("rooms")
-                    post["sizes_sqm"] = reparsed_details.get("sizes_sqm")
-                    post["phone_numbers"] = reparsed_details.get("phone_numbers")
+                    post["locations"] = reparsed_details.get("locations") or post.get("locations", [])
+
+                    # Preserve existing valid category if re-parser yielded General/Unclassified/Media-Only
+                    reparsed_cat = reparsed_details.get("property_category")
+                    if reparsed_cat and reparsed_cat not in ["General / Unclassified", "Media-Only"]:
+                        post["property_category"] = reparsed_cat
+                    elif not post.get("property_category"):
+                        post["property_category"] = reparsed_cat or "General / Unclassified"
+
+                    # Preserve existing valid listing type if re-parser yielded Unknown
+                    reparsed_type = reparsed_details.get("listing_type")
+                    if reparsed_type and reparsed_type != "Unknown":
+                        post["listing_type"] = reparsed_type
+                    elif not post.get("listing_type"):
+                        post["listing_type"] = reparsed_type or "Unknown"
+
+                    post["rooms"] = reparsed_details.get("rooms") or post.get("rooms", [])
+                    post["sizes_sqm"] = reparsed_details.get("sizes_sqm") or post.get("sizes_sqm", [])
+                    post["phone_numbers"] = reparsed_details.get("phone_numbers") or post.get("phone_numbers", [])
                     if reparsed_details.get("prices"):
                         post["prices"] = reparsed_details.get("prices")
+                    post["zoning"] = reparsed_details.get("zoning") or post.get("zoning", [])
+
+                # Verify post has meaningful text or extracted attributes post-parsing
+                text = (post.get("full_text") or "").strip()
+                has_attrs = bool(
+                    post.get("prices") or post.get("sizes_sqm") or 
+                    post.get("rooms") or post.get("phone_numbers")
+                )
+                if len(text) < 15 and not has_attrs:
+                    continue
 
                 if "prices" in post:
                     post["prices"] = normalize_and_convert_prices(post.get("prices"))
+
+                # Standardize creation timestamp
+                post["creation_timestamp"] = normalize_timestamp(post)
+
+                # Clean any temporary scraper artifacts
+                post.pop("raw_node", None)
 
                 post_url = post.get("url")
                 canonical_id = post.get("canonical_id") or extract_canonical_post_id(post_url)
@@ -304,6 +288,29 @@ def get_unique_listings_from_all_groups():
     return content_unique_posts
 
 
+def prune_for_display(post):
+    """Retains essential fields for the website feed to minimize payload bandwidth."""
+    text = post.get("full_text") or ""
+    if len(text) > 500:
+        text = text[:497] + "..."
+    return {
+        "url": post.get("url"),
+        "canonical_id": post.get("canonical_id"),
+        "source": post.get("source") or "Facebook",
+        "property_category": post.get("property_category"),
+        "listing_type": post.get("listing_type"),
+        "prices": post.get("prices", []),
+        "sizes_sqm": post.get("sizes_sqm", []),
+        "rooms": post.get("rooms", []),
+        "locations": post.get("locations", []),
+        "phone_numbers": post.get("phone_numbers", []),
+        "zoning": post.get("zoning", []),
+        "full_text": text,
+        "created_at": post.get("created_at"),
+        "creation_timestamp": post.get("creation_timestamp") or 0
+    }
+
+
 def categorize_and_save_master_files(all_posts):
     master_categories = {
         "apartments_for_sale.json": {"type": "Sale", "category": "Apartment"},
@@ -315,7 +322,6 @@ def categorize_and_save_master_files(all_posts):
     }
 
     print(f"\n[INFO] Generating master category files...")
-    location_organized_listings = {}
 
     for file_name, filters in master_categories.items():
         filtered_posts = []
@@ -323,6 +329,17 @@ def categorize_and_save_master_files(all_posts):
         for post in all_posts:
             p_type = post.get("listing_type")
             p_cat = post.get("property_category")
+
+            # Drop ghost records if any slipped through
+            text = (post.get("full_text") or "").strip()
+            has_attrs = bool(post.get("prices") or post.get("sizes_sqm") or post.get("rooms") or post.get("phone_numbers"))
+            if len(text) < 15 and not has_attrs:
+                continue
+
+            # For all_for_sale_rent.json, only include verified, classified displayable listings
+            if file_name == "all_for_sale_rent.json":
+                if not p_cat or p_cat in ["General / Unclassified", "Media-Only"]:
+                    continue
 
             is_match = (
                 (filters["type"] == "Any" and filters["category"] == "Any") or
@@ -332,42 +349,22 @@ def categorize_and_save_master_files(all_posts):
 
             if is_match:
                 filtered_posts.append(post)
-                locations = post.get("locations") or ["Unknown Location"]
 
-                for loc in locations:
-                    clean_loc = sanitize_filename(loc)
-                    if clean_loc not in location_organized_listings:
-                        location_organized_listings[clean_loc] = []
-
-                    if not any(existing.get('url') == post.get('url') for existing in location_organized_listings[clean_loc]):
-                        location_organized_listings[clean_loc].append({
-                            "url": post.get("url"),
-                            "canonical_id": post.get("canonical_id"),
-                            "title": f"{p_cat} in {loc}",
-                            "price": post.get("prices"),
-                            "category": p_cat,
-                            "location": loc,
-                            "rooms": post.get("rooms"),
-                            "size": post.get("sizes_sqm"),
-                            "is_previously_seen": post.get("is_previously_seen", False)
-                        })
-
-        filtered_posts.sort(key=lambda x: x.get("creation_timestamp") or 0, reverse=True)
+        display_posts = [prune_for_display(p) for p in filtered_posts]
+        display_posts.sort(key=lambda x: x.get("creation_timestamp") or 0, reverse=True)
         output_path = os.path.join(MASTER_OUTPUT_DIR, file_name)
         with open(output_path, 'w', encoding='utf-8') as f:
-            json.dump(filtered_posts, f, ensure_ascii=False, separators=(',', ':'))
-        print(f"  [OK] Saved '{file_name}' ({len(filtered_posts)} records)")
+            json.dump(display_posts, f, ensure_ascii=False, separators=(',', ':'))
+        print(f"  [OK] Saved '{file_name}' ({len(display_posts)} records, {os.path.getsize(output_path) / 1024:.1f} KB)")
 
-    print("\n[INFO] Generating location summary files...")
-    loc_items = list(location_organized_listings.items())
-    total_locs = len(loc_items)
-
-    for idx, (clean_loc, listings_data) in enumerate(loc_items):
-        print_progress(idx + 1, total_locs, prefix='Writing Locations:', suffix=f'({idx + 1}/{total_locs})')
-        listings_data.sort(key=lambda x: x.get("size")[0] if x.get("size") else 0, reverse=True)
-        loc_file_path = os.path.join(LOC_SUMMARY_DIR, f"{clean_loc}.json")
-        with open(loc_file_path, 'w', encoding='utf-8') as f:
-            json.dump(listings_data, f, ensure_ascii=False, separators=(',', ':'))
+    # Clean up obsolete by_location directory if present
+    if os.path.exists(LOC_SUMMARY_DIR):
+        try:
+            import shutil
+            shutil.rmtree(LOC_SUMMARY_DIR, ignore_errors=True)
+            print("[INFO] Pruned obsolete 'by_location/' directory.")
+        except Exception:
+            pass
 
     print(f"\n[SUCCESS] Master output created in '{MASTER_OUTPUT_DIR}/'.")
 

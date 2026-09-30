@@ -1,5 +1,6 @@
 import os
 import json
+import re
 from abc import ABC, abstractmethod
 from datetime import datetime
 
@@ -66,7 +67,11 @@ class BaseScraper(ABC):
     @staticmethod
     def sanitize_area_size(raw_str):
         if not raw_str: return None
-        # Remove units, spaces, dots/commas if used as separators
-        cleaned = re.sub(r'[^\d.]', '', raw_str.strip())
+        # Remove common area unit words first to avoid dots in abbreviations like 'sq.m.' or 'ք.մ.'
+        no_units = re.sub(r'(?i)(?:sq\.?\s*m\.?|ք\.?\s*մ\.?|m2|մ2|кв\.?\s*м\.?|մետր)', '', raw_str.strip())
+        cleaned = re.sub(r'[^\d.]', '', no_units.strip())
+        if cleaned.count('.') > 1:
+            parts = cleaned.split('.')
+            cleaned = "".join(parts[:-1]) + "." + parts[-1]
         try: return float(cleaned)
         except ValueError: return None
