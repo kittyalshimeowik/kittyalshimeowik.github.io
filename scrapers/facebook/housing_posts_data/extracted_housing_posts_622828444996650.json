@@ -5389,5 +5389,290 @@
         "locations": [],
         "phone_numbers": [],
         "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/622828444996650/posts/2183012365644909",
+        "canonical_id": "2183012365644909",
+        "source": "Facebook",
+        "group_id": "622828444996650",
+        "extracted_at": "2026-09-30T15:32:07.782589",
+        "created_at": "2026-09-30 15:24:27",
+        "creation_timestamp": 1790781867,
+        "author": "Vahag Melqonyan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Rent",
+        "is_negotiable": "Unknown",
+        "floor_info": {
+            "floor": 12,
+            "total_floors": 3
+        },
+        "prices": [
+            {
+                "amount": 350000,
+                "currency": "AMD",
+                "raw_text": "գինը  350 000  դրամ"
+            }
+        ],
+        "sizes_sqm": [
+            72
+        ],
+        "rooms": [
+            3
+        ],
+        "locations": [],
+        "phone_numbers": [
+            "+374 94 228 061"
+        ],
+        "full_text": "Վարձով  է  տրվում  բնակարան\nՄազմանյան  փողոց\n72  քմ\nսենյակ  3\n12/3\nգինը  350 000  դրամ\n☎️  094228061"
+    },
+    {
+        "url": "https://www.facebook.com/groups/622828444996650/posts/2183011528978326",
+        "canonical_id": "2183011528978326",
+        "source": "Facebook",
+        "group_id": "622828444996650",
+        "extracted_at": "2026-09-30T15:32:07.792741",
+        "created_at": "2026-09-30 15:23:22",
+        "creation_timestamp": 1790781802,
+        "author": "Lera Movsisyan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Rent",
+        "is_negotiable": "Unknown",
+        "floor_info": {
+            "floor": 10,
+            "total_floors": 14
+        },
+        "prices": [
+            {
+                "amount": 370000,
+                "currency": "AMD",
+                "raw_text": "370,000 ֏"
+            }
+        ],
+        "sizes_sqm": [
+            52
+        ],
+        "rooms": [
+            2
+        ],
+        "locations": [],
+        "phone_numbers": [
+            "+374 91 247 356",
+            "+374 96 799 733"
+        ],
+        "full_text": "🏠 Վարձով է տրվում 2 սենյականոց բնակարան Նոր Նորքում՝ Բագրևանդի փողոցում։\n📐 Մակերես՝ 52 քմ\n🏢 Հարկ՝ 10/14\n🏗️ Նորակառույց շենք\n💰 Վարձակալության արժեք՝ 370,000 ֏ ամսական\n📅 Ազատ է հիմա\n\n📞 Մանրամասների համար զանգահարել։\n\n091-24-73-56 | 096-799-733"
+    },
+    {
+        "url": "https://www.facebook.com/groups/622828444996650/posts/2183011445645001",
+        "canonical_id": "2183011445645001",
+        "source": "Facebook",
+        "group_id": "622828444996650",
+        "extracted_at": "2026-09-30T15:32:07.807494",
+        "created_at": "2026-09-30 15:23:15",
+        "creation_timestamp": 1790781795,
+        "author": "Grigor Danielyan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "House",
+        "listing_type": "Rent",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [
+            {
+                "amount": 130000,
+                "currency": "AMD",
+                "raw_text": "130,000"
+            },
+            {
+                "amount": 140000,
+                "currency": "AMD",
+                "raw_text": "140,000 դրամ"
+            }
+        ],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [
+            "Zeytun / Kanaker",
+            "Arabkir",
+            "Ajapnyak",
+            "Avan"
+        ],
+        "phone_numbers": [],
+        "full_text": "🏠 ՇԱՏ ՇՏԱՊ ԵՐԿԱՐԱԺԱՄԿԵՏ ՎԱՐՁՈՎ ՍԵՓԱԿԱՆ ՏՈՒՆ ԵՆՔ ՓՆՏՐՈՒՄ\n📍 Նախընտրելի տարածքներ՝\n\n• Կոմիտաս\n\n• Ավան\n\n• Զեյթուն\n\n• Քանաքեռ\n\n• Աջափնյակ\n\nԿիսադատարկ վիճակում նույնպես կարող է լինել։\n\n💰 Բյուջե՝ 130,000–140,000 դրամ"
+    },
+    {
+        "url": "https://www.facebook.com/groups/622828444996650/posts/2182998958979583",
+        "canonical_id": "2182998958979583",
+        "source": "Facebook",
+        "group_id": "622828444996650",
+        "extracted_at": "2026-09-30T15:32:28.881966",
+        "created_at": "2026-09-30 15:08:45",
+        "creation_timestamp": 1790780925,
+        "author": "Շանս Ռիելթի",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": {
+            "floor": 14,
+            "total_floors": 5
+        },
+        "prices": [
+            {
+                "amount": 122000,
+                "currency": "USD",
+                "raw_text": "Գինը 122.000$"
+            }
+        ],
+        "sizes_sqm": [
+            45
+        ],
+        "rooms": [
+            2
+        ],
+        "locations": [
+            "Zeytun / Kanaker"
+        ],
+        "phone_numbers": [
+            "+374 96 194 646",
+            "+374 41 194 646",
+            "+374 94 174 646"
+        ],
+        "full_text": "🔑Վաճառվում է 2 սենյականոց բնակարան նորակառույց շենքում\n📍Զեյթուն, Ռուբինյանց փողոց Բուսաբանական այգու հարևանությամբ \n💫Գարուն բնակելի համալիր\n💠Կապիտալ վերանորոգված \n🌡Ջեռուցման անհատական համակարգ \n📐45ք.մ.\n🪜14/5-րդ հարկ\n💰Գինը 122.000$\n📞Մանրամասների համար զանգահարել\n096 19 46 46 | 041 19 46 46 | 094 17 46 46"
+    },
+    {
+        "url": "https://www.facebook.com/groups/622828444996650/posts/2182995122313300",
+        "canonical_id": "2182995122313300",
+        "source": "Facebook",
+        "group_id": "622828444996650",
+        "extracted_at": "2026-09-30T15:32:28.891150",
+        "created_at": "2026-09-30 15:04:06",
+        "creation_timestamp": 1790780646,
+        "author": "Smki Yan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [
+            {
+                "amount": 25000,
+                "currency": "USD",
+                "raw_text": "25000$"
+            }
+        ],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [
+            "+374 77 721 212"
+        ],
+        "full_text": "Vacharvum e 3 senyakanoc bnakaran Jermukum 5 harkani shenqi 1 in harkum kapital veranoroqvac ch bnakecvac mutqi dur@ arandzin drsic balkonchikov: manramasn zangov gin@ 25000$ her. 077721212"
+    },
+    {
+        "url": "https://www.facebook.com/groups/622828444996650/posts/2182966172316195",
+        "canonical_id": "2182966172316195",
+        "source": "Facebook",
+        "group_id": "622828444996650",
+        "extracted_at": "2026-09-30T15:34:48.029651",
+        "created_at": "2026-09-30 14:31:38",
+        "creation_timestamp": 1790778698,
+        "author": "Narine Yan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Rent",
+        "is_negotiable": "Unknown",
+        "floor_info": {
+            "floor": 2,
+            "total_floors": 3
+        },
+        "prices": [
+            {
+                "amount": 180000,
+                "currency": "AMD",
+                "raw_text": "180.000 AMD"
+            }
+        ],
+        "sizes_sqm": [],
+        "rooms": [
+            1
+        ],
+        "locations": [
+            "Arinj"
+        ],
+        "phone_numbers": [],
+        "full_text": "🏡 FOR RENT - 180.000 AMD / MONTH / owner\n\nForeigners are welcome!\n\n📍 Arinj 15th Street, Yerevan \n\n☀️ Sunny and bright apartment\n* 1 bedroom\n* 1 living room\n* 2nd floor of a 3-story House (2/3)\n* For** **up to 2 people 👈\n* Baxi heating\n* Washing machine\n* Refrigerator \n* Full-size wardrobe \n\nMessage me for more details or to arrange a viewing."
+    },
+    {
+        "url": "https://www.facebook.com/groups/622828444996650/posts/2182961422316670",
+        "canonical_id": "2182961422316670",
+        "source": "Facebook",
+        "group_id": "622828444996650",
+        "extracted_at": "2026-09-30T15:34:48.036623",
+        "created_at": "2026-09-30 14:28:47",
+        "creation_timestamp": 1790778527,
+        "author": "Aethel Group",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [
+            "+374 93 063 003"
+        ],
+        "full_text": "Բնակարանը ազատվում է՝ 01.11.26թ\n📞Մանրամասների համար\n093-06-30-03"
+    },
+    {
+        "url": "https://www.facebook.com/groups/622828444996650/posts/2182957922317020",
+        "canonical_id": "2182957922317020",
+        "source": "Facebook",
+        "group_id": "622828444996650",
+        "extracted_at": "2026-09-30T15:34:57.231571",
+        "created_at": "2026-09-30 14:24:46",
+        "creation_timestamp": 1790778286,
+        "author": "Ruben Petrosyan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": {
+            "floor": 4,
+            "total_floors": 1
+        },
+        "prices": [
+            {
+                "amount": 119999,
+                "currency": "AMD",
+                "raw_text": "119.999"
+            },
+            {
+                "amount": 119999,
+                "currency": "AMD",
+                "raw_text": "119.999"
+            }
+        ],
+        "sizes_sqm": [],
+        "rooms": [
+            3
+        ],
+        "locations": [
+            "Zeytun / Kanaker"
+        ],
+        "phone_numbers": [
+            "+374 77 181 684"
+        ],
+        "full_text": "🔥ՎԱՃԱՌՔԻ ԲՆԱԿԱՐԱՆ🔥\n📍Զեյթուն, Կարապետ Ուլնեցու փողոց, Կակտուս սուպերմարկետի մոտ\n💸Գինը - 119.999💸\n\n✔️4/1 հարկ (բարձր)\n✔️72 մ.ք մակերես\n✔️3 սենյակ\n☑️Բաքսի համակարգ\n🪟Եվրոպատուհաններ\n✔️Բակային հատված, նկուղ\n\n💸Գինը - 119.999💸\n📲077-18-16-84"
     }
 ]
