@@ -1,6 +1,17 @@
 # -*- coding: utf-8 -*-
 import os
 import sys
+import subprocess
+
+# Auto re-exec in virtual environment if available and not already inside it
+_proj_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+_venv_py_win = os.path.join(_proj_root, ".venv", "Scripts", "python.exe")
+_venv_py_nix = os.path.join(_proj_root, ".venv", "bin", "python")
+_target_py = _venv_py_win if (os.name == "nt" and os.path.isfile(_venv_py_win)) else (_venv_py_nix if os.path.isfile(_venv_py_nix) else None)
+if _target_py and os.path.abspath(sys.executable).lower() != os.path.abspath(_target_py).lower():
+    _res = subprocess.run([_target_py] + sys.argv, check=False)
+    sys.exit(_res.returncode)
+
 import io
 import time
 import json
@@ -10,7 +21,10 @@ import platform
 import builtins
 import re
 from datetime import datetime, timezone
-import setuptools  # Fixes distutils issue on modern Python
+try:
+    import setuptools  # Fixes distutils issue on modern Python
+except ImportError:
+    pass
 import undetected_chromedriver as uc
 from bs4 import BeautifulSoup
 

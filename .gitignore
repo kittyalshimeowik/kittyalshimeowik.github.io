@@ -9,3 +9,7 @@ scrapers/facebook/utilities/__pycache__
 scrapers/processors/__pycache__
 scrapers/processors/__tests__/__pycache__
 scrapers/utilities/__pycache__
+__pycache__/
+*.pyc
+.venv/
+venv/

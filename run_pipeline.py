@@ -17,9 +17,20 @@ LIST_AM_SCRAPER_SCRIPT = os.path.join("scrapers", "listam", "list_am_scraper.py"
 GENERATOR_SCRIPT = os.path.join("scrapers", "processors", "generate_site_data.py")
 CLEANUP_SCRIPT = os.path.join("scrapers", "processors", "cleanup_master_listings.py")
 
+def get_project_python():
+    """Returns the project virtual environment Python if available, else current sys.executable."""
+    proj_root = os.path.dirname(os.path.abspath(__file__))
+    venv_py_win = os.path.join(proj_root, ".venv", "Scripts", "python.exe")
+    venv_py_nix = os.path.join(proj_root, ".venv", "bin", "python")
+    if os.name == 'nt' and os.path.isfile(venv_py_win):
+        return venv_py_win
+    elif os.path.isfile(venv_py_nix):
+        return venv_py_nix
+    return sys.executable
+
 def run_step(script_path, description, extra_args=None):
-    """Helper function to run a script using the current Python environment."""
-    cmd = [sys.executable, script_path]
+    """Helper function to run a script using the virtual environment or current Python."""
+    cmd = [get_project_python(), script_path]
     if extra_args:
         cmd.extend(extra_args)
 

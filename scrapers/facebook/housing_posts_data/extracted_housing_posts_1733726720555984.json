@@ -4297,5 +4297,375 @@
             "+374 33 711 177"
         ],
         "full_text": "📲 033-711-177"
+    },
+    {
+        "url": "https://www.facebook.com/groups/1733726720555984/posts/2122458025016183",
+        "canonical_id": "2122458025016183",
+        "group_id": "1733726720555984",
+        "extracted_at": "2026-09-30T02:40:58.232590",
+        "created_at": "2026-09-29 23:33:06",
+        "creation_timestamp": 1790724786,
+        "author": "SmartBrokers",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [
+            "+374 99 070 087"
+        ],
+        "full_text": "Մենք ձեզ Կօգնենք գնել վաճառել Վարձակալել անշարժ գույք 099070087"
+    },
+    {
+        "url": "https://www.facebook.com/groups/1733726720555984/posts/2122443221684330",
+        "canonical_id": "2122443221684330",
+        "group_id": "1733726720555984",
+        "extracted_at": "2026-09-30T02:40:58.237318",
+        "created_at": "2026-09-29 23:02:11",
+        "creation_timestamp": 1790722931,
+        "author": "Tamara Harutyunyan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Rent",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [
+            {
+                "amount": 250000,
+                "currency": "AMD",
+                "raw_text": "250.000դրամ"
+            },
+            {
+                "amount": 94239016,
+                "currency": "AMD",
+                "raw_text": "94239016"
+            }
+        ],
+        "sizes_sqm": [],
+        "rooms": [
+            2
+        ],
+        "locations": [
+            "Erebuni"
+        ],
+        "phone_numbers": [],
+        "full_text": "Վարձով է տրվում Էրեբունի Մոլի մոտ։ \nՏրվում է գույքով և տեխնիկսյդվ։\n 2սենյակ, քարե շենք\n250.000դրամ\n094239016միջնորդ"
+    },
+    {
+        "url": "https://www.facebook.com/groups/1733726720555984/posts/2122422028353116",
+        "canonical_id": "2122422028353116",
+        "group_id": "1733726720555984",
+        "extracted_at": "2026-09-30T02:40:58.241270",
+        "created_at": "2026-09-29 22:17:54",
+        "creation_timestamp": 1790720274,
+        "author": "Էլիտա Sales & Rent Specialist in YVN",
+        "has_text": false,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/1733726720555984/posts/2122409828354336",
+        "canonical_id": "2122409828354336",
+        "group_id": "1733726720555984",
+        "extracted_at": "2026-09-30T02:40:58.261622",
+        "created_at": "2026-09-29 21:55:25",
+        "creation_timestamp": 1790718925,
+        "author": "Arakelyan Relty",
+        "has_text": false,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/1733726720555984/posts/2122405171688135",
+        "canonical_id": "2122405171688135",
+        "group_id": "1733726720555984",
+        "extracted_at": "2026-09-30T02:40:58.267448",
+        "created_at": "2026-09-29 21:46:36",
+        "creation_timestamp": 1790718396,
+        "author": "Khachik Adamyan",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": {
+            "floor": 9,
+            "total_floors": 6
+        },
+        "prices": [
+            {
+                "amount": 86000,
+                "currency": "USD",
+                "raw_text": "գինը 86000$"
+            }
+        ],
+        "sizes_sqm": [
+            45
+        ],
+        "rooms": [
+            1,
+            2
+        ],
+        "locations": [
+            "Avan"
+        ],
+        "phone_numbers": [
+            "+374 91 771 120",
+            "+374 98 751 120"
+        ],
+        "full_text": "Վաճառվում է 1 սենյականոցը 2 սենյակ դարձրած բնակարան Ավանում 9/6 45 քմ գինը 86000$ Հեռ.091 77-11-20,098 75-11-20"
+    },
+    {
+        "url": "https://www.facebook.com/groups/1733726720555984/posts/2122402098355109",
+        "canonical_id": "2122402098355109",
+        "group_id": "1733726720555984",
+        "extracted_at": "2026-09-30T02:40:58.273131",
+        "created_at": "2026-09-29 21:41:25",
+        "creation_timestamp": 1790718085,
+        "author": "Hasmik Gevorgyan",
+        "has_text": false,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/1733726720555984/posts/2122398658355453",
+        "canonical_id": "2122398658355453",
+        "group_id": "1733726720555984",
+        "extracted_at": "2026-09-30T02:41:09.761446",
+        "created_at": "2026-09-29 21:35:18",
+        "creation_timestamp": 1790717718,
+        "author": "Max Sark",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Apartment",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": {
+            "floor": 2,
+            "total_floors": 5
+        },
+        "prices": [
+            {
+                "amount": 96000,
+                "currency": "USD",
+                "raw_text": "Գինը՝ 96,000$"
+            }
+        ],
+        "sizes_sqm": [
+            48
+        ],
+        "rooms": [
+            2
+        ],
+        "locations": [
+            "Nor Nork / Massiv"
+        ],
+        "phone_numbers": [
+            "+374 98 780 177"
+        ],
+        "full_text": "🏡 Վաճառվում է 2 սենյականոց բնակարան\n📍 Նոր Նորք, Գյուլիքևխյան փողոց\n\n🏢 Չեխական նախագծի քարե շենք\n\n📐 Մակերես՝ 48 քմ\n\n🏙️ Հարկ՝ 2/5\n\n💰 Գինը՝ 96,000$\n\n📞 098 780177"
+    },
+    {
+        "url": "https://www.facebook.com/groups/1733726720555984/posts/2122397651688887",
+        "canonical_id": "2122397651688887",
+        "group_id": "1733726720555984",
+        "extracted_at": "2026-09-30T02:41:09.765958",
+        "created_at": "2026-09-29 21:33:09",
+        "creation_timestamp": 1790717589,
+        "author": "Samo Hayrapetyan",
+        "has_text": false,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/1733726720555984/posts/2122397531688899",
+        "canonical_id": "2122397531688899",
+        "group_id": "1733726720555984",
+        "extracted_at": "2026-09-30T02:41:09.769975",
+        "created_at": "2026-09-29 21:32:54",
+        "creation_timestamp": 1790717574,
+        "author": "Samo Hayrapetyan",
+        "has_text": false,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [],
+        "phone_numbers": [],
+        "full_text": ""
+    },
+    {
+        "url": "https://www.facebook.com/groups/1733726720555984/posts/2122395938355725",
+        "canonical_id": "2122395938355725",
+        "group_id": "1733726720555984",
+        "extracted_at": "2026-09-30T02:41:18.362882",
+        "created_at": "2026-09-29 21:31:18",
+        "creation_timestamp": 1790717478,
+        "author": "Villa Realty",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Land",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [
+            {
+                "amount": 230000,
+                "currency": "USD",
+                "raw_text": "230.000$"
+            },
+            {
+                "amount": 230000,
+                "currency": "USD",
+                "raw_text": "230.000$"
+            }
+        ],
+        "sizes_sqm": [
+            307,
+            135
+        ],
+        "rooms": [
+            4
+        ],
+        "locations": [
+            "Ajapnyak",
+            "Malatia-Sebastia"
+        ],
+        "phone_numbers": [
+            "+374 96 512 191"
+        ],
+        "full_text": "🔲Մալաթիա Հաղթանակ թաղամաս 230.000$\n🏡 Նորակառույց առանձնատուն 2 հարկանի\n\n🔘Հողատարածքի մակերես 307քմ\n\n🔘Տան մակերես 135քմ \n\n🔘Սենյակ 4\n\n🔘2 սանհանգույց\n\n✔️Գույք տեխնիկա\n\n✔️ ավտոկայանատեղի\n\n✔️Պարսպապատ\n\n🔘Գին 230.000$\n\n📞096-51-21-91viber\n\n📞096-51-21-91 whatsapp\n\n📞096-51-21-91 telegram"
+    },
+    {
+        "url": "https://www.facebook.com/groups/1733726720555984/posts/2122394718355847",
+        "canonical_id": "2122394718355847",
+        "group_id": "1733726720555984",
+        "extracted_at": "2026-09-30T02:41:18.369023",
+        "created_at": "2026-09-29 21:29:20",
+        "creation_timestamp": 1790717360,
+        "author": "Villa Realty",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "General / Unclassified",
+        "listing_type": "Sale",
+        "is_negotiable": "Unknown",
+        "floor_info": {
+            "floor": 9,
+            "total_floors": 4
+        },
+        "prices": [
+            {
+                "amount": 90000,
+                "currency": "USD",
+                "raw_text": "90.000$"
+            },
+            {
+                "amount": 90000,
+                "currency": "AMD",
+                "raw_text": "90.000"
+            },
+            {
+                "amount": 90000,
+                "currency": "AMD",
+                "raw_text": "90.000"
+            }
+        ],
+        "sizes_sqm": [],
+        "rooms": [],
+        "locations": [
+            "Malatia-Sebastia"
+        ],
+        "phone_numbers": [
+            "+374 96 512 191"
+        ],
+        "full_text": "🔥ՇՏԱՊ ՎԱՃԱՌՔ 90.000$🔥\n📍Մալաթիա Բանգլադեշ,Ա2թաղամաս\n\n✅Հատուկ նախագիծ\n\n💰Գինը վերջնական սակարկված 90.000💰\n\n✔️9/4 հարկ\n\n✔️48մ.ք մակերես\n\n✔️1-2 դարձրած\n\n☑️Հին վերանորոգում\n\n☑️Մասնակի գույք տեխնիկա\n\n🪟եվրոպատուհաններ\n\n✔️2.75 առաստաղի բարձ.\n\n🔆Արևկողմ\n\n💰Գինը վերջնական սակարկված 90.000💰\n\n📲096 51-21-91"
+    },
+    {
+        "url": "https://www.facebook.com/groups/1733726720555984/posts/2122394161689236",
+        "canonical_id": "2122394161689236",
+        "group_id": "1733726720555984",
+        "extracted_at": "2026-09-30T02:41:18.374184",
+        "created_at": "2026-09-29 21:28:39",
+        "creation_timestamp": 1790717319,
+        "author": "Villa Realty",
+        "has_text": true,
+        "is_media_only": false,
+        "property_category": "Land",
+        "listing_type": "Unknown",
+        "is_negotiable": "Unknown",
+        "floor_info": null,
+        "prices": [
+            {
+                "amount": 160000,
+                "currency": "USD",
+                "raw_text": "160.000$"
+            },
+            {
+                "amount": 160000,
+                "currency": "USD",
+                "raw_text": "160.000$"
+            }
+        ],
+        "sizes_sqm": [
+            300,
+            160
+        ],
+        "rooms": [
+            5
+        ],
+        "locations": [
+            "Ajapnyak",
+            "Malatia-Sebastia"
+        ],
+        "phone_numbers": [
+            "+374 96 512 191"
+        ],
+        "full_text": "🔲Մալաթիա Հաղթանակ թաղամաս 160.000$\n🏡 Նորակառույց առանձնատուն 2 հարկանի\n\n🔘Հողատարածքի մակերես 300քմ\n\n🔘Տան մակերես 160քմ \n\n🔘Սենյակ 5\n\n🔘2 սանհանգույց\n\n✔️Հողատարածք,ավտոկայանատեղի\n\n✔️Պարսպապատ\n\n🔘Գին 160.000$\n\n📞096-51-21-91viber\n\n📞096-51-21-91 whatsapp\n\n📞096-51-21-91 telegram #дом #բնակարան #hause #rek"
     }
 ]

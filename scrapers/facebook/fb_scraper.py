@@ -16,6 +16,17 @@ else:
 
 os.environ["TZ"] = "UTC"
 
+import subprocess
+
+# Auto re-exec in virtual environment if available and not already inside it
+_proj_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+_venv_py_win = os.path.join(_proj_root, ".venv", "Scripts", "python.exe")
+_venv_py_nix = os.path.join(_proj_root, ".venv", "bin", "python")
+_target_py = _venv_py_win if (os.name == "nt" and os.path.isfile(_venv_py_win)) else (_venv_py_nix if os.path.isfile(_venv_py_nix) else None)
+if _target_py and os.path.abspath(sys.executable).lower() != os.path.abspath(_target_py).lower():
+    _res = subprocess.run([_target_py] + sys.argv, check=False)
+    sys.exit(_res.returncode)
+
 import time
 import json
 import random
@@ -137,6 +148,84 @@ def extract_posts_from_graphql_payload(obj, group_id):
             yield from extract_posts_from_graphql_payload(item, group_id)
 
 
+def is_facebook_logged_in(browser_context, page=None):
+    """Returns True if user has an active session cookie or logged-in indicators."""
+    try:
+        if page and not page.is_closed():
+            current_url = page.url.lower()
+            if "/login" in current_url or "checkpoint" in current_url:
+                return False
+            if page.locator("input[name='email'], input#email, input[name='pass'], input#pass, input[name='approvals_code']").count() > 0:
+                return False
+    except Exception:
+        pass
+
+    try:
+        cookies = browser_context.cookies(["https://www.facebook.com", "https://facebook.com"])
+        for c in cookies:
+            if c.get("name") == "c_user" and c.get("value"):
+                return True
+    except Exception:
+        pass
+
+    return False
+
+
+def wait_for_facebook_login(browser_context, page):
+    """Checks if logged into Facebook; if not, pauses and waits for user to log in."""
+    print("🔍 Checking Facebook authentication status...")
+    if is_facebook_logged_in(browser_context, page):
+        print("✅ Active Facebook session detected.")
+        return
+
+    print("🌐 Navigating to Facebook to verify login state...")
+    try:
+        page.goto("https://www.facebook.com/", wait_until="domcontentloaded")
+        time.sleep(2.5)
+    except Exception as e:
+        print(f"⚠️ Notice while loading Facebook: {e}")
+
+    if is_facebook_logged_in(browser_context, page):
+        print("✅ Active Facebook session verified.")
+        return
+
+    print("\n" + "=" * 65)
+    print("🔑 FACEBOOK LOGIN REQUIRED")
+    print("👉 Please log into your Facebook account in the open browser window.")
+    print("👉 Enter your credentials, complete 2FA if prompted, and stay on Facebook.")
+    print("⏳ The scraper will automatically detect your login and proceed...")
+    print("=" * 65 + "\n")
+
+    try:
+        page.bring_to_front()
+    except Exception:
+        pass
+
+    wait_start = time.time()
+    last_prompt = time.time()
+
+    while True:
+        try:
+            # Handle user closing the active tab while logging in
+            if page.is_closed():
+                pages = browser_context.pages
+                page = pages[0] if pages else browser_context.new_page()
+
+            if is_facebook_logged_in(browser_context, page):
+                print("\n🎉 Facebook login successfully detected!")
+                print("💾 Waiting 4 seconds for session tokens to persist...")
+                time.sleep(4.0)
+                break
+        except Exception:
+            pass
+
+        time.sleep(1.5)
+        if time.time() - last_prompt >= 15:
+            elapsed = int(time.time() - wait_start)
+            print(f"⏳ Waiting for Facebook login in browser window... ({elapsed}s elapsed)")
+            last_prompt = time.time()
+
+
 def run_facebook_housing_scraper():
     target_groups = load_target_groups(GROUPS_CONFIG_FILE, METADATA_DIR)
     if not target_groups:
@@ -191,7 +280,10 @@ def run_facebook_housing_scraper():
 
         browser_context = p.chromium.launch_persistent_context(**context_args)
         open_tabs = list(browser_context.pages)
-        initial_blank_page = open_tabs[0] if open_tabs else None
+        initial_blank_page = open_tabs[0] if open_tabs else browser_context.new_page()
+
+        # Ensure user is logged into Facebook before proceeding to group scraping
+        wait_for_facebook_login(browser_context, initial_blank_page)
 
         current_active_group_id = {"id": None}
         current_session_posts = []
@@ -295,7 +387,7 @@ def run_facebook_housing_scraper():
             current_session_posts.clear()
             current_active_group_id["id"] = group_id
 
-            if visited_groups_count == 1 and initial_blank_page and not initial_blank_page.is_closed() and initial_blank_page.url == "about:blank":
+            if visited_groups_count == 1 and initial_blank_page and not initial_blank_page.is_closed():
                 page = initial_blank_page
             else:
                 page = browser_context.new_page()
@@ -318,6 +410,14 @@ def run_facebook_housing_scraper():
             print(f"Navigating to {group_url}...")
             page.goto(group_url)
             time.sleep(random.uniform(4.0, 6.0))
+
+            # Guard against unexpected mid-session login barriers
+            if not is_facebook_logged_in(browser_context, page):
+                print(f"\n⚠️ Facebook login barrier encountered while accessing {group_name}!")
+                wait_for_facebook_login(browser_context, page)
+                print(f"Re-navigating to {group_url}...")
+                page.goto(group_url)
+                time.sleep(random.uniform(4.0, 6.0))
 
             last_scroll_height = page.evaluate("document.body.scrollHeight")
             stagnant_counter = 0
