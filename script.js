@@ -33,6 +33,15 @@ document.addEventListener("DOMContentLoaded", () => {
         document.fonts.ready.then(updateHeaderHeight);
     }
 
+    function syncCurrencyWithLanguage() {
+        const currSelect = document.getElementById("currency-filter");
+        if (currSelect) {
+            currSelect.value = (currentLanguage === "en") ? "USD" : "AMD";
+        }
+    }
+
+    syncCurrencyWithLanguage();
+
     function text(key) {
         return (translations[currentLanguage] && translations[currentLanguage][key]) || key;
     }
@@ -43,6 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function applyLanguage() {
         document.documentElement.lang = currentLanguage;
+        syncCurrencyWithLanguage();
         document.querySelectorAll("[data-i18n]").forEach(element => {
             const key = element.dataset.i18n;
             element.textContent = text(key);
@@ -672,7 +682,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (keywordSearch) keywordSearch.value = "";
         document.querySelectorAll("input[type='checkbox']").forEach(input => input.checked = false);
         document.getElementById("source-filter").value = "All";
-        document.getElementById("currency-filter").value = "AMD";
+        syncCurrencyWithLanguage();
         document.getElementById("listing-type-mode").value = "include";
         document.getElementById("property-type-mode").value = "include";
         const zoningMode = document.getElementById("property-zoning-mode");

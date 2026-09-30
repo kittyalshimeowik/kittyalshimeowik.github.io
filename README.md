@@ -250,6 +250,7 @@ The frontend is a fast, responsive static web application located at [index.html
 
 2. **Clean Currency & Rate Presentation**:
    * Direct primary price display in AMD (֏) or USD ($) without redundant secondary bracketed text.
+   * Default currency automatically synchronizes with language selection (USD for English, AMD for Armenian) on initial load, language change, and filter reset, while remaining manually customizable.
    * In English mode (or USD selected), price per square meter pill displays formatted as **`$/m²`** (e.g. `$1,250/m²`). In Armenian mode, displays as `${rate} ֏/ քմ`.
 
 3. **Clickable Card Rows & Centered Action**:
