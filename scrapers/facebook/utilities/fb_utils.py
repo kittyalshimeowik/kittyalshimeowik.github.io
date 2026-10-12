@@ -80,17 +80,34 @@ def extract_posts_from_graphql_payload(obj, group_id):
                     text = message_dict.get("text") if isinstance(message_dict, dict) else ""
 
                     attachment_texts = []
+                    attachment_images = []
                     attachments = story.get("attachments", [])
                     for att in attachments:
                         media_node = att.get("media", {})
-                        accessibility_caption = media_node.get("accessibility_caption")
-                        if accessibility_caption:
-                            attachment_texts.append(accessibility_caption)
+                        if isinstance(media_node, dict):
+                            accessibility_caption = media_node.get("accessibility_caption")
+                            if accessibility_caption:
+                                attachment_texts.append(accessibility_caption)
+                            img_uri = (
+                                media_node.get("image", {}).get("uri")
+                                or media_node.get("photo_image", {}).get("uri")
+                                or media_node.get("thumbnail_image", {}).get("uri")
+                            )
+                            if img_uri and img_uri not in attachment_images:
+                                attachment_images.append(img_uri)
                         
                         for subatt in media_node.get("all_subattachments", {}).get("nodes", []):
-                            sub_cap = subatt.get("media", {}).get("accessibility_caption")
-                            if sub_cap:
-                                attachment_texts.append(sub_cap)
+                            sub_media = subatt.get("media", {})
+                            if isinstance(sub_media, dict):
+                                sub_cap = sub_media.get("accessibility_caption")
+                                if sub_cap:
+                                    attachment_texts.append(sub_cap)
+                                sub_uri = (
+                                    sub_media.get("image", {}).get("uri")
+                                    or sub_media.get("photo_image", {}).get("uri")
+                                )
+                                if sub_uri and sub_uri not in attachment_images:
+                                    attachment_images.append(sub_uri)
 
                     combined_text = text if text else ""
                     if attachment_texts:
@@ -106,6 +123,7 @@ def extract_posts_from_graphql_payload(obj, group_id):
                         "canonical_id": canonical_id,
                         "text": combined_text,
                         "is_media_only": is_media_only,
+                        "images": attachment_images,
                         "creation_timestamp": time_data["timestamp"],
                         "created_at": time_data["formatted"],
                         "author": author_name,

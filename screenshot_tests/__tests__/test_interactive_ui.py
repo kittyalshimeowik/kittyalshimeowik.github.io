@@ -162,6 +162,171 @@ class TestInteractiveUIFeatures(unittest.TestCase):
         new_card_count = self.page.locator(".property-card:not(.skeleton-card)").count()
         self.assertGreater(new_card_count, initial_card_count)
 
+    def test_logo_and_tab_bar_favicons_rendered(self):
+        """Verifies logo image in header and favicon links in head for browser tabs."""
+        logo_img = self.page.locator(".brand-logo")
+        self.assertTrue(logo_img.is_visible(), "Brand logo must be visible in header.")
+
+        # Ensure image has loaded successfully
+        is_loaded = self.page.evaluate("""() => {
+            const img = document.querySelector('.brand-logo');
+            return img && img.complete && img.naturalWidth > 0;
+        }""")
+        self.assertTrue(is_loaded, "Brand logo image must load without errors.")
+
+        # Verify browser tab favicon tags
+        favicon_svg = self.page.locator("link[rel='icon'][type='image/svg+xml']")
+        self.assertTrue(favicon_svg.count() > 0, "SVG favicon link must exist in head for browser tab bar.")
+
+        apple_icon = self.page.locator("link[rel='apple-touch-icon']")
+        self.assertTrue(apple_icon.count() > 0, "Apple touch icon link must exist in head for mobile bookmarks.")
+
+        manifest = self.page.locator("link[rel='manifest']")
+        self.assertTrue(manifest.count() > 0, "Manifest link must exist in head for mobile web apps.")
+
+    def test_mobile_viewport_and_header_logo(self):
+        """Verifies mobile responsiveness (375x812), logo display, touch layout, and zero overflow."""
+        mobile_page = self.browser.new_page(
+            viewport={"width": 375, "height": 812},
+            is_mobile=True,
+            has_touch=True,
+        )
+        try:
+            mobile_page.goto(self.server.get_url("index.html"))
+            mobile_page.wait_for_selector(".property-card:not(.skeleton-card)", timeout=10000)
+
+            # Logo must be visible and properly proportioned on mobile
+            logo = mobile_page.locator(".brand-logo")
+            self.assertTrue(logo.is_visible(), "Logo must be visible on mobile.")
+            logo_box = logo.bounding_box()
+            self.assertIsNotNone(logo_box)
+            self.assertLessEqual(logo_box["width"], 42, "Logo should be compact on mobile.")
+            self.assertGreaterEqual(logo_box["width"], 30, "Logo should remain prominent on mobile.")
+
+            # No horizontal overflow on mobile
+            has_horizontal_overflow = mobile_page.evaluate("""() => {
+                return document.documentElement.scrollWidth > document.documentElement.clientWidth;
+            }""")
+            self.assertFalse(has_horizontal_overflow, "Mobile page must not have horizontal scroll/overflow.")
+
+            # Language toggle must work on mobile touch
+            hy_btn = mobile_page.locator(".language-btn[data-language='hy']")
+            hy_btn.tap()
+            time.sleep(0.3)
+            doc_lang = mobile_page.evaluate("() => document.documentElement.lang")
+            self.assertEqual(doc_lang, "hy", "Language switch to Armenian should work on mobile.")
+
+            # Filter collapse button must work on mobile
+            toggle_btn = mobile_page.locator("#toggle-filters")
+            toggle_btn.tap()
+            time.sleep(0.3)
+            is_collapsed = mobile_page.evaluate("() => document.querySelector('.catalog-layout').classList.contains('filters-collapsed')")
+            self.assertTrue(is_collapsed, "Filters should collapse on mobile touch.")
+        finally:
+            mobile_page.close()
+
+    def test_compact_mobile_viewport_360px(self):
+        """Verifies ultra-compact mobile viewport (360x640) for no overflow and readable branding."""
+        compact_page = self.browser.new_page(
+            viewport={"width": 360, "height": 640},
+            is_mobile=True,
+            has_touch=True,
+        )
+        try:
+            compact_page.goto(self.server.get_url("index.html"))
+            compact_page.wait_for_selector(".property-card:not(.skeleton-card)", timeout=10000)
+
+            # Check no overflow on 360px screen
+            overflow = compact_page.evaluate("""() => {
+                return document.documentElement.scrollWidth > document.documentElement.clientWidth;
+            }""")
+            self.assertFalse(overflow, "360px compact mobile screen should not overflow.")
+
+            # Logo and title should both be visible
+            self.assertTrue(compact_page.locator(".brand-logo").is_visible())
+            self.assertTrue(compact_page.locator("h1.logo").is_visible())
+        finally:
+            compact_page.close()
+
+    def test_card_media_and_visuals_rendered(self):
+        """Verifies that all property cards render visual media (photos or styled SVG graphics)."""
+        cards = self.page.locator(".property-card")
+        card_count = cards.count()
+        self.assertGreater(card_count, 0, "At least one card should be rendered.")
+
+        # Inspect first 5 cards
+        for i in range(min(5, card_count)):
+            card = cards.nth(i)
+            media = card.locator(".card-media")
+            self.assertTrue(media.is_visible(), f"Card {i} must render .card-media visual.")
+            
+            # Must contain either an img.card-media-img or .card-media-fallback
+            has_img = media.locator(".card-media-img").count() > 0
+            has_fallback = media.locator(".card-media-fallback").count() > 0
+            self.assertTrue(has_img or has_fallback, f"Card {i} must render an image or a styled fallback graphic.")
+
+    def test_google_maps_modal_interaction(self):
+        """Verifies clicking on Map button opens the interactive Google Maps modal."""
+        # Check map button exists
+        map_btn = self.page.locator(".property-card .map-btn").first
+        self.assertTrue(map_btn.is_visible(), "Property card should have a map button.")
+
+        modal = self.page.locator("#map-modal")
+        self.assertEqual(modal.get_attribute("aria-hidden"), "true", "Modal should initially be hidden.")
+
+        # Click the map button
+        map_btn.click()
+        time.sleep(0.3)
+
+        # Modal should now be active and visible
+        self.assertEqual(modal.get_attribute("aria-hidden"), "false", "Modal should be active after clicking map button.")
+        self.assertIn("active", modal.get_attribute("class") or "")
+
+        # Check iframe src is set to Google Maps embed
+        iframe_src = self.page.locator("#map-modal-iframe").get_attribute("src") or ""
+        self.assertIn("maps.google.com/maps", iframe_src, "Iframe src should point to Google Maps embed.")
+        self.assertIn("output=embed", iframe_src)
+
+        # Check external link is populated
+        ext_link = self.page.locator("#map-modal-external-link").get_attribute("href") or ""
+        self.assertIn("google.com/maps/search", ext_link)
+
+        # Click close button
+        close_btn = self.page.locator("#map-modal-close")
+        close_btn.click()
+        time.sleep(0.2)
+
+        # Modal should now be closed
+        self.assertEqual(modal.get_attribute("aria-hidden"), "true", "Modal should close upon clicking close button.")
+        self.assertNotIn("active", modal.get_attribute("class") or "")
+
+    def test_card_content_minimal_and_non_redundant(self):
+        """Verifies listing cards are minimal: no duplicate category/map words, working URLs, no Unknown tags."""
+        cards = self.page.locator(".property-card:not(.skeleton-card)")
+        card_count = cards.count()
+        self.assertGreater(card_count, 0)
+
+        for i in range(min(10, card_count)):
+            card = cards.nth(i)
+
+            # Check view original link is a working URL
+            view_link = card.locator(".view-btn").get_attribute("href") or ""
+            self.assertTrue(view_link.startswith("http"), f"Card {i} must have working http link: {view_link}")
+            self.assertNotIn("123456", view_link, f"Card {i} must not have placeholder url")
+
+            # Check no duplicate fallback badge on photo
+            self.assertEqual(card.locator(".fallback-badge").count(), 0, f"Card {i} should not have redundant fallback-badge on photo")
+
+            # Check map badge is not duplicated on location row
+            self.assertEqual(card.locator(".location-container .map-badge").count(), 0, f"Card {i} should not duplicate map badge in location row")
+
+            # Check no 'Unknown' tag displayed
+            tags = card.locator(".source-tag, .category-tag").all_text_contents()
+            for t in tags:
+                self.assertNotIn("Unknown", t, f"Card {i} should not display uninformative 'Unknown' badge: {t}")
+                self.assertNotIn("Անհայտ", t, f"Card {i} should not display uninformative 'Անհայտ' badge: {t}")
+
 
 if __name__ == "__main__":
     unittest.main()
+

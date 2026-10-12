@@ -196,4 +196,21 @@ SCENARIOS = [
         element_selector=".property-card:first-of-type",
         setup_action=_setup_component_card,
     ),
+    TestScenario(
+        id="header_branding_logo",
+        title="Header Branding & Logo Component",
+        description="High-resolution element capture of header brand logo, title, and live indicator.",
+        viewport=(1440, 900),
+        element_selector="header",
+        setup_action=_wait_for_site_ready,
+    ),
+    TestScenario(
+        id="mobile_compact_360",
+        title="Compact Mobile Screen (360x640)",
+        description="Android/compact smartphone viewport (360x640) validating logo proportions, stacked header, and filter touch targets.",
+        viewport=(360, 640),
+        is_mobile=True,
+        has_touch=True,
+        setup_action=_setup_mobile_view,
+    ),
 ]

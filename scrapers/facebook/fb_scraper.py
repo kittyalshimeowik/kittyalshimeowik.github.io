@@ -199,6 +199,7 @@ def run_facebook_housing_scraper():
                                         "rooms": details["rooms"],
                                         "locations": details["locations"],
                                         "phone_numbers": details["phone_numbers"],
+                                        "images": post.get("images", []),
                                         "full_text": post["text"],
                                     }
 

@@ -23,9 +23,35 @@ def is_ghost_record(item):
     return len(text) < 15 and not has_attributes
 
 
+def is_valid_listing_url(url):
+    """Verifies that a URL is a valid, working listing URL (not empty, placeholder, or broken)."""
+    if not url or not isinstance(url, str):
+        return False
+    u = url.strip()
+    if not (u.startswith("http://") or u.startswith("https://")):
+        return False
+    if "/123456/posts/100" in u or "example.com" in u or "localhost" in u:
+        return False
+    try:
+        from urllib.parse import urlparse
+        parsed = urlparse(u)
+        host = (parsed.netloc or "").lower()
+        if not ("facebook.com" in host or "fb.com" in host or "list.am" in host):
+            return False
+        if "list.am" in host and not re.search(r"/item/\d+", parsed.path):
+            return False
+        if ("facebook.com" in host or "fb.com" in host) and len(parsed.path) < 5:
+            return False
+        return True
+    except Exception:
+        return False
+
+
 def is_valid_display_listing(item):
-    """Checks whether a listing is non-ghost and has a classified, displayable category."""
+    """Checks whether a listing is non-ghost, has a classified category, and has a working URL if provided."""
     if is_ghost_record(item):
+        return False
+    if "url" in item and not is_valid_listing_url(item.get("url")):
         return False
     cat = item.get("property_category")
     if not cat or cat in ["General / Unclassified", "Media-Only"]:

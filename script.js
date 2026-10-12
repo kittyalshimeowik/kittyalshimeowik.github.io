@@ -114,6 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderSkeletons() {
         gridContainer.innerHTML = Array.from({ length: 6 }).map(() => `
             <article class="property-card skeleton-card">
+                <div class="skeleton-image"></div>
                 <div class="property-info">
                     <div class="skeleton-line skeleton-header"></div>
                     <div class="skeleton-line skeleton-price"></div>
@@ -127,6 +128,31 @@ document.addEventListener("DOMContentLoaded", () => {
 
     renderSkeletons();
 
+    function isValidListingUrl(url) {
+        if (!url || typeof url !== "string") return false;
+        const trimmed = url.trim();
+        if (!trimmed.startsWith("http://") && !trimmed.startsWith("https://")) return false;
+        if (trimmed.includes("123456") || trimmed.includes("example.com") || trimmed.includes("localhost")) {
+            return false;
+        }
+        try {
+            const parsed = new URL(trimmed);
+            const host = parsed.hostname.toLowerCase();
+            if (!host.includes("facebook.com") && !host.includes("fb.com") && !host.includes("list.am")) {
+                return false;
+            }
+            if (host.includes("list.am") && !/\/item\/\d+/.test(parsed.pathname)) {
+                return false;
+            }
+            if ((host.includes("facebook.com") || host.includes("fb.com")) && (!parsed.pathname || parsed.pathname.length < 5)) {
+                return false;
+            }
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
     fetch("scrapers/processors/master_listings_json/all_for_sale_rent.json")
         .then(response => {
             if (!response.ok) throw new Error("Failed to load listings data.");
@@ -136,7 +162,8 @@ document.addEventListener("DOMContentLoaded", () => {
             allListings = data.filter(item => 
                 item.property_category && 
                 item.property_category !== "General / Unclassified" && 
-                item.property_category !== "Media-Only"
+                item.property_category !== "Media-Only" &&
+                isValidListingUrl(item.url)
             );
 
             populateLocations();
@@ -404,6 +431,181 @@ document.addEventListener("DOMContentLoaded", () => {
         return dateObj.toLocaleDateString(currentLanguage === "hy" ? "hy-AM" : "en-US", { month: "short", day: "numeric" });
     }
 
+    const CATEGORY_SVGS = {
+        Apartment: `
+            <svg class="fallback-svg" viewBox="0 0 160 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="35" y="25" width="90" height="85" rx="3" fill="#1e293b" stroke="#3b82f6" stroke-width="2"/>
+                <rect x="48" y="38" width="16" height="18" rx="2" fill="#60a5fa" opacity="0.85"/>
+                <rect x="72" y="38" width="16" height="18" rx="2" fill="#93c5fd" opacity="0.6"/>
+                <rect x="96" y="38" width="16" height="18" rx="2" fill="#60a5fa" opacity="0.85"/>
+                <rect x="48" y="65" width="16" height="18" rx="2" fill="#93c5fd" opacity="0.6"/>
+                <rect x="72" y="65" width="16" height="18" rx="2" fill="#60a5fa" opacity="0.85"/>
+                <rect x="96" y="65" width="16" height="18" rx="2" fill="#93c5fd" opacity="0.6"/>
+                <rect x="70" y="93" width="20" height="17" fill="#2563eb"/>
+                <line x1="20" y1="110" x2="140" y2="110" stroke="#475569" stroke-width="2"/>
+            </svg>
+        `,
+        House: `
+            <svg class="fallback-svg" viewBox="0 0 160 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="80,18 25,60 135,60" fill="#10b981" opacity="0.25" stroke="#10b981" stroke-width="2"/>
+                <rect x="38" y="60" width="84" height="48" fill="#1e293b" stroke="#10b981" stroke-width="2"/>
+                <rect x="52" y="70" width="16" height="16" rx="2" fill="#34d399" opacity="0.8"/>
+                <rect x="92" y="70" width="16" height="16" rx="2" fill="#6ee7b7" opacity="0.7"/>
+                <rect x="72" y="80" width="16" height="28" fill="#059669"/>
+                <polygon points="105,32 105,22 115,22 115,40" fill="#047857"/>
+                <line x1="20" y1="108" x2="140" y2="108" stroke="#475569" stroke-width="2"/>
+            </svg>
+        `,
+        Land: `
+            <svg class="fallback-svg" viewBox="0 0 160 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20,95 Q50,60 90,85 T145,90 L145,110 L20,110 Z" fill="#15803d" opacity="0.3"/>
+                <path d="M15,100 Q60,75 100,90 T145,100 L145,110 L15,110 Z" fill="#16a34a" opacity="0.4"/>
+                <circle cx="80" cy="55" r="20" fill="#84cc16" opacity="0.2" stroke="#84cc16" stroke-width="2" stroke-dasharray="4 3"/>
+                <path d="M80,45 L80,65 M70,55 L90,55" stroke="#a3e635" stroke-width="2"/>
+                <path d="M42,75 L48,60 L54,75 Z" fill="#22c55e"/>
+                <path d="M110,78 L116,64 L122,78 Z" fill="#22c55e"/>
+                <line x1="15" y1="108" x2="145" y2="108" stroke="#334155" stroke-width="2"/>
+            </svg>
+        `,
+        General: `
+            <svg class="fallback-svg" viewBox="0 0 160 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="30" y="35" width="100" height="75" rx="3" fill="#1e293b" stroke="#818cf8" stroke-width="2"/>
+                <rect x="42" y="48" width="22" height="20" rx="2" fill="#818cf8" opacity="0.7"/>
+                <rect x="70" y="48" width="22" height="20" rx="2" fill="#a5b4fc" opacity="0.6"/>
+                <rect x="98" y="48" width="20" height="20" rx="2" fill="#818cf8" opacity="0.7"/>
+                <rect x="68" y="80" width="24" height="30" fill="#6366f1"/>
+                <line x1="20" y1="110" x2="140" y2="110" stroke="#475569" stroke-width="2"/>
+            </svg>
+        `
+    };
+
+    const STREET_PATTERNS = [
+        { name: "Mashtots Ave", regex: /(?:մաշտոց|маштоц|mashtots)/i },
+        { name: "Komitas Ave", regex: /(?:կոմիտաս|комитас|komitas)/i },
+        { name: "Baghramyan Ave", regex: /(?:բաղրամյան|баграмян|baghramyan|bagramyan)/i },
+        { name: "Sayat-Nova Ave", regex: /(?:սայաթ[\s-]նովա|саят[\s-]нова|sayat[\s-]nova)/i },
+        { name: "Northern Ave", regex: /(?:հյուսիսային|северный|northern\s*ave)/i },
+        { name: "Tumanyan St", regex: /(?:թումանյան|туманян|tumanyan)/i },
+        { name: "Amiryan St", regex: /(?:ամիրյան|амирян|amiryan)/i },
+        { name: "Nalbandyan St", regex: /(?:նալբանդյան|налбандян|nalbandyan)/i },
+        { name: "Abovyan St", regex: /(?:աբովյան\s*(?:փողոց|փող|փ\.|st|street)?|абовян|abovyan)/i },
+        { name: "Tigran Mets Ave", regex: /(?:տիգրան\s+մեծ|тигран\s+мец|tigran\s+mets)/i },
+        { name: "Khanjyan St", regex: /(?:խանջյան|ханджян|khanjyan)/i },
+        { name: "Vardanants St", regex: /(?:վարդանանց|вардананц|vardanants)/i },
+        { name: "Charents St", regex: /(?:չարենց|чаренц|charents)/i },
+        { name: "Pushkin St", regex: /(?:պուշկին|пушкин|pushkin)/i },
+        { name: "Arami St", regex: /(?:արամի\s*(?:փողոց|փ\.|st)?|арами|arami)/i },
+        { name: "Isahakyan St", regex: /(?:իսահակյան|исаакян|isahakyan)/i },
+        { name: "Moskovyan St", regex: /(?:մոսկովյան|московян|moskovyan)/i },
+        { name: "Kasyan St", regex: /(?:կասյան|касьян|kasyan)/i },
+        { name: "Vagharshyan St", regex: /(?:վաղարշյան|вагаршян|vagharshyan)/i },
+        { name: "Gulbenkian St", regex: /(?:գյուլբենկյան|гюльбенкян|gulbenkian|gyulbenkyan)/i },
+        { name: "Azatutyan Ave", regex: /(?:ազատության|азатутян|azatutyan)/i },
+        { name: "Davit Anhaght St", regex: /(?:դավիթ\s+անհաղթ|давид\s+анахт|davit\s+anhaght)/i },
+        { name: "Sebastia St", regex: /(?:սեբաստիա|себастия|sebastia)/i },
+        { name: "Gai Ave", regex: /(?:գայի\s+(?:պող|պողոտա)|gai\s+ave)/i },
+        { name: "Rubinyants St", regex: /(?:ռուբինյանց|рубинянц|rubinyants)/i }
+    ];
+
+    function buildGoogleMapsInfo(item) {
+        const textStr = (item.full_text || "") + " " + (item.title || "");
+        let detectedStreet = null;
+        for (const sp of STREET_PATTERNS) {
+            if (sp.regex.test(textStr)) {
+                detectedStreet = sp.name;
+                break;
+            }
+        }
+
+        const locList = Array.isArray(item.locations) && item.locations.length > 0 
+            ? [...new Set(item.locations.map(translateLocation).filter(Boolean))] 
+            : [];
+        const primaryLoc = locList[0] || "";
+        const formattedLoc = locList.join(", ") || text("armenia");
+
+        let mapQuery = "";
+        let displaySubtitle = "";
+
+        if (detectedStreet) {
+            const locPart = primaryLoc ? `${primaryLoc}, ` : "";
+            mapQuery = `${detectedStreet}, ${locPart}Yerevan, Armenia`;
+            displaySubtitle = `${detectedStreet}, ${formattedLoc}`;
+        } else if (locList.length > 0) {
+            mapQuery = `${locList.join(", ")}, Armenia`;
+            displaySubtitle = formattedLoc;
+        } else {
+            mapQuery = "Yerevan, Armenia";
+            displaySubtitle = text("armenia");
+        }
+
+        const propCat = translations[currentLanguage].propertyTypes[item.property_category] || text("property");
+        const listType = translations[currentLanguage].listingTypes[item.listing_type] || item.listing_type || "";
+        const displayTitle = (listType && item.listing_type !== "Unknown") ? `${propCat} • ${listType}` : propCat;
+
+        return {
+            query: mapQuery,
+            displayTitle: displayTitle,
+            displaySubtitle: displaySubtitle,
+            embedUrl: `https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed`,
+            externalUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}`
+        };
+    }
+
+    const mapModal = document.getElementById("map-modal");
+    const mapModalTitle = document.getElementById("map-modal-title");
+    const mapModalSubtitle = document.getElementById("map-modal-subtitle");
+    const mapModalIframe = document.getElementById("map-modal-iframe");
+    const mapModalExternalLink = document.getElementById("map-modal-external-link");
+    const mapModalClose = document.getElementById("map-modal-close");
+    const mapLoadingIndicator = document.getElementById("map-loading-indicator");
+
+    function openMapModal(item) {
+        if (!mapModal) return;
+        const mapsInfo = buildGoogleMapsInfo(item);
+        if (mapModalTitle) mapModalTitle.textContent = mapsInfo.displayTitle;
+        if (mapModalSubtitle) mapModalSubtitle.textContent = mapsInfo.displaySubtitle;
+        if (mapModalExternalLink) mapModalExternalLink.href = mapsInfo.externalUrl;
+
+        if (mapLoadingIndicator) mapLoadingIndicator.style.display = "flex";
+        if (mapModalIframe) {
+            mapModalIframe.onload = () => {
+                if (mapLoadingIndicator) mapLoadingIndicator.style.display = "none";
+            };
+            mapModalIframe.src = mapsInfo.embedUrl;
+        }
+
+        mapModal.classList.add("active");
+        mapModal.setAttribute("aria-hidden", "false");
+        document.body.style.overflow = "hidden";
+        if (mapModalClose) mapModalClose.focus();
+    }
+
+    function closeMapModal() {
+        if (!mapModal) return;
+        mapModal.classList.remove("active");
+        mapModal.setAttribute("aria-hidden", "true");
+        document.body.style.overflow = "";
+        if (mapModalIframe) {
+            mapModalIframe.src = "about:blank";
+        }
+    }
+
+    if (mapModalClose) {
+        mapModalClose.addEventListener("click", closeMapModal);
+    }
+    if (mapModal) {
+        mapModal.addEventListener("click", (e) => {
+            if (e.target === mapModal) {
+                closeMapModal();
+            }
+        });
+    }
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && mapModal && mapModal.classList.contains("active")) {
+            closeMapModal();
+        }
+    });
+
     function renderNextBatch() {
         const nextBatch = currentFilteredListings.slice(renderedCount, renderedCount + PAGE_SIZE);
         if (nextBatch.length === 0) return;
@@ -423,21 +625,21 @@ document.addEventListener("DOMContentLoaded", () => {
                 const amtAmd = p.amount_amd !== undefined ? p.amount_amd : p.original_amount;
                 const amtUsd = p.amount_usd !== undefined ? p.amount_usd : Math.round(amtAmd / 364.18);
 
-                if (currencyChoice === "USD") {
-                    primaryPriceText = `$${Number(amtUsd).toLocaleString()} USD`;
-                } else {
-                    primaryPriceText = `${Number(amtAmd).toLocaleString()} ֏`;
-                }
+                if (amtAmd > 0 || amtUsd > 0) {
+                    if (currencyChoice === "USD") {
+                        primaryPriceText = `$${Number(amtUsd).toLocaleString()} USD`;
+                    } else {
+                        primaryPriceText = `${Number(amtAmd).toLocaleString()} ֏`;
+                    }
 
-                if (item.sizes_sqm && item.sizes_sqm[0] > 0) {
-                    const sqm = Number(item.sizes_sqm[0]);
-                    if (sqm > 0) {
+                    if (item.sizes_sqm && Number(item.sizes_sqm[0]) > 0) {
+                        const sqm = Number(item.sizes_sqm[0]);
                         if (currentLanguage === "en" || currencyChoice === "USD") {
                             const sqmRate = Math.round(amtUsd / sqm);
-                            pricePerSqmText = `$${sqmRate.toLocaleString()}/m²`;
+                            if (sqmRate > 0) pricePerSqmText = `$${sqmRate.toLocaleString()}/m²`;
                         } else {
                             const sqmRate = Math.round(amtAmd / sqm);
-                            pricePerSqmText = `${sqmRate.toLocaleString()} ֏${text("perSqm")}`;
+                            if (sqmRate > 0) pricePerSqmText = `${sqmRate.toLocaleString()} ֏${text("perSqm")}`;
                         }
                     }
                 }
@@ -458,8 +660,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const relativeTimeStr = formatRelativeTime(item.creation_timestamp);
 
-            const locationText = item.locations && item.locations.length > 0
-                ? item.locations.map(translateLocation).join(", ")
+            const locList = Array.isArray(item.locations) && item.locations.length > 0
+                ? [...new Set(item.locations.map(translateLocation).filter(Boolean))]
+                : [];
+            const locationText = locList.length > 0
+                ? locList.join(", ")
                 : text("armenia");
 
             // Specs badges
@@ -471,10 +676,10 @@ document.addEventListener("DOMContentLoaded", () => {
             if (zonings.includes("Housing") && item.property_category === "Land") {
                 specsBadges.push(`<span class="spec-pill zoning-housing">🏡 ${text("zoningHousingBadge")}</span>`);
             }
-            if (item.rooms && item.rooms.length > 0) {
+            if (item.rooms && item.rooms.length > 0 && Number(item.rooms[0]) > 0) {
                 specsBadges.push(`<span class="spec-pill">🛏️ ${translations[currentLanguage].roomLabel(Number(item.rooms[0]))}</span>`);
             }
-            if (item.sizes_sqm && item.sizes_sqm.length > 0) {
+            if (item.sizes_sqm && item.sizes_sqm.length > 0 && Number(item.sizes_sqm[0]) > 0) {
                 specsBadges.push(`<span class="spec-pill">📐 ${item.sizes_sqm[0]} m²</span>`);
             }
             if (pricePerSqmText) {
@@ -483,16 +688,51 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const propCategory = translations[currentLanguage].propertyTypes[item.property_category] || text("property");
 
-            const phoneBtnHtml = item.phone_numbers && item.phone_numbers.length > 0
+            const phoneBtnHtml = (item.phone_numbers && item.phone_numbers.length > 0 && item.phone_numbers[0].trim().length >= 6)
                 ? `<a href="tel:${escapeHtml(item.phone_numbers[0].replace(/\s+/g, ''))}" class="phone-link" title="${escapeHtml(item.phone_numbers.join(', '))}">📞 ${escapeHtml(item.phone_numbers[0])}</a>`
                 : '';
 
+            // Media / Visuals
+            const categoryKey = item.property_category || "General";
+            const fallbackClass = categoryKey === "Apartment" ? "cat-apartment" : (categoryKey === "House" ? "cat-house" : (categoryKey === "Land" ? "cat-land" : "cat-general"));
+            const categorySvg = CATEGORY_SVGS[categoryKey] || CATEGORY_SVGS.General;
+            const firstImage = (item.images && item.images.length > 0) ? item.images[0] : null;
+            const imageCount = (item.images && item.images.length) || 0;
+
+            let mediaHtml = "";
+            if (firstImage) {
+                const photoBadge = imageCount > 1 
+                    ? `<span class="photo-count-badge">📷 ${imageCount}</span>` 
+                    : '';
+                mediaHtml = `
+                    <div class="card-media">
+                        <img class="card-media-img" src="${escapeHtml(firstImage)}" alt="${escapeHtml(propCategory)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling?.remove();this.parentElement.innerHTML='<div class=\\'card-media-fallback ${fallbackClass}\\'><div class=\\'fallback-graphic\\'>${categorySvg.replace(/'/g, "\\'")}</div></div>';">
+                        ${photoBadge}
+                    </div>
+                `;
+            } else {
+                mediaHtml = `
+                    <div class="card-media">
+                        <div class="card-media-fallback ${fallbackClass}">
+                            <div class="fallback-graphic">
+                                ${categorySvg}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            const typeBadgeHtml = (listingType === "Sale" || listingType === "Rent")
+                ? `<span class="source-tag ${typeTagClass}">${escapeHtml(listingTypeLabel)}</span>`
+                : '';
+
             card.innerHTML = `
+                ${mediaHtml}
                 <div class="property-info">
                     <div class="listing-topline">
                         <div class="tags-container">
                             <span class="source-tag ${sourceClass}">${escapeHtml(sourceDisplay)}</span>
-                            <span class="source-tag ${typeTagClass}">${escapeHtml(listingTypeLabel)}</span>
+                            ${typeBadgeHtml}
                             <span class="category-tag">${escapeHtml(propCategory)}</span>
                         </div>
                         ${relativeTimeStr ? `<span class="time-tag">📅 ${escapeHtml(relativeTimeStr)}</span>` : ''}
@@ -504,12 +744,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     ${specsBadges.length > 0 ? `<div class="specs-row">${specsBadges.join("")}</div>` : ''}
 
-                    <p class="location"><span class="pin-icon">📍</span> ${escapeHtml(locationText)}</p>
+                    <div class="location-container">
+                        <button type="button" class="map-link-btn" title="${text("viewOnMap")}">
+                            <span class="pin-icon">📍</span>
+                            <span class="loc-text">${escapeHtml(locationText)}</span>
+                        </button>
+                    </div>
                     
-                    ${item.full_text ? `<p class="description-snippet">${escapeHtml(item.full_text)}</p>` : ''}
+                    ${(item.full_text && item.full_text.trim().length > 0) ? `<p class="description-snippet">${escapeHtml(item.full_text.trim())}</p>` : ''}
 
                     <div class="card-footer">
                         ${phoneBtnHtml}
+                        <button type="button" class="map-btn" title="${text("viewOnMap")}">
+                            <span class="map-btn-icon">🗺️</span>
+                            <span>${text("map")}</span>
+                        </button>
                         <button type="button" class="share-btn" title="${text("shareLink")}">
                             <svg class="share-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="18" cy="5" r="3"></circle>
@@ -526,6 +775,15 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div>
                 </div>
             `;
+
+            // Map button interactions
+            const mapBtns = card.querySelectorAll(".map-link-btn, .map-btn");
+            mapBtns.forEach(btn => {
+                btn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    openMapModal(item);
+                });
+            });
 
             // Share button copy interaction
             const shareBtn = card.querySelector(".share-btn");
@@ -547,7 +805,7 @@ document.addEventListener("DOMContentLoaded", () => {
             card.setAttribute("role", "link");
             card.setAttribute("tabindex", "0");
             card.addEventListener("click", (e) => {
-                if (e.target.closest(".phone-link, .share-btn, .view-btn")) return;
+                if (e.target.closest(".phone-link, .share-btn, .view-btn, .map-btn, .map-link-btn")) return;
                 const selection = window.getSelection();
                 if (selection && selection.toString().trim().length > 0) return;
                 if (item.url) {
@@ -557,7 +815,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             card.addEventListener("keydown", (e) => {
                 if (e.key === "Enter" || e.key === " ") {
-                    if (e.target.closest(".phone-link, .share-btn, .view-btn")) return;
+                    if (e.target.closest(".phone-link, .share-btn, .view-btn, .map-btn, .map-link-btn")) return;
                     e.preventDefault();
                     if (item.url) {
                         window.open(item.url, "_blank", "noopener,noreferrer");

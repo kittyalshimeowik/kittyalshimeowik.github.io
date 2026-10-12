@@ -84,6 +84,12 @@ const TRANSLATIONS = {
         call: "Call",
         copiedPhone: "Phone copied!",
         perSqm: "/ m²",
+        viewOnMap: "View on Google Maps",
+        map: "Map",
+        mapLocation: "Location on Map",
+        openInGoogleMaps: "Open in Google Maps",
+        closeMap: "Close map",
+        photosCount: count => `${count} photo${count === 1 ? "" : "s"}`,
         listingTypes: { Sale: "Sale", Rent: "Rent", Unknown: "Unknown" },
         propertyTypes: { Apartment: "Apartment", House: "House", Land: "Land" }
     },
@@ -167,6 +173,12 @@ const TRANSLATIONS = {
         call: "Զանգահարել",
         copiedPhone: "Հեռախոսահամարը պատճենվեց!",
         perSqm: "/ քմ",
+        viewOnMap: "Դիտել Google Քարտեզում",
+        map: "Քարտեզ",
+        mapLocation: "Տեղադրությունը քարտեզի վրա",
+        openInGoogleMaps: "Բացել Google Քարտեզում",
+        closeMap: "Փակել քարտեզը",
+        photosCount: count => `${count} լուսանկար`,
         listingTypes: { Sale: "Վաճառք", Rent: "Վարձակալություն", Unknown: "Անհայտ" },
         propertyTypes: { Apartment: "Բնակարան", House: "Տուն", Land: "Հողատարածք" }
     }
@@ -204,7 +216,25 @@ const LOCATION_TRANSLATIONS = {
     "Charentsavan": "Չարենցավան",
     "Masis": "Մասիս",
     "Stepanavan": "Ստեփանավան",
-    "Martuni": "Մարտունի"
+    "Martuni": "Մարտունի",
+    "Zovuni": "Զովունի",
+    "Ptghni": "Պտղնի",
+    "Balahovit": "Բալահովիտ",
+    "Kanakeravan": "Քանաքեռավան",
+    "Mrgashen": "Մրգաշեն",
+    "Argavand": "Արգավանդ",
+    "Parakar / Tairov": "Փարաքար / Թաիրով",
+    "Ayntap / Kharberd": "Այնթապ / Խարբերդ",
+    "Garni / Geghadir": "Գառնի / Գեղադիր",
+    "Hrazdan": "Հրազդան",
+    "Nor Hachn": "Նոր Հաճն",
+    "Byureghavan": "Բյուրեղավան",
+    "Armavir": "Արմավիր",
+    "Ararat": "Արարատ",
+    "Ijevan": "Իջևան",
+    "Jermuk": "Ջերմուկ",
+    "Kapan": "Կապան",
+    "Oshakan / Voskevaz": "Օշական / Ոսկեվազ"
 };
 
 // Expose to window for browser or module.exports for Node testing

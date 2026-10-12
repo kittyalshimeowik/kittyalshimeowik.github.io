@@ -92,6 +92,50 @@ def extract_listing_dates(item_soup):
     return posted_date or renewed_date
 
 
+def extract_listing_images(item_soup, fallback_thumb=None):
+    """Extracts photo URLs from a List.am listing detail page soup or falls back to thumbnail."""
+    images = []
+    if not item_soup:
+        return [fallback_thumb] if fallback_thumb else []
+
+    # 1. OpenGraph meta image
+    og_img = item_soup.find("meta", property="og:image") or item_soup.find("meta", attrs={"name": "og:image"})
+    if og_img and og_img.get("content"):
+        content = og_img["content"].strip()
+        if content.startswith("//"):
+            content = "https:" + content
+        if content.startswith("http") and not any(skip in content.lower() for skip in ["logo", "blank", "default"]):
+            images.append(content)
+
+    # 2. Detail page gallery / carousel / main images
+    selectors = [
+        "div#pmain img", "div.pmain img", "div#thumbs img", "div.thumbs img",
+        "div.gallery img", "div.gl img", "div.carousel img", "img.item-photo",
+        "a.gl img", "div.pic img"
+    ]
+    for selector in selectors:
+        for img in item_soup.select(selector):
+            src = img.get("src") or img.get("data-original") or img.get("data-src")
+            if not src:
+                continue
+            src = src.strip()
+            if src.startswith("//"):
+                src = "https:" + src
+            if src.startswith("http") and src not in images:
+                if not any(skip in src.lower() for skip in ["icon", "logo", "arrow", "star", "blank.gif", "spacer"]):
+                    images.append(src)
+
+    # 3. Fallback to thumbnail from catalog card if no detail photos found
+    if not images and fallback_thumb:
+        thumb = fallback_thumb.strip()
+        if thumb.startswith("//"):
+            thumb = "https:" + thumb
+        if thumb.startswith("http"):
+            images.append(thumb)
+
+    return images
+
+
 def human_scroll(driver, is_category_page=False):
     """Simulates natural human scrolling down a page with customizable intensity."""
     try:

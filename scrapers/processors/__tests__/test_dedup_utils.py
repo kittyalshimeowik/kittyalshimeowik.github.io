@@ -10,6 +10,7 @@ if PROJECT_ROOT not in sys.path:
 from scrapers.processors.dedup_utils import (
     is_ghost_record,
     is_valid_display_listing,
+    is_valid_listing_url,
     normalize_listing_text,
     listing_completeness_score,
     compute_record_score,
@@ -51,10 +52,35 @@ class TestDedupUtils(unittest.TestCase):
             "full_text": "Valid length listing text but media only",
             "property_category": "Media-Only"
         }))
+        self.assertFalse(is_valid_display_listing({
+            "full_text": "Valid length listing text with apartment category",
+            "property_category": "Apartment",
+            "url": "https://facebook.com/groups/123456/posts/100"  # Invalid dummy URL
+        }))
+        self.assertFalse(is_valid_display_listing({
+            "full_text": "Valid length listing text with apartment category",
+            "property_category": "Apartment",
+            "url": "invalid-url-schema"
+        }))
         self.assertTrue(is_valid_display_listing({
             "full_text": "Valid length listing text with apartment category",
             "property_category": "Apartment"
         }))
+        self.assertTrue(is_valid_display_listing({
+            "full_text": "Valid length listing text with apartment category",
+            "property_category": "Apartment",
+            "url": "https://www.list.am/item/19827364"
+        }))
+
+    def test_is_valid_listing_url(self):
+        self.assertFalse(is_valid_listing_url(None))
+        self.assertFalse(is_valid_listing_url(""))
+        self.assertFalse(is_valid_listing_url("not_a_url"))
+        self.assertFalse(is_valid_listing_url("https://facebook.com/groups/123456/posts/100"))
+        self.assertFalse(is_valid_listing_url("https://example.com/test"))
+        self.assertFalse(is_valid_listing_url("https://www.list.am/category/123"))
+        self.assertTrue(is_valid_listing_url("https://www.list.am/item/18273645"))
+        self.assertTrue(is_valid_listing_url("https://www.facebook.com/groups/123456789/posts/987654321/"))
 
     def test_normalize_listing_text(self):
         self.assertEqual(normalize_listing_text(None), "")

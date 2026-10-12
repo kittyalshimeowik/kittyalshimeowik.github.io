@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Armenia Real Estate Hub</title>
+    <link rel="icon" type="image/svg+xml" href="logo.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -13,13 +20,18 @@
 
     <header>
         <div class="header-inner">
-            <div class="header-branding">
-                <div class="header-badge-row">
-                    <span class="live-pill"><span class="live-dot"></span> LIVE FEED</span>
-                    <span class="source-pills-header">Facebook &bull; List.am</span>
+            <div class="brand-container">
+                <a href="#" class="brand-logo-link" aria-label="Armenia Real Estate Hub Home">
+                    <img src="logo.svg" alt="Armenia Real Estate Hub Logo" class="brand-logo" width="46" height="46">
+                </a>
+                <div class="header-branding">
+                    <div class="header-badge-row">
+                        <span class="live-pill"><span class="live-dot"></span> LIVE FEED</span>
+                        <span class="source-pills-header">Facebook &bull; List.am</span>
+                    </div>
+                    <h1 class="logo" data-i18n="siteTitle">🇦🇲 Armenia Real Estate Hub</h1>
+                    <p class="header-subtitle" data-i18n="siteSubtitle">Live Aggregated Real Estate from Facebook & List.am</p>
                 </div>
-                <h1 class="logo" data-i18n="siteTitle">🇦🇲 Armenia Real Estate Hub</h1>
-                <p class="header-subtitle" data-i18n="siteSubtitle">Live Aggregated Real Estate from Facebook & List.am</p>
             </div>
             <div class="header-actions">
                 <div class="language-toggle" role="group" aria-label="Language">
@@ -188,6 +200,33 @@
 
     <!-- Floating Toast Notification System -->
     <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+    <!-- Google Maps Interactive Modal -->
+    <div id="map-modal" class="map-modal-backdrop" aria-hidden="true" role="dialog" aria-labelledby="map-modal-title">
+        <div class="map-modal-dialog">
+            <div class="map-modal-header">
+                <div class="map-modal-titles">
+                    <span class="map-modal-badge">📍 GOOGLE MAPS</span>
+                    <h3 id="map-modal-title" class="map-modal-title" data-i18n="mapLocation">Location on Map</h3>
+                    <p id="map-modal-subtitle" class="map-modal-subtitle">Armenia</p>
+                </div>
+                <button type="button" class="map-modal-close" id="map-modal-close" aria-label="Close map" title="Close">&times;</button>
+            </div>
+            <div class="map-modal-body">
+                <div class="map-loading-indicator" id="map-loading-indicator">
+                    <div class="map-spinner"></div>
+                    <span>Loading map...</span>
+                </div>
+                <iframe id="map-modal-iframe" class="map-modal-iframe" src="about:blank" title="Google Map Preview" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+            <div class="map-modal-footer">
+                <span class="map-modal-hint">🔍 Search nearby landmarks, schools, and transport</span>
+                <a id="map-modal-external-link" href="#" target="_blank" rel="noopener noreferrer" class="map-modal-open-btn">
+                    <span data-i18n="openInGoogleMaps">Open in Google Maps</span> <span class="arrow">↗</span>
+                </a>
+            </div>
+        </div>
+    </div>
 
     <script src="translations.js"></script>
     <script src="script.js"></script>

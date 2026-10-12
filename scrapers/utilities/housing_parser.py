@@ -1,4 +1,4 @@
-# scrapers/facebook/housing_parser.py
+# scrapers/utilities/housing_parser.py
 
 import re
 from scrapers.utilities.location_data import LOCATION_DICTIONARY_REGEX
@@ -14,25 +14,99 @@ PHONE_NUMBER_PATTERN = re.compile(
     r')'
 )
 
+# Area / Size patterns
+# Excluded bare 'մետր' / 'метр' so linear distances (e.g. 150 մետր հեռավորության վրա) are never captured as sizes
 SIZE_PATTERN = re.compile(
-    r'(?:(?P<size1>[1-9]\d{0,2}(?:[.,\s]\d{3})+|\d{1,5}(?:[.,]\d+)+|\d{1,5})\s*[-֊:]*\s*(?:քմ|ք\.մ\.|ք․մ․|ք\.\s*մ|քառակուսի\s+մետր|քառ\.\s*(?:մ\.|մետր)|sq\s*m|sq\.m\.|sqm|m2|m²|ք/մ|qm|q\.m\.|м²|кв\.?\s*м\.?|մ²|մ2|մետր))'
+    r'(?:(?P<size1>[1-9]\d{0,2}(?:[.,\s]\d{3})+|\d{1,5}(?:[.,]\d+)+|\d{1,5})\s*[-֊:.]*\s*(?:քմ|ք\.մ\.|ք․մ․|ք\.\s*մ|քառակուսի\s+մետր|քառ\.\s*(?:մ\.|մետր)|sq\s*m|sq\.m\.|sqm|m2|m²|ք/մ|qm|q\.m\.|м²|кв\.?\s*м\.?|մ²|մ2|մ\.))'
     r'|'
-    r'(?:(?:քմ|ք\.մ\.|ք․մ․|ք\.\s*մ|քառակուսի\s+մետր|քառ\.\s*(?:մ\.|մետր)|sq\s*m|sq\.m\.|sqm|m2|m²|ք/մ|qm|q\.m\.|м²|кв\.?\s*м\.?|մ²|մ2|մետր)\s*[-֊:]*\s*(?P<size2>[1-9]\d{0,2}(?:[.,\s]\d{3})+|\d{1,5}(?:[.,]\d+)+|\d{1,5}))',
+    r'(?:(?:քմ|ք\.մ\.|ք․մ․|ք\.\s*մ|քառակուսի\s+մետր|քառ\.\s*(?:մ\.|մետր)|sq\s*m|sq\.m\.|sqm|m2|m²|ք/մ|qm|q\.m\.|м²|кв\.?\s*м\.?|մ²|մ2|մ\.)\s*[-֊:.]*\s*(?P<size2>[1-9]\d{0,2}(?:[.,\s]\d{3})+|\d{1,5}(?:[.,]\d+)+|\d{1,5}))'
+    r'|'
+    r'(?:\b(?P<size3>[1-9]\d{1,3})\s*²\b)',
     re.IGNORECASE
 )
 
-ROOM_PATTERN = re.compile(
-    r'(?:(?P<rooms1>\d{1,2})\s*[-֊:]*\s*(?:սենյակ|սենյականոց|սեն\.|room|rooms|bed|bd|bedrooms|комн(?:\.|аты|ат)?))'
-    r'|'
-    r'(?:(?:սենյակ|սենյականոց|սեն\.|room|rooms|bed|bd|bedrooms|комн(?:\.|аты|ат)?)\s*[-֊:]*\s*(?P<rooms2>\d{1,2}))',
+SOT_PATTERN = re.compile(
+    r'\b(?P<sot>[1-9]\d{0,3}(?:[.,]\d+)?)\s*[-֊:]*\s*(?:սոտ|սոտկա|սոտեկ|սոտկի|сотка|сотки|соток|sot)\b',
     re.IGNORECASE
+)
+
+HA_PATTERN = re.compile(
+    r'\b(?P<ha>[1-9]\d{0,3}(?:[.,]\d+)?)\s*[-֊:]*\s*(?:հա|հեկտար|гектар|га|ha|hectare)\b',
+    re.IGNORECASE
+)
+
+RATE_PER_SQM_HEADER_PATTERN = re.compile(
+    r'\b1\s*(?:քմ|ք/մ|ք\.մ|մ2|sqm|sq\s*m|м²|кв\.?\s*м\.?)\s*(?:[-֊:]|\s)*(?:արժեքը?|գինը?|цена|price|արժե)',
+    re.IGNORECASE
+)
+
+# Room count patterns
+ROOM_PATTERN = re.compile(
+    r'(?:(?P<rooms1>\d{1,2})\s*[-֊:]*\s*(?:սենյակ\w*|սեն\.|room|rooms|bed|bd|bedrooms|ննջասենյակ\w*|ննջարան\w*|комн(?:\.|аты|ատ|а)?|спальн\w*))'
+    r'|'
+    r'(?:(?:սենյակ\w*|սեն\.|room|rooms|bed|bd|bedrooms|ննջասենյակ\w*|ննջարան\w*|комн(?:\.|аты|ատ|а)?|спальн\w*)\s*[-֊:]*\s*(?P<rooms2>\d{1,2}))',
+    re.IGNORECASE
+)
+
+CONVERTED_ROOMS_PATTERN = re.compile(
+    r'\b(?P<r1>[1-9])\s*[-֊]\s*(?P<r2>[1-9])\s*սենյակ\w*',
+    re.IGNORECASE
+)
+
+TRANSFORMED_ROOMS_PATTERN = re.compile(
+    r'\b(?P<r1>[1-9])\s*(?:-?րդ\s+)?սենյակ\w*\s*(?:ձևափոխված|դարձրած|դարձած|վերափոխված|переделанная\s+в)\s*(?P<r2>[1-9])',
+    re.IGNORECASE
+)
+
+WORD_ROOMS_PATTERN = re.compile(
+    r'\b(?P<word>մեկ|երկու|երեք|չորս|հինգ)\s+սենյակ\w*',
+    re.IGNORECASE
+)
+
+WORD_TO_NUM = {"մեկ": 1, "երկու": 2, "երեք": 3, "չորս": 4, "հինգ": 5}
+STUDIO_PATTERN = re.compile(r'\b(?:ստուդիա|ստուդիո|studio|студия)\b', re.IGNORECASE)
+LISTAM_ROOMS_PATTERN = re.compile(r'\b(?P<r>\d{1,2})\+?\s+Սենյակների\s+քանակ', re.IGNORECASE)
+
+CURRENCY_SYMBOLS_REGEX = (
+    r'\$|֏|€|₽|'
+    r'USD|AMD|EUR|RUB|'
+    r'dram(?:i|ov)?|amd|dollar(?:s)?|'
+    r'հհ\s*դրամ|հհ\s*դր\.?|ամն\s*դոլար(?:ով)?|'
+    r'դրամ(?:ի|ով)?|դր\.?|դ\b|'
+    r'դոլար(?:ի|ով)?|տոլար(?:ի|ով)?|'
+    r'амд|драм(?:а|ов)?|доллар(?:а|ов)?|у\.е\.?|ye|'
+    r'руб(?:лей|ля)?'
 )
 
 PRICE_CURRENCY_PATTERN = re.compile(
     r'(?:գինը[\s:`՝]*|price[\s:`՝]*|արժեքը[\s:`՝]*)?'
-    r'(?P<pre_curr>\$|֏|€|USD|AMD|EUR|dram|դրամ|դոլար|dollar|տոլար|հհ\s*դրամ|ամն\s*դոլար|руб|рублей)?\s*'
-    r'(?<![\d.])(?P<amount>[1-9]\d{0,2}(?:[,\s\.]\d{3})+(?!\d)|[1-9]\d{1,8})(?![\d.])\s*'
-    r'(?P<post_curr>\$|֏|€|USD|AMD|EUR|dram|դրամ|դոլար|dollar|տոլար|հհ\s*դրամ|ամն\s*դոլար|руб|рублей)?',
+    r'(?P<pre_curr>' + CURRENCY_SYMBOLS_REGEX + r')?\s*'
+    r'(?<![\d.])(?P<amount>[1-9]\d{0,2}(?:[,\s\.․\u0589\u2024]\d{3})+(?!\d)|[1-9]\d{1,8})(?![\d.])\s*'
+    r'(?P<post_curr>' + CURRENCY_SYMBOLS_REGEX + r')?',
+    re.IGNORECASE
+)
+
+PER_SQM_PRICE_PATTERN = re.compile(
+    r'(?:1\s*(?:քմ|ք/մ|ք\.մ|մ2|sqm|sq\s*m|кв\.?\s*м\.?)\s*[-֊:]?\s*(?P<p1>\$?\d[\d,\s.]*\$?)|'
+    r'(?P<p2>\$?\d[\d,\s.]*\$?)\s*[-֊/]\s*(?:1\s*)?(?:քմ|ք/մ|ք\.մ|մ2|sqm|sq\s*m|кв\.?\s*м\.?)|'
+    r'(?:արժեքը|գինը|цена)\s*1\s*(?:քմ|ք/մ|ք\.մ|մ2|sqm)\s*[-֊:]?\s*(?P<p3>\$?\d[\d,\s.]*\$?))',
+    re.IGNORECASE
+)
+
+INVESTMENT_RENTAL_PATTERN = re.compile(
+    r'\b(?:'
+    r'հարմար\s+է(?:\s+շատ)?\s+(?:օրավարձով|վարձով)(?:\s+հանձնելու|\s+տալու)?(?:\s+համար)?|'
+    r'օրավարձով\s+(?:հանձնելու|տալու)(?:\s+համար)?|'
+    r'վարձով\s+(?:հանձնելու|տալու)(?:\s+համար)?|'
+    r'կարող\s+եք\s+(?:տրվել\s+|տալ\s+)?(?:վարձով|օրավարձով)|'
+    r'karox\s+eq\s+vardzov(?:\s+tal)?|'
+    r'vardzov\s+talu(?:\s+hamar)?|'
+    r'harmar\s+e\s+(?:shat\s+)?(?:vardzov|oravardzov)|'
+    r'под\s+сдачу(?:\s+в\s+аренду)?|'
+    r'для\s+сдачи(?:\s+в\s+аренду)?|'
+    r'сдавать\s+в\s+аренду|'
+    r'купи\s+и\s+сдавай(?:\s+в\s+аренду)?'
+    r')\b',
     re.IGNORECASE
 )
 
@@ -56,18 +130,27 @@ EXCLUDED_CONTEXT_PATTERN = re.compile(
 )
 
 CURRENCY_MAP = {
-    '$': 'USD', 'usd': 'USD', 'dollar': 'USD', 'դոլար': 'USD', 'տոլար': 'USD',
+    '$': 'USD', 'usd': 'USD', 'dollar': 'USD', 'dollars': 'USD',
+    'դոլար': 'USD', 'դոլարի': 'USD', 'դոլարով': 'USD',
+    'տոլար': 'USD', 'տոլարի': 'USD', 'տոլարով': 'USD',
     'ամն դոլար': 'USD', 'ամն դոլարով': 'USD', 'usd dollar': 'USD',
-    '֏': 'AMD', 'amd': 'AMD', 'dram': 'AMD', 'դրամ': 'AMD', 'հհ դրամ': 'AMD', 'հհդրամ': 'AMD',
-    '€': 'EUR', 'eur': 'EUR', 'euro': 'EUR',
-    'руб': 'RUB', 'рублей': 'RUB'
+    'доллар': 'USD', 'доллара': 'USD', 'долларов': 'USD',
+    'у.е.': 'USD', 'у.е': 'USD', 'ye': 'USD',
+
+    '֏': 'AMD', 'amd': 'AMD', 'dram': 'AMD', 'drami': 'AMD', 'dramov': 'AMD',
+    'դրամ': 'AMD', 'դրամի': 'AMD', 'դրամով': 'AMD', 'դր': 'AMD', 'դր.': 'AMD', 'դ': 'AMD', 'դ.': 'AMD',
+    'հհ դրամ': 'AMD', 'հհդրամ': 'AMD', 'հհ դր': 'AMD', 'հհ դր.': 'AMD',
+    'амд': 'AMD', 'драм': 'AMD', 'драма': 'AMD', 'драмов': 'AMD',
+
+    '€': 'EUR', 'eur': 'EUR', 'euro': 'EUR', 'евро': 'EUR',
+    '₽': 'RUB', 'руб': 'RUB', 'рублей': 'RUB', 'рубля': 'RUB'
 }
 
 
 def normalize_price_amount(raw_str):
     if not raw_str:
         return None
-    cleaned = re.sub(r'[,\s\.]', '', raw_str.strip())
+    cleaned = re.sub(r'[,\s\.․\u0589\u2024]', '', raw_str.strip())
     try:
         return int(cleaned)
     except ValueError:
@@ -118,17 +201,62 @@ def extract_property_category(text, is_media_only=False):
         return "Media-Only" if is_media_only else "General / Unclassified"
     text_lower = text.lower()
     
-    # 1. Apartment: explicit apartment/studio keywords or building floor ratio (e.g. 3/9 հարկ, 4/5 этаж)
-    if re.search(r'\b(?:բնակարան|բնակարանի|բնակարանում|բնակարանը|nakaran|apartment|flat|ստուդիո|studio|квартира|квартиру|квартире|студия)\b', text_lower) or re.search(r'\b\d{1,2}\s*/\s*\d{1,2}\s*(?:-?րդ\s+)?(?:հարկ|этаж|эт)\b', text_lower):
-        return "Apartment"
-        
-    # 2. House: explicit house/villa/cottage keywords with word boundaries to avoid matching inside street names (e.g. Բագրատունյանց)
-    if re.search(r'\b(?:առանձնատուն|առանձնատան|առանձնատները|սեփական\s+տուն|տուն|տան|տներ|տները|arandznatun|tun|house|villa|ամառանոց|дом|дома|дач[ае]|коттедж|особняк)\b', text_lower):
+    # 0. Filter non-real-estate posts (vehicles, furniture, mines, accessories)
+    if re.search(r'\b(?:ավտոմեքենա|մեքենա|ավտո|nissan|toyota|mercedes|bmw|kia|hyundai|ավազի\s+հանք|կահույք|պահոց\s+\+\s+քնելատեղ|սպորտային\s+հագուստ)\b', text_lower):
+        if not re.search(r'\b(?:բնակարան|առանձնատուն|սեփական\s+տուն|հողատարածք)\b', text_lower):
+            return "General / Unclassified"
+
+    # 1. Commercial / Business premises (should not pollute Apartment / House)
+    is_commercial = bool(re.search(
+        r'\b(?:կոմերցիոն\s+տարածք|գրասենյակային\s+տարածք|գրասենյակ|բիզնես\s+տարածք|առևտրային\s+տարածք|արտադրական\s+տարածք|պահեստային\s+տարածք|խանութ|ավտոտնակ|garage|պահեստ|սրճարան|ռեստորան)\b',
+        text_lower
+    ))
+    if is_commercial and not re.search(r'\b(?:բնակարան|առանձնատուն|սեփական\s+տուն)\b', text_lower):
+        if re.search(r'\b(?:հող|հողատարածք|հողամաս)\b', text_lower):
+            return "Land"
+        return "General / Unclassified"
+
+    # Clean out distracting footnotes before primary category matching:
+    # A) "փոխանակում բնակարանի հետ" (exchange with apartment)
+    cleaned_text = re.sub(r'(?:փոխանակ(?:վում|ում)?|обмен)\s+(?:նաև\s+)?[^\n.,;]+?\s+բնակարանի\s+հետ', ' [EXCHANGE_NOTE] ', text_lower)
+    # B) "(տուն|առանձնատուն) կառուցելու համար" (to build a house)
+    cleaned_text = re.sub(r'(?:տուն|առանձնատուն)\s+կառուցելու(?:\s+համար)?', ' [BUILDING_NOTE] ', cleaned_text)
+    # C) Street names containing "տուն" root (e.g. Բագրատունյանց)
+    cleaned_text = re.sub(r'բագրատունյա[նց]+', ' [STREET_NAME] ', cleaned_text)
+
+    # 2. Inspect headline / first 2 lines (strongest signal of transaction item)
+    lines = [line.strip() for line in cleaned_text.split('\n') if line.strip()]
+    first_lines = " ".join(lines[:2]) if lines else cleaned_text
+
+    # Title check for Land
+    if re.search(r'\b(?:հող|հողատարածք|հողատարացք|հողամաս|հողակտոր|տնամերձ(?:\s+հողատարածք)?|գյուղատնտեսական\s+հող|պտղատու\s+այգի|land|plot|участок|земельный\s+участок)\b', first_lines):
+        return "Land"
+
+    # Title check for House
+    if re.search(r'\b(?:առանձնատուն|առանձնատոին|առանձնատան|սեփական\s+տուն|սեփական\s+տոին|ամառանոց|թաունհաուզ|դուպլեքս|քոթեջ|տուն|տան|վիլլա|villa|cottage|townhouse|дом|дома|дач[ае]|коттедж|особняк|таунхаус)\b', first_lines):
         return "House"
 
-    # 3. Land: explicit land/plot keywords
-    if re.search(r'\b(?:հող|հողատարածք|հողատարածքի|հողամաս|հողամասի|հողակտոր|tnamerd|tnamerdz|hox|land|plot|участок|земля|земли)\b', text_lower):
-        return "Land"
+    # Title check for Apartment
+    if re.search(r'\b(?:բնակարան|բնակարանի|բնակարանում|բնակարանը|nakaran|apartment|flat|ստուդիո|ստուդիա|studio|квартира|квартиру|квартире|студия)\b', first_lines) or re.search(r'\b\d{1,2}\s*/\s*\d{1,2}\s*(?:-?րդ\s+)?(?:հարկ|этаж|эт)\b', first_lines):
+        return "Apartment"
+
+    # 3. Full text fallback checks
+    if re.search(r'\b(?:հող|հողատարածք|հողատարացք|հողամաս|հողակտոր|տնամերձ|tnamerd|tnamerdz|hox|land|plot|участок|земля|земельный\s+участок)\b', cleaned_text):
+        if not re.search(r'\b(?:առանձնատուն|սեփական\s+տուն|ամառանոց|թաունհաուզ|դուպլեքս|քոթեջ)\b', cleaned_text):
+            return "Land"
+
+    if re.search(r'\b(?:առանձնատուն|առանձնատոին|առանձնատան|առանձնատները|սեփական\s+տուն|սեփական\s+տոին|տուն|տան|տներ|տները|arandznatun|tun|house|villa|ամառանոց|дом|дома|дач[ае]|коттедж|особняк|թաունհաուզ|դուպլեքս|քոթեջ|таунхаус)\b', cleaned_text):
+        if not re.search(r'\b(?:բնակարան|բնակարանի|բնակարանում|բնակարանը|квартира)\b', cleaned_text):
+            return "House"
+
+    if re.search(r'\b(?:բնակարան|բնակարանի|բնակարանում|բնակարանը|nakaran|apartment|flat|ստուդիո|ստուդիա|studio|квартира|квартиру|квартире|студия)\b', cleaned_text):
+        return "Apartment"
+
+    if re.search(r'\b\d{1,2}\s*/\s*\d{1,2}\s*(?:-?րդ\s+)?(?:հարկ|этаж|эт)\b', cleaned_text):
+        return "Apartment"
+
+    if re.search(r'\b(?:քարե|պանելային|մոնոլիտ|նորակառույց)\s+շենք(?:ի|ում|ը)?\b', cleaned_text) and re.search(r'\b\d{1,2}\s*[-֊:]*\s*սենյակ\w*', cleaned_text):
+        return "Apartment"
 
     return "Media-Only" if is_media_only else "General / Unclassified"
 
@@ -158,12 +286,6 @@ RESIDENTIAL_HOUSING_PATTERN = re.compile(
 
 
 def extract_property_zoning(text, property_category=None):
-    """
-    Classifies property purpose/zoning:
-    - 'Housing': Intended for residential living/housing (apartments, residential houses, homestead land).
-    - 'Agricultural': Intended for agricultural, farming, crops, orchards, greenhouses.
-    Returns: ['Housing'], ['Agricultural'], or ['Housing', 'Agricultural'] (if dual-purpose), or [].
-    """
     if not text and not property_category:
         return []
 
@@ -200,14 +322,41 @@ def extract_negotiation_status(text):
 
 def extract_locations_from_text(text_lower):
     sanitized_text = EXCLUDED_CONTEXT_PATTERN.sub(" [EXCLUDED_CONTEXT] ", text_lower)
-    
     found_locations = set()
-    for canonical_name, patterns in LOCATION_DICTIONARY_REGEX.items():
-        for pattern in patterns:
-            if re.search(pattern, sanitized_text, re.IGNORECASE):
-                found_locations.add(canonical_name)
+
+    # Priority 1: Check explicit Location: or 📍 line for highest accuracy
+    for line in sanitized_text.split('\n'):
+        line_clean = line.strip()
+        if line_clean.startswith('location:') or '📍' in line_clean or line_clean.startswith('տեղադրություն'):
+            for canonical_name, patterns in LOCATION_DICTIONARY_REGEX.items():
+                for pattern in patterns:
+                    if re.search(pattern, line_clean, re.IGNORECASE):
+                        found_locations.add(canonical_name)
+                        break
+            if found_locations:
                 break
-                
+
+    # Priority 2: Full text inspection if none found yet or to add neighborhood details
+    if not found_locations:
+        for canonical_name, patterns in LOCATION_DICTIONARY_REGEX.items():
+            for pattern in patterns:
+                if re.search(pattern, sanitized_text, re.IGNORECASE):
+                    found_locations.add(canonical_name)
+                    break
+
+    # Contextual conflict resolutions:
+    # 1. Garun Avan (Spring Neighborhood) is in Nor Nork 2nd Massiv, not Avan district
+    if "Nor Nork / Massiv" in found_locations and "Avan" in found_locations and "գարուն ավան" in sanitized_text:
+        found_locations.remove("Avan")
+    # 2. Azatutyan street in Dzoraghbyur should not be tagged as Arabkir
+    if "Jrvezh / Dzoraghbyur" in found_locations and "Arabkir" in found_locations and "ազատության" in sanitized_text:
+        if not re.search(r'\bկոմիտաս\b|\bարաբկիր\b', sanitized_text):
+            found_locations.remove("Arabkir")
+    # 3. Abovyan street/avenue in Kentron should not be tagged as Abovyan city
+    if "Abovyan" in found_locations and "Kentron / Center" in found_locations:
+        if re.search(r'\bաբովյան\s+(?:փողոց|պողոտա|նրբ)\b', sanitized_text):
+            found_locations.remove("Abovyan")
+
     return list(found_locations)
 
 
@@ -234,22 +383,7 @@ def extract_housing_details(text, is_media_only=False):
 
     property_category = extract_property_category(text, is_media_only=is_media_only)
 
-    listing_type = "Unknown"
-    if any(w in text_lower for w in ["վարձով", "օրավարձով", "vardsov", "rent", "vardzov", "аренду", "сдам", "сдается", "аренда", "посуточно"]):
-        listing_type = "Sale" if any(w in text_lower for w in ["վաճառք", "վաճառվում", "продажа", "продается"]) else "Rent"
-    elif any(w in text_lower for w in ["վաճառվում է", "vacharvum e", "sale", "nakavachark", "վաճառք", "продается", "продам", "продажа"]):
-        listing_type = "Sale"
-
-    is_negotiable = extract_negotiation_status(text)
-
-    floor_info = None
-    floor_match = FLOOR_PATTERN.search(text)
-    if floor_match:
-        floor_info = {
-            "floor": int(floor_match.group("floor")),
-            "total_floors": int(floor_match.group("total_floors"))
-        }
-
+    # 1. Extract phone numbers and mask them to avoid false price/code matches
     phone_matches = list(PHONE_NUMBER_PATTERN.finditer(sanitized_text))
     found_phones = []
     for match in reversed(phone_matches):
@@ -259,10 +393,30 @@ def extract_housing_details(text, is_media_only=False):
         sanitized_text = sanitized_text[:start] + " [PHONE_REMOVED] " + sanitized_text[end:]
     found_phones.reverse()
 
-    size_matches = list(SIZE_PATTERN.finditer(sanitized_text))
+    # 2. Extract sizes
     found_sizes = []
+    clean_for_size = RATE_PER_SQM_HEADER_PATTERN.sub(" [RATE_HEADER] ", sanitized_text)
+    
+    # Hectare sizes (1 ha = 10,000 sqm)
+    for m in HA_PATTERN.finditer(clean_for_size):
+        try:
+            val = float(m.group('ha').replace(',', '.'))
+            found_sizes.append(int(val * 10000))
+        except ValueError:
+            pass
+
+    # Sotka sizes (1 sot = 100 sqm)
+    for m in SOT_PATTERN.finditer(clean_for_size):
+        try:
+            val = float(m.group('sot').replace(',', '.'))
+            found_sizes.append(int(val * 100))
+        except ValueError:
+            pass
+
+    # Standard sqm sizes
+    size_matches = list(SIZE_PATTERN.finditer(clean_for_size))
     for match in reversed(size_matches):
-        size_str = match.group('size1') or match.group('size2')
+        size_str = match.group('size1') or match.group('size2') or match.group('size3')
         if size_str:
             size_str = size_str.strip()
             if re.search(r'[.,\s]\d{3}$', size_str):
@@ -274,22 +428,52 @@ def extract_housing_details(text, is_media_only=False):
                 if size_num.is_integer():
                     size_num = int(size_num)
 
-            found_sizes.append(size_num)
+            # Avoid 1 sqm false matches resulting from 1 քմ rate mentions
+            if size_num > 1 and size_num <= 500000:
+                found_sizes.append(size_num)
         start, end = match.span()
         sanitized_text = sanitized_text[:start] + " [SIZE_REMOVED] " + sanitized_text[end:]
     found_sizes.reverse()
 
-    room_matches = list(ROOM_PATTERN.finditer(sanitized_text))
+    # 3. Extract rooms
     found_rooms = []
+    # Converted room formats (e.g. 2-3 սենյակ, 1 ձևափոխված 2)
+    for m in CONVERTED_ROOMS_PATTERN.finditer(sanitized_text):
+        found_rooms.extend([int(m.group('r1')), int(m.group('r2'))])
+    for m in TRANSFORMED_ROOMS_PATTERN.finditer(sanitized_text):
+        found_rooms.extend([int(m.group('r1')), int(m.group('r2'))])
+
+    # List.am attributes (e.g. 5 Սենյակների քանակ)
+    for m in LISTAM_ROOMS_PATTERN.finditer(sanitized_text):
+        found_rooms.append(int(m.group('r')))
+
+    # Word numbers (e.g. երկու սենյակ)
+    for m in WORD_ROOMS_PATTERN.finditer(sanitized_text):
+        w = m.group('word').lower()
+        if w in WORD_TO_NUM:
+            found_rooms.append(WORD_TO_NUM[w])
+
+    room_matches = list(ROOM_PATTERN.finditer(sanitized_text))
     for match in reversed(room_matches):
-        try: 
+        try:
             rooms_str = match.group('rooms1') or match.group('rooms2')
-            found_rooms.append(int(rooms_str))
-        except ValueError: pass
+            if rooms_str:
+                found_rooms.append(int(rooms_str))
+        except ValueError:
+            pass
         start, end = match.span()
         sanitized_text = sanitized_text[:start] + " [ROOM_REMOVED] " + sanitized_text[end:]
     found_rooms.reverse()
 
+    # Studio default room count
+    if not found_rooms and STUDIO_PATTERN.search(sanitized_text):
+        found_rooms.append(1)
+
+    # Discard rooms for pure Land listings
+    if property_category == "Land":
+        found_rooms = []
+
+    # Clean other distractors
     sanitized_text = TREE_COUNT_PATTERN.sub(" [TREE_COUNT_REMOVED] ", sanitized_text)
     sanitized_text = DIMENSION_PATTERN.sub(" [DIMENSION_REMOVED] ", sanitized_text)
     sanitized_text = COUNT_ITEM_PATTERN.sub(" [COUNT_REMOVED] ", sanitized_text)
@@ -297,40 +481,157 @@ def extract_housing_details(text, is_media_only=False):
     sanitized_text = PERCENT_PATTERN.sub(" [PERCENT_REMOVED] ", sanitized_text)
     sanitized_text = COORDINATES_PATTERN.sub(" [COORDINATE_REMOVED] ", sanitized_text)
 
+    # 4. Determine initial sale/rent signals
+    rent_check_text = INVESTMENT_RENTAL_PATTERN.sub(" ", text_lower)
+    is_rent = any(w in rent_check_text for w in [
+        "վարձով", "վարձակալություն", "վարձակալության", "վարձակալությամբ", "տրվում է վարձով",
+        "օրավարձով", "օրավարձ", "vardsov", "rent", "for rent", "vardzov", "аренду", "в аренду",
+        "сдам", "сдается", "аренда", "посуточно",
+        "տրվում է", "տերվում է", "երկարաժամկետ", "ամսական", "ամսեկան", "ամսավճար",
+        "կվարձակալեմ", "կվարձեմ", "դեպոզիտ", "դեպոզիտային", "depozit", "amsakan", "erkarajamket"
+    ])
+    
+    is_sale = any(w in text_lower for w in [
+        "վաճառվում է", "վաճառվում են", "վաճառվում", "վաճառում եմ", "վաճառում ենք", "վաճառում",
+        "վաճառք", "շտապ վաճառք", "վաճառքի է", "վաճառքի", "կգնեմ", "կգնենք", "գնում եմ", "առնում եմ",
+        "vacharvum e", "vacharvum", "vacharum em", "vacharum", "sale", "for sale", "vachark", "nakavachark",
+        "продается", "продам", "продажа", "продаю", "куплю"
+    ])
+
+    has_text_amd = bool(re.search(
+        r'\b(?:amd|dram|drami|dramov|դրամ|դրամի|դրամով|դր|դ|հհ\s*դրամ|ամդ|драм|драма|драмов)\b|[֏]',
+        text, re.IGNORECASE
+    ))
+    has_text_usd = bool(re.search(
+        r'\b(?:usd|dollar|dollars|դոլար|դոլարի|դոլարով|տոլար|ամն\s*դոլար|доллар|доллара|долларов|у\.е)\b|[\$]',
+        text, re.IGNORECASE
+    ))
+
+    # Mask per-sqm price mentions so rate numbers don't get captured as total property prices
+    sanitized_text = PER_SQM_PRICE_PATTERN.sub(" [PER_SQM_PRICE_REMOVED] ", sanitized_text)
+
+    # 5. Extract prices
     parsed_prices = []
-    for match in PRICE_CURRENCY_PATTERN.finditer(sanitized_text):
-        amount_raw = match.group('amount')
-        pre_curr = match.group('pre_curr')
-        post_curr = match.group('post_curr')
-        amount = normalize_price_amount(amount_raw)
-        
-        if not amount:
-            continue
+    # Priority 1: Check explicit Price header line (List.am or FB format)
+    explicit_price_match = re.search(r'(?:Price:|Գինը[^\n:]*:|Արժեքը[^\n:]*:)\s*([^\n]+)', text, re.IGNORECASE)
+    if explicit_price_match:
+        price_header_line = explicit_price_match.group(1)
+        header_has_amd = bool(re.search(r'\b(?:amd|dram|drami|dramov|դրամ|դրամի|դրամով|դր|դ|ամդ|драм)\b|[֏]', price_header_line, re.IGNORECASE))
+        header_has_usd = bool(re.search(r'\b(?:usd|dollar|dollars|դոլար|տոլար|ամն\s*դոլար|доллар|у\.е)\b|[\$]', price_header_line, re.IGNORECASE))
+        for match in PRICE_CURRENCY_PATTERN.finditer(price_header_line):
+            amount_raw = match.group('amount')
+            pre_curr = match.group('pre_curr')
+            post_curr = match.group('post_curr')
+            amount = normalize_price_amount(amount_raw)
+            if not amount or (2020 <= amount <= 2030 and not pre_curr and not post_curr):
+                continue
+            symbol = (pre_curr or post_curr or '').strip().lower()
+            symbol_clean = re.sub(r'\s+', ' ', symbol)
+            currency = CURRENCY_MAP.get(
+                symbol_clean,
+                'AMD' if header_has_amd and not header_has_usd else ('USD' if header_has_usd and not header_has_amd else None)
+            )
+            if not currency:
+                if has_text_amd and not has_text_usd:
+                    currency = 'AMD'
+                elif is_rent and not is_sale and amount >= 30000:
+                    currency = 'AMD'
+                elif amount >= 10000000:
+                    currency = 'AMD'
+                elif 20000 <= amount < 1000000 and (is_sale or not is_rent):
+                    currency = 'USD'
+            if currency in ['AMD', 'USD']:
+                parsed_prices.append({
+                    "amount": amount,
+                    "currency": currency,
+                    "raw_text": match.group(0).strip()
+                })
+
+    # Priority 2: General text prices
+    if not parsed_prices:
+        for match in PRICE_CURRENCY_PATTERN.finditer(sanitized_text):
+            amount_raw = match.group('amount')
+            pre_curr = match.group('pre_curr')
+            post_curr = match.group('post_curr')
+            amount = normalize_price_amount(amount_raw)
             
-        if 2020 <= amount <= 2030 and not pre_curr and not post_curr:
-            continue
+            if not amount:
+                continue
+                
+            if 2020 <= amount <= 2030 and not pre_curr and not post_curr:
+                continue
+                
+            symbol = (pre_curr or post_curr or '').strip().lower()
+            symbol_clean = re.sub(r'\s+', ' ', symbol)
+            currency = CURRENCY_MAP.get(symbol_clean)
             
-        symbol = (pre_curr or post_curr or '').strip().lower()
-        symbol_clean = re.sub(r'\s+', ' ', symbol)
-        currency = CURRENCY_MAP.get(symbol_clean)
-        
-        if currency in ['AMD', 'USD']:
-            if currency == 'USD' and amount < 50:
+            if currency in ['AMD', 'USD']:
+                if currency == 'USD' and amount < 50:
+                    continue
+                if currency == 'AMD' and amount < 5000:
+                    continue
+                parsed_prices.append({
+                    "amount": amount,
+                    "currency": currency,
+                    "raw_text": match.group(0).strip()
+                })
+            elif not symbol_clean:
+                # Text with explicit AMD keywords and no USD keywords defaults unadorned prices to AMD
+                if has_text_amd and not has_text_usd:
+                    if amount >= 10000:
+                        parsed_prices.append({"amount": amount, "currency": "AMD", "raw_text": match.group(0).strip()})
+                # Rentals (without explicit sale signals) in Armenia are quoted in AMD (e.g. 150,000 - 800,000 AMD/month)
+                elif is_rent and not is_sale and 30000 <= amount <= 5000000:
+                    parsed_prices.append({"amount": amount, "currency": "AMD", "raw_text": match.group(0).strip()})
+                elif amount >= 10000000:
+                    parsed_prices.append({"amount": amount, "currency": "AMD", "raw_text": match.group(0).strip()})
+                # Real estate sales quoted as 20k-999k without symbol (and without AMD indicators) are USD
+                elif 20000 <= amount < 1000000 and (is_sale or (not is_rent and property_category in ["Apartment", "House", "Land"])):
+                    parsed_prices.append({"amount": amount, "currency": "USD", "raw_text": match.group(0).strip()})
+
+    # Filter out false per-sqm price rates (< 1,000 USD or < 400,000 AMD) for sales
+    if is_sale:
+        valid_prices = []
+        for p in parsed_prices:
+            amt = p.get("amount")
+            curr = p.get("currency")
+            if (curr == "USD" and amt and amt < 1000) or (curr == "AMD" and amt and amt < 400000):
                 continue
-            if currency == 'AMD' and amount < 5000:
-                continue
-            parsed_prices.append({
-                "amount": amount,
-                "currency": currency,
-                "raw_text": match.group(0).strip()
-            })
-        elif not symbol_clean:
-            if amount >= 50000:
-                parsed_prices.append({"amount": amount, "currency": "AMD", "raw_text": match.group(0).strip()})
-            elif 3000 <= amount < 50000:
-                continue
-            elif 50 <= amount < 3000:
-                continue
+            valid_prices.append(p)
+        if valid_prices:
+            parsed_prices = valid_prices
+
+    # 6. Determine listing type (Sale vs Rent)
+    first_price_val = parsed_prices[0]['amount'] if parsed_prices else None
+    first_price_curr = parsed_prices[0]['currency'] if parsed_prices else None
+    listing_type = "Unknown"
+
+    is_sale_priced = bool(
+        first_price_val and property_category in ["Apartment", "House", "Land"] and
+        ((first_price_curr == "USD" and first_price_val >= 15000) or
+         (first_price_curr == "AMD" and first_price_val >= 8000000))
+    )
+
+    if is_sale_priced:
+        listing_type = "Sale"
+    elif is_rent and is_sale:
+        listing_type = "Sale"
+    elif is_rent:
+        listing_type = "Rent"
+    elif is_sale:
+        listing_type = "Sale"
+    elif first_price_val and first_price_val >= 15000 and property_category in ["Apartment", "House", "Land"]:
+        listing_type = "Sale"
+
+    is_negotiable = extract_negotiation_status(text)
+
+    floor_info = None
+    floor_match = FLOOR_PATTERN.search(text)
+    if floor_match:
+        floor_info = {
+            "floor": int(floor_match.group("floor")),
+            "total_floors": int(floor_match.group("total_floors"))
+        }
 
     found_locations = extract_locations_from_text(text_lower)
     zoning = extract_property_zoning(text, property_category)
@@ -352,7 +653,6 @@ def extract_housing_details(text, is_media_only=False):
 
 
 def safe_to_float(val_str, default=0.0):
-    """Safely converts strings with regional separators (dots/commas) to float."""
     if not val_str:
         return default
     val_str = str(val_str).strip()
@@ -363,7 +663,6 @@ def safe_to_float(val_str, default=0.0):
             else:
                 val_str = val_str.replace(',', '')
         elif val_str.count('.') > 1:
-            # Handle multiple dots like '1.363.6' -> treat previous dots as thousands separators
             parts = val_str.split('.')
             val_str = "".join(parts[:-1]) + "." + parts[-1]
         elif ',' in val_str and val_str.count(',') > 1:

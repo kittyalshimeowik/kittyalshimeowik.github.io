@@ -59,7 +59,18 @@ The application utilizes a curated, accessible color palette defined in `:root`:
    - Appears smoothly with fade and scale animation when the user scrolls past `300px`.
    - Smoothly scrolls viewport back to the top (`window.scrollTo({ top: 0, behavior: 'smooth' })`).
 
-5. **Toast Notification System (`#toast-container`)**:
+5. **Visual Property Media & Photo Badges (`.card-media`)**:
+   - Displays real listing photography scraped from List.am and Facebook attachments with `loading="lazy"`.
+   - Photo counter badge (`📷 N`) showing total available images.
+   - Vector fallback: When photos are absent or fail to load, renders custom category-themed SVG graphics (Apartment, House, Land, Commercial) against subtle radial gradients.
+
+6. **Interactive Google Maps Modal (`#map-modal`)**:
+   - Zero-key embedded Google Maps preview triggered from either the card location link (`.map-link-btn`) or the footer map action (`.map-btn`).
+   - Automatically detects recognized Yerevan streets (Mashtots, Komitas, Baghramyan, Northern Ave, Tumanyan, Amiryan, Nalbandyan, etc.) or falls back to community/district level.
+   - Includes live loading spinner, interactive preview iframe, and direct "Open in Google Maps ↗" external navigation button.
+   - Full keyboard accessibility (Escape to dismiss, focus trap handling, outside backdrop click).
+
+7. **Toast Notification System (`#toast-container`)**:
    - Centered floating toast notifications for copy-to-clipboard interactions.
    - Smooth enter/exit transition with green checkmark indicator.
 
@@ -99,6 +110,7 @@ Users can sort listings by:
 - **Size: Small to Large** (tie-breaker: lower price, then newest date)
 
 ### 4. Card Action Handlers
+- **Map Buttons (`.map-link-btn`, `.map-btn`)**: Opens the Google Maps modal with resolved street/location query and live embed preview.
 - **Phone Button**: Direct `tel:` link with formatted Armenian number.
 - **Share Button**: Copies permalink to system clipboard and triggers toast notification.
 - **View Original Button**: Opens origin source on Facebook or List.am in a new tab.

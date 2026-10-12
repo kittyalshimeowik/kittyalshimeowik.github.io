@@ -95,3 +95,40 @@ The pipeline can be scheduled via Cron (Linux/macOS) or Windows Task Scheduler:
 # Example crontab entry: run every 3 hours
 0 */3 * * * cd /path/to/repo && /path/to/repo/.venv/bin/python run_pipeline.py >> pipeline.log 2>&1
 ```
+
+---
+
+## 🛡️ Anti-Bot Protections & Real User Emulation Guidelines
+
+External real estate platforms (primarily **List.am** and **Facebook**) enforce active anti-bot systems: Cloudflare Turnstile challenges, browser fingerprinting, rate limiting, and account checkpointing. To prevent automated bans during development, testing, and production runs, all browser interactions must act like genuine human users.
+
+### 1. Browser Stealth Architecture
+- **Undetected ChromeDriver (`undetected_chromedriver`)**:
+  - Used for List.am scraping; matched directly to installed Chrome major version (`get_installed_chrome_major_version()`).
+  - Launches in subprocess mode (`use_subprocess=True`) with automation flags removed (`--disable-blink-features=AutomationControlled`, `--no-sandbox`).
+- **Persistent User Profiles**:
+  - Browser sessions use persistent user data directories (`USER_DATA_DIR` under `~/Desktop/fb-scraper-project/`).
+  - Never use clean disposable sessions for authenticated workflows; persistent profiles preserve validated cookies (`c_user`, `cf_clearance`).
+- **Prohibition of Raw HTTP Requests**:
+  - Never send raw `curl`, `requests`, `urllib`, or `fetch` calls to List.am or Facebook. Cloudflare blocks them immediately with HTTP 403. Always use the configured browser drivers or inspect local SQLite records.
+
+### 2. Behavioral Humanization (`scrapers/utilities/browser_humanizer.py` & `listam_utils.py`)
+- **Bézier Curve Mouse Dynamics (`move_mouse_bezier`)**:
+  - Mouse pointer moves along randomized cubic Bézier curves with eased speed trajectories across 20–30 sub-steps (10–25ms delay).
+  - Clicks target random offsets within buttons/links (20%–80% bounding box), avoiding artificial (0, 0) or dead-center clicks.
+- **Natural Smooth Scrolling (`human_scroll`, `smooth_scroll`)**:
+  - Incremental chunk scrolling (350–700 px) with 12–20ms step delays.
+  - Injects natural backward scroll-backs (5%–15% probability of scrolling up 100–200 px) simulating reading pauses.
+- **Multitasking Simulation (`simulate_random_tab_activity`)**:
+  - 20% probability of opening an auxiliary tab, dwelling for 1.0–2.5 seconds, and switching back.
+- **Randomized Jitter Delays**:
+  - 1.5s to 3.5s randomized intervals between page navigations and item visits.
+- **Global Rest Breaks (`check_global_break`)**:
+  - 30s to 180s natural pauses every 8 to 12 minutes of active scraping.
+
+### 3. Checkpoint Handling
+- **Cloudflare Loops (`handle_cloudflare_loop`)**:
+  - Automatically identifies "Just a moment..." and "Verify you are human" screens, pausing for user clearance without spamming requests.
+- **Facebook Authentication (`wait_for_facebook_login`)**:
+  - Inspects `c_user` cookie and login elements. Prompts for manual login if the session expires, strictly avoiding automated credential input.
+

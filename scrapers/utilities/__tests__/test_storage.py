@@ -146,10 +146,31 @@ class TestListingsStorage(unittest.TestCase):
             "rooms": [2],
             "locations": ["Yerevan"],
             "phone_numbers": ["123"],
+            "images": ["https://s.list.am/g/1/1.jpg"],
             "property_category": "Apartment",
             "full_text": "Good apartment"
         })
         self.assertGreater(score_high, score_low)
+
+    def test_upsert_and_retrieve_with_images(self):
+        record = {
+            "canonical_id": "photo_listing_1",
+            "source": "List.am",
+            "url": "https://list.am/item/9999",
+            "property_category": "Apartment",
+            "images": [
+                "https://s.list.am/g/123/456.jpg",
+                "https://s.list.am/g/123/457.jpg"
+            ],
+            "creation_timestamp": int(time.time())
+        }
+        self.storage.upsert_listing(record)
+        listings = self.storage.get_all_listings()
+        self.assertEqual(len(listings), 1)
+        self.assertEqual(listings[0]["images"], [
+            "https://s.list.am/g/123/456.jpg",
+            "https://s.list.am/g/123/457.jpg"
+        ])
 
 
 if __name__ == "__main__":

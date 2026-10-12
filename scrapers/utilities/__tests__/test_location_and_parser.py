@@ -77,6 +77,44 @@ class TestLocationAndHousingParser(unittest.TestCase):
         self.assertEqual(details_amd["prices"][0]["amount"], 250000)
         self.assertEqual(details_amd["prices"][0]["currency"], "AMD")
 
+        # Armenian separator and dram symbol (250․000֏)
+        text_arm_sep = "Վարձով 2 սենյակ: 250․000֏ ամսական"
+        details_arm_sep = extract_housing_details(text_arm_sep)
+        self.assertEqual(len(details_arm_sep["prices"]), 1)
+        self.assertEqual(details_arm_sep["prices"][0]["amount"], 250000)
+        self.assertEqual(details_arm_sep["prices"][0]["currency"], "AMD")
+
+        # Armenian abbreviation 'դ' (180.000դ)
+        text_arm_d = "Վարձով բնակարան 180.000դ"
+        details_arm_d = extract_housing_details(text_arm_d)
+        self.assertEqual(len(details_arm_d["prices"]), 1)
+        self.assertEqual(details_arm_d["prices"][0]["amount"], 180000)
+        self.assertEqual(details_arm_d["prices"][0]["currency"], "AMD")
+
+        # Rental with unadorned price should never be classified as USD
+        text_rent_unadorned = "Վարձով է տրվում 2 սենյականոց բնակարան Կենտրոնում, գինը` 300,000"
+        details_rent_unadorned = extract_housing_details(text_rent_unadorned)
+        self.assertEqual(len(details_rent_unadorned["prices"]), 1)
+        self.assertEqual(details_rent_unadorned["prices"][0]["amount"], 300000)
+        self.assertEqual(details_rent_unadorned["prices"][0]["currency"], "AMD")
+        self.assertEqual(details_rent_unadorned["listing_type"], "Rent")
+
+        # Sale with investor rental potential should remain Sale
+        text_investor_sale = "Վաճառվում է առանձնատուն, 1-ին հարկը կարող եք տալ վարձով: Գինը` 185,000$"
+        details_investor_sale = extract_housing_details(text_investor_sale)
+        self.assertEqual(len(details_investor_sale["prices"]), 1)
+        self.assertEqual(details_investor_sale["prices"][0]["amount"], 185000)
+        self.assertEqual(details_investor_sale["prices"][0]["currency"], "USD")
+        self.assertEqual(details_investor_sale["listing_type"], "Sale")
+
+        # Monthly rental phrasing without explicit 'վարձով' word (e.g., 240.000դ Ամսեկան, Տրվում է Երկարաժամկետ)
+        text_monthly_rent = "1-2 սենյականոց բնակարան\n240.000դ Ամսեկան\nՏրվում է Երկարաժամկետ"
+        details_monthly_rent = extract_housing_details(text_monthly_rent)
+        self.assertEqual(len(details_monthly_rent["prices"]), 1)
+        self.assertEqual(details_monthly_rent["prices"][0]["amount"], 240000)
+        self.assertEqual(details_monthly_rent["prices"][0]["currency"], "AMD")
+        self.assertEqual(details_monthly_rent["listing_type"], "Rent")
+
     def test_multiple_prices_in_post(self):
         text = "Գինը` 120,000$ կամ 48,000,000 դրամ"
         details = extract_housing_details(text)

@@ -63,6 +63,7 @@ from scrapers.processors.dedup_utils import (
     DEFAULT_EXCHANGE_RATE_AMD_PER_USD,
     is_ghost_record,
     is_valid_display_listing,
+    is_valid_listing_url,
     normalize_listing_text,
     listing_completeness_score,
     get_phone_spec_signature,
@@ -207,7 +208,58 @@ def get_unique_listings_from_all_groups():
                 db_records = storage.get_all_listings(active_only=True)
                 if db_records:
                     print(f"[SUCCESS] Retrieved {len(db_records)} records from SQLite database.")
-                    return merge_duplicate_listings(db_records)
+                    print("[INFO] Re-classifying listings with upgraded parser and updating database...")
+                    reclassified_records = []
+                    for post in db_records:
+                        raw_text = (post.get("full_text") or post.get("text") or "").strip()
+                        if not post.get("source"):
+                            post["source"] = "List.am" if "list.am" in str(post.get("url") or "").lower() else "Facebook"
+
+                        is_media_only = (post.get("property_category") == "Media-Only")
+                        cat_id = str(post.get("category_id") or "").strip()
+
+                        if raw_text:
+                            reparsed_details = extract_housing_details(
+                                raw_text,
+                                is_media_only=is_media_only
+                            )
+                            post["locations"] = reparsed_details.get("locations") or []
+
+                            reparsed_cat = reparsed_details.get("property_category")
+                            if reparsed_cat and reparsed_cat not in ["General / Unclassified", "Media-Only"]:
+                                post["property_category"] = reparsed_cat
+                            elif cat_id == "55":
+                                post["property_category"] = "Apartment"
+                            elif cat_id == "60":
+                                post["property_category"] = "House"
+                            elif cat_id == "1447":
+                                post["property_category"] = "Land"
+                            elif not post.get("property_category"):
+                                post["property_category"] = reparsed_cat or ("Media-Only" if is_media_only else "General / Unclassified")
+
+                            reparsed_type = reparsed_details.get("listing_type")
+                            if cat_id in ["55", "60", "1447", "1386"]:
+                                post["listing_type"] = "Sale"
+                            elif reparsed_type and reparsed_type != "Unknown":
+                                post["listing_type"] = reparsed_type
+                            elif not post.get("listing_type"):
+                                post["listing_type"] = reparsed_type or "Unknown"
+
+                            post["rooms"] = reparsed_details.get("rooms") or []
+                            post["sizes_sqm"] = reparsed_details.get("sizes_sqm") or []
+                            post["phone_numbers"] = reparsed_details.get("phone_numbers") or []
+                            post["prices"] = reparsed_details.get("prices") or []
+                            post["zoning"] = reparsed_details.get("zoning") or []
+
+                        if "prices" in post:
+                            post["prices"] = normalize_and_convert_prices(post.get("prices"))
+
+                        post["creation_timestamp"] = normalize_timestamp(post)
+                        reclassified_records.append(post)
+
+                    storage.batch_update_classifications(reclassified_records)
+                    print(f"[SUCCESS] Re-classified and updated {len(reclassified_records)} listings in SQLite.")
+                    return merge_duplicate_listings(reclassified_records)
         except Exception as e:
             print(f"[WARNING] Could not load from SQLite: {e}")
         return []
@@ -306,6 +358,13 @@ def prune_for_display(post):
     text = post.get("full_text") or ""
     if len(text) > 500:
         text = text[:497] + "..."
+    images = post.get("images") or []
+    if isinstance(images, list):
+        # Cap to 5 to avoid overly large JSON payloads while providing multiple photos
+        images = [img for img in images if isinstance(img, str) and img.startswith("http")][:5]
+    else:
+        images = []
+
     return {
         "url": post.get("url"),
         "canonical_id": post.get("canonical_id"),
@@ -318,6 +377,7 @@ def prune_for_display(post):
         "locations": post.get("locations", []),
         "phone_numbers": post.get("phone_numbers", []),
         "zoning": post.get("zoning", []),
+        "images": images,
         "full_text": text,
         "created_at": post.get("created_at"),
         "creation_timestamp": post.get("creation_timestamp") or 0
@@ -347,6 +407,10 @@ def categorize_and_save_master_files(all_posts):
             text = (post.get("full_text") or "").strip()
             has_attrs = bool(post.get("prices") or post.get("sizes_sqm") or post.get("rooms") or post.get("phone_numbers"))
             if len(text) < 15 and not has_attrs:
+                continue
+
+            # Drop posts with invalid, non-working, or placeholder links
+            if post.get("url") and not is_valid_listing_url(post.get("url")):
                 continue
 
             # For all_for_sale_rent.json, only include verified, classified displayable listings

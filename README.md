@@ -20,6 +20,8 @@ Detailed technical documentation and component guides are organized in the [`doc
 - **Live Aggregation**: Ingests real estate listings across Facebook public groups and List.am categories.
 - **Multilingual Domain Parser**: Identifies prices (USD / AMD), sizes (m²), room counts, contact numbers, and zoning (Residential / Agricultural) across Armenian, Russian, and English listing bodies.
 - **Modern Web Interface**:
+  - **Visual Property Media**: Scraped listing photography with lazy loading, photo count badges, and graceful category-themed SVG vector fallbacks for 100% visual presentation.
+  - **Interactive Google Maps**: Modal map viewer with zero-key embedded Google Maps iframe resolving recognized Yerevan streets, landmarks, and districts, plus direct 1-click external navigation.
   - Live feed header with pulse indicator and quick source stats.
   - Collapsible filter sidebar with smooth SVG rotation.
   - Instantaneous in-memory filtering (price, source, property type, zoning, multi-select locations, keywords).
@@ -28,9 +30,10 @@ Detailed technical documentation and component guides are organized in the [`doc
   - Direct call button with clean international number formatting.
   - Infinite scroll pagination and skeleton loading placeholders.
   - Full bilingual localization (English / Հայերեն) with automatic currency alignment.
-- **Automated Testing & QA**:
-  - 159+ automated unit and interactive browser test cases.
+- **Automated Testing & Anti-Bot QA**:
+  - 172+ automated unit and interactive browser test cases.
   - Visual regression testing across desktop, tablet, and mobile breakpoints with interactive HTML reports.
+  - Strict human emulation & anti-detection safeguards (Bézier mouse curves, smooth jitter scrolling, Cloudflare challenge loops, and persistent session profiles) documented in [`.agents/rules/safe_scraping_and_browser_guidelines.md`](file:///d:/Projects/kittyalshimeowik.github.io/.agents/rules/safe_scraping_and_browser_guidelines.md).
 
 ---
 

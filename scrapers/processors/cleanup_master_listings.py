@@ -12,6 +12,7 @@ from scrapers.utilities.env_utils import ensure_utf8_output
 from scrapers.processors.dedup_utils import (
     is_ghost_record,
     is_valid_display_listing,
+    is_valid_listing_url,
     compute_record_score,
     get_content_signature,
     normalize_listing_text as normalize_text
@@ -31,6 +32,9 @@ def deduplicate_records(listings, filter_unclassified=False):
     dropped_count = 0
     for item in listings:
         if is_ghost_record(item):
+            dropped_count += 1
+            continue
+        if "url" in item and item["url"] is not None and not is_valid_listing_url(item["url"]):
             dropped_count += 1
             continue
         if filter_unclassified and not is_valid_display_listing(item):

@@ -15,6 +15,7 @@ if PROJECT_ROOT not in sys.path:
 
 from scrapers.listam.list_am_scraper import (
     extract_listing_dates,
+    extract_listing_images,
     SafeFloatContext,
     safe_extract_housing_details,
     get_category_file_path,
@@ -62,6 +63,41 @@ class TestListAmScraper(unittest.TestCase):
         html = '<div><p>Simple description without any dates.</p></div>'
         soup = BeautifulSoup(html, "html.parser")
         self.assertIsNone(extract_listing_dates(soup))
+
+    # -------------------------------------------------------------------------
+    # 1.1 extract_listing_images tests
+    # -------------------------------------------------------------------------
+
+    def test_extract_listing_images_og_and_gallery(self):
+        html = '''
+        <html>
+        <head>
+            <meta property="og:image" content="https://s.list.am/g/123/456.webp">
+        </head>
+        <body>
+            <div id="pmain">
+                <img src="https://s.list.am/g/123/457.webp" alt="Property image 2">
+            </div>
+            <div id="thumbs">
+                <img data-original="https://s.list.am/g/123/458.webp">
+                <img src="https://list.am/img/icon_star.png">
+            </div>
+        </body>
+        </html>
+        '''
+        soup = BeautifulSoup(html, "html.parser")
+        images = extract_listing_images(soup)
+        self.assertEqual(len(images), 3)
+        self.assertIn("https://s.list.am/g/123/456.webp", images)
+        self.assertIn("https://s.list.am/g/123/457.webp", images)
+        self.assertIn("https://s.list.am/g/123/458.webp", images)
+        self.assertNotIn("https://list.am/img/icon_star.png", images)
+
+    def test_extract_listing_images_fallback_thumb(self):
+        html = '<div><p>No photos on page</p></div>'
+        soup = BeautifulSoup(html, "html.parser")
+        images = extract_listing_images(soup, fallback_thumb="https://s.list.am/thumb.jpg")
+        self.assertEqual(images, ["https://s.list.am/thumb.jpg"])
 
     # -------------------------------------------------------------------------
     # 2. SafeFloatContext tests

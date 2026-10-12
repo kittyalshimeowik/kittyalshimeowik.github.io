@@ -47,6 +47,7 @@ from scrapers.listam.utilities.listam_utils import (
     load_dataset_for_category,
     save_record_to_disk,
     extract_listing_dates,
+    extract_listing_images,
     human_scroll,
     simulate_random_tab_activity,
     SafeFloatContext,
@@ -218,7 +219,11 @@ class DirectBrowserListAmScraper(BaseScraper):
                             continue
 
                         card_text = card.get_text(separator=" ", strip=True)
-                        page_items.append({"url": full_url, "text": card_text})
+                        card_img = card.find("img")
+                        card_thumb = None
+                        if card_img:
+                            card_thumb = card_img.get("src") or card_img.get("data-original") or card_img.get("data-src")
+                        page_items.append({"url": full_url, "text": card_text, "thumbnail": card_thumb})
 
                     unique_page_items = []
                     seen_page_urls = set()
@@ -275,12 +280,14 @@ class DirectBrowserListAmScraper(BaseScraper):
                                 attr_text = attr_div.get_text(" ", strip=True) if attr_div else ""
 
                                 created_at = extract_listing_dates(item_soup)
+                                images = extract_listing_images(item_soup, fallback_thumb=item.get("thumbnail"))
 
                                 full_text = f"{title}\nPrice: {price_text}\nLocation: {loc_text}\nAttributes: {attr_text}\n{body_text}".strip()
                             except Exception as e:
                                 print(f"⚠️ Error loading item page {url}: {e}")
                                 full_text = item["text"]
                                 created_at = None
+                                images = [item["thumbnail"]] if item.get("thumbnail") else []
 
                             parsed = safe_extract_housing_details(full_text)
 
@@ -317,6 +324,7 @@ class DirectBrowserListAmScraper(BaseScraper):
                                 "rooms": parsed.get("rooms", []),
                                 "locations": parsed.get("locations", []),
                                 "phone_numbers": parsed.get("phone_numbers", []),
+                                "images": images,
                                 "full_text": full_text,
                             }
                             category_records.append(record)

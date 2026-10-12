@@ -27,6 +27,8 @@ def compute_record_completeness(record):
     score += len(record.get("rooms") or []) * 5.0
     score += len(record.get("locations") or []) * 5.0
     score += len(record.get("phone_numbers") or []) * 5.0
+    if record.get("images"):
+        score += 10.0
     cat = record.get("property_category")
     if cat in ["Apartment", "House", "Land"]:
         score += 15.0
@@ -64,12 +66,19 @@ class ListingsStorage:
                     locations_json TEXT,
                     phones_json TEXT,
                     zoning_json TEXT,
+                    images_json TEXT,
                     completeness_score REAL DEFAULT 0,
                     is_active INTEGER DEFAULT 1,
                     first_seen_at TEXT,
                     last_seen_at TEXT
                 );
             """)
+            # Migration check: Ensure images_json column exists in legacy tables
+            cur = self.conn.cursor()
+            cols = [col[1] for col in cur.execute("PRAGMA table_info(listings)").fetchall()]
+            if "images_json" not in cols:
+                cur.execute("ALTER TABLE listings ADD COLUMN images_json TEXT;")
+
             self.conn.execute("""
                 CREATE INDEX IF NOT EXISTS idx_listings_active_ts 
                 ON listings(is_active, creation_timestamp);
@@ -120,6 +129,7 @@ class ListingsStorage:
             json.dumps(record.get("locations") or [], ensure_ascii=False),
             json.dumps(record.get("phone_numbers") or [], ensure_ascii=False),
             json.dumps(record.get("zoning") or [], ensure_ascii=False),
+            json.dumps(record.get("images") or [], ensure_ascii=False),
             score,
             1, # is_active
             now_iso, # first_seen_at
@@ -144,24 +154,24 @@ class ListingsStorage:
                     INSERT INTO listings (
                         canonical_id, source, url, category_id, property_category, listing_type,
                         full_text, created_at, creation_timestamp, extracted_at,
-                        prices_json, sizes_json, rooms_json, locations_json, phones_json, zoning_json,
+                        prices_json, sizes_json, rooms_json, locations_json, phones_json, zoning_json, images_json,
                         completeness_score, is_active, first_seen_at, last_seen_at
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, row_data)
                 return "inserted"
             else:
                 existing_score = existing["completeness_score"]
-                new_score = row_data[16]
+                new_score = row_data[17]
                 if new_score >= existing_score:
                     # Update all details and last_seen_at
                     cur.execute("""
                         UPDATE listings SET
                             source = ?, url = ?, category_id = ?, property_category = ?, listing_type = ?,
                             full_text = ?, created_at = ?, creation_timestamp = ?, extracted_at = ?,
-                            prices_json = ?, sizes_json = ?, rooms_json = ?, locations_json = ?, phones_json = ?, zoning_json = ?,
+                            prices_json = ?, sizes_json = ?, rooms_json = ?, locations_json = ?, phones_json = ?, zoning_json = ?, images_json = ?,
                             completeness_score = ?, is_active = 1, last_seen_at = ?
                         WHERE canonical_id = ?
-                    """, row_data[1:17] + (now_iso, canonical_id))
+                    """, row_data[1:18] + (now_iso, canonical_id))
                     return "updated"
                 else:
                     # Keep existing richer details, just update last_seen_at
@@ -187,30 +197,63 @@ class ListingsStorage:
                         INSERT INTO listings (
                             canonical_id, source, url, category_id, property_category, listing_type,
                             full_text, created_at, creation_timestamp, extracted_at,
-                            prices_json, sizes_json, rooms_json, locations_json, phones_json, zoning_json,
+                            prices_json, sizes_json, rooms_json, locations_json, phones_json, zoning_json, images_json,
                             completeness_score, is_active, first_seen_at, last_seen_at
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """, row_data)
                     inserted += 1
                 else:
                     existing_score = existing["completeness_score"]
-                    new_score = row_data[16]
+                    new_score = row_data[17]
                     if new_score >= existing_score:
                         cur.execute("""
                             UPDATE listings SET
                                 source = ?, url = ?, category_id = ?, property_category = ?, listing_type = ?,
                                 full_text = ?, created_at = ?, creation_timestamp = ?, extracted_at = ?,
-                                prices_json = ?, sizes_json = ?, rooms_json = ?, locations_json = ?, phones_json = ?, zoning_json = ?,
+                                prices_json = ?, sizes_json = ?, rooms_json = ?, locations_json = ?, phones_json = ?, zoning_json = ?, images_json = ?,
                                 completeness_score = ?, is_active = 1, last_seen_at = ?
                             WHERE canonical_id = ?
-                        """, row_data[1:17] + (now_iso, canonical_id))
+                        """, row_data[1:18] + (now_iso, canonical_id))
                         updated += 1
                     else:
                         cur.execute("UPDATE listings SET last_seen_at = ?, is_active = 1 WHERE canonical_id = ?", (now_iso, canonical_id))
                         touched += 1
         return {"inserted": inserted, "updated": updated, "touched": touched}
 
+    def batch_update_classifications(self, records):
+        """Batch updates classifications and extracted fields for listings."""
+        updated = 0
+        now_iso = datetime.now(timezone.utc).isoformat()
+        with self.conn:
+            cur = self.conn.cursor()
+            for record in records:
+                row_data = self._serialize_record(record)
+                if not row_data:
+                    continue
+                canonical_id = row_data[0]
+                cur.execute("""
+                    UPDATE listings SET
+                        source = ?, category_id = ?, property_category = ?, listing_type = ?,
+                        prices_json = ?, sizes_json = ?, rooms_json = ?, locations_json = ?, phones_json = ?, zoning_json = ?, images_json = ?,
+                        completeness_score = ?, last_seen_at = ?
+                    WHERE canonical_id = ?
+                """, (
+                    row_data[1], row_data[3], row_data[4], row_data[5],
+                    row_data[10], row_data[11], row_data[12], row_data[13], row_data[14], row_data[15], row_data[16],
+                    row_data[17], now_iso, canonical_id
+                ))
+                updated += 1
+        return updated
+
     def _row_to_dict(self, row):
+        row_keys = row.keys()
+        images = []
+        if "images_json" in row_keys and row["images_json"]:
+            try:
+                images = json.loads(row["images_json"])
+            except Exception:
+                images = []
+
         return {
             "canonical_id": row["canonical_id"],
             "source": row["source"],
@@ -228,6 +271,7 @@ class ListingsStorage:
             "locations": json.loads(row["locations_json"] or "[]"),
             "phone_numbers": json.loads(row["phones_json"] or "[]"),
             "zoning": json.loads(row["zoning_json"] or "[]"),
+            "images": images,
             "completeness_score": row["completeness_score"],
             "is_active": row["is_active"],
             "first_seen_at": row["first_seen_at"],
