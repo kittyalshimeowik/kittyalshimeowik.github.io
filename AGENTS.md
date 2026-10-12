@@ -23,10 +23,10 @@ See the complete specification in: [`.agents/rules/safe_scraping_and_browser_gui
 
 1. **Unit Testing**:
    - Run: `.venv\Scripts\python.exe run_tests.py`
-   - Must maintain 100% pass rate across all 167+ unit tests.
+   - Must maintain 100% pass rate across all 191+ unit tests.
 2. **Visual Regression & Screenshot Testing**:
    - Run: `.venv\Scripts\python.exe run_screenshot_tests.py`
-   - Tests 13 desktop, tablet, and mobile scenarios against baseline images.
+   - Tests 14 desktop, tablet, and mobile scenarios against baseline images.
    - Only update baselines via `--update-baselines` when intentional layout or dataset changes occur.
 3. **Data Classification Integrity**:
    - Pricing must never capture per-m² rates ($55–$170) as total sale prices.

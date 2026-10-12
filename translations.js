@@ -90,6 +90,11 @@ const TRANSLATIONS = {
         openInGoogleMaps: "Open in Google Maps",
         closeMap: "Close map",
         photosCount: count => `${count} photo${count === 1 ? "" : "s"}`,
+        showOriginal: "Show original",
+        showTranslation: "Translate to English",
+        showMore: "Show more",
+        showLess: "Show less",
+        translatedBadge: "Translated",
         listingTypes: { Sale: "Sale", Rent: "Rent", Unknown: "Unknown" },
         propertyTypes: { Apartment: "Apartment", House: "House", Land: "Land" }
     },
@@ -179,6 +184,11 @@ const TRANSLATIONS = {
         openInGoogleMaps: "Բացել Google Քարտեզում",
         closeMap: "Փակել քարտեզը",
         photosCount: count => `${count} լուսանկար`,
+        showOriginal: "Դիտել սկզբնականը",
+        showTranslation: "Թարգմանել անգլերեն",
+        showMore: "Տեսնել ավելին",
+        showLess: "Փակել",
+        translatedBadge: "Թարգմանված",
         listingTypes: { Sale: "Վաճառք", Rent: "Վարձակալություն", Unknown: "Անհայտ" },
         propertyTypes: { Apartment: "Բնակարան", House: "Տուն", Land: "Հողատարածք" }
     }

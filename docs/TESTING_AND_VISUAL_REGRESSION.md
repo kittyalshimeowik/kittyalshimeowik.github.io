@@ -33,7 +33,7 @@ screenshot_tests/
 Spawns a clean `http.server.SimpleHTTPRequestHandler` in a background daemon thread on port `0` (OS-assigned ephemeral port). Eliminates port collisions and allows testing without external web servers or CORS restrictions.
 
 ### 2. Test Scenarios Registry (`scenarios.py`)
-Defines viewports and setup interactions across 11 critical user journeys:
+Defines viewports and setup interactions across 14 critical user journeys:
 
 | Scenario ID | Title | Viewport | Type / Interaction |
 | :--- | :--- | :--- | :--- |
@@ -48,6 +48,9 @@ Defines viewports and setup interactions across 11 critical user journeys:
 | `mobile_view` | Mobile Portrait View | 375x812 | iPhone mobile viewport |
 | `mobile_filters_collapsed` | Mobile Filters Collapsed | 375x812 | Mobile view with filter drawer closed |
 | `component_card_detail` | Single Property Card Component | 1440x900 | High-res element capture (`.property-card`) |
+| `component_card_photo` | Single Property Card with Photography | 1440x900 | High-res element capture with real photos & badge |
+| `header_branding_logo` | Header Branding & Logo Component | 1440x900 | High-res element capture (`header`) |
+| `mobile_compact_360` | Compact Mobile Screen (360x640) | 360x640 | Android compact viewport verification |
 
 ### 3. Image Comparator & Diff Math (`comparator.py`)
 Computes pixel differences between current screenshots and golden baselines:

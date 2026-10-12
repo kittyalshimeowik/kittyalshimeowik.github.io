@@ -95,3 +95,4 @@ Each listing object in `all_for_sale_rent.json` adheres to this standard schema:
 | `phone_numbers` | `string[]` | Cleaned contact numbers | `["+374 94 880 550"]` |
 | `creation_timestamp` | `number` | Unix timestamp of post | `1712839200` |
 | `full_text` | `string` | Original listing body | `"Վաճառվում է 3 սենյականոց..."` |
+| `full_text_en` | `string` | English translation of listing body | `"3-room apartment for sale in..."` |

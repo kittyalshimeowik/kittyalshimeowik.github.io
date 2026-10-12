@@ -79,6 +79,36 @@ class TestHousingExtractor(unittest.TestCase):
         self.assertEqual(details["prices"][0]["amount"], 98000)
         self.assertEqual(details["prices"][0]["currency"], "USD")
 
+    def test_sqm_rate_and_area_total_cost_calculation(self):
+        # 1քմ - 70$ with 7066 քմ land
+        post1 = (
+            "🌿 Վաճառվում է հողատարածք Ջրվեժ-Առինջ տանող ճանապարհին։\n"
+            "🏷️Արժեքը՝   1քմ - 70$\n"
+            "————————————————\n"
+            "📐 Մակերես՝ 7066  քմ\n"
+            "🏡 Նշանակություն՝ գյուղատնտեսական"
+        )
+        details1 = extract_housing_details(post1)
+        self.assertEqual(details1["prices"][0]["amount"], 494620)
+        self.assertEqual(details1["prices"][0]["currency"], "USD")
+        self.assertEqual(details1["sizes_sqm"], [7066])
+        self.assertEqual(details1["listing_type"], "Sale")
+
+        # 1քմ - 80$ with 5770 քմ land
+        post2 = (
+            "🌿 Վաճառվում է հողատարածք Ձորաղբյուրում՝ ձիարշավարանի մոտ։\n"
+            "🏷️Արժեքը՝   1քմ - 80$\n"
+            "————————————————\n"
+            "📐 Մակերես՝ 5770  քմ\n"
+            "🏡 Նշանակություն՝ գյուղատնտեսական"
+        )
+        details2 = extract_housing_details(post2)
+        self.assertEqual(details2["prices"][0]["amount"], 461600)
+        self.assertEqual(details2["prices"][0]["currency"], "USD")
+        self.assertEqual(details2["sizes_sqm"], [5770])
+        self.assertEqual(details2["listing_type"], "Sale")
+
+
     # -------------------------------------------------------------------------
     # 2. PHONE NUMBER NORMALIZATION TESTS
     # -------------------------------------------------------------------------

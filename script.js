@@ -305,6 +305,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (query) {
                 const searchCorpus = [
                     item.full_text || "",
+                    item.full_text_en || "",
                     (item.locations || []).join(" "),
                     item.property_category || "",
                     itemZonings.join(" "),
@@ -479,43 +480,279 @@ document.addEventListener("DOMContentLoaded", () => {
         `
     };
 
+    const YEREVAN_DISTRICTS = new Set([
+        "Ajapnyak", "Arabkir", "Avan", "Davtashen", "Erebuni", "Kentron / Center",
+        "Malatia-Sebastia", "Nor Nork / Massiv", "Nork-Marash", "Nubarashen",
+        "Shengavit", "Zeytun / Kanaker", "Downtown", "Center", "Կենտրոն"
+    ]);
+
     const STREET_PATTERNS = [
-        { name: "Mashtots Ave", regex: /(?:մաշտոց|маштоц|mashtots)/i },
-        { name: "Komitas Ave", regex: /(?:կոմիտաս|комитас|komitas)/i },
-        { name: "Baghramyan Ave", regex: /(?:բաղրամյան|баграмян|baghramyan|bagramyan)/i },
-        { name: "Sayat-Nova Ave", regex: /(?:սայաթ[\s-]նովա|саят[\s-]нова|sayat[\s-]nova)/i },
+        { name: "Mashtots Ave", regex: /(?:մաշտոց(?:ի)?|маштоц(?:а)?|mashtots)/i },
+        { name: "Komitas Ave", regex: /(?:կոմիտաս(?:ի)?|комитас(?:а)?|komitas)/i },
+        { name: "Baghramyan Ave", regex: /(?:բաղրամյան(?:ի)?|баграмян(?:а)?|baghramyan|bagramyan)/i },
+        { name: "Sayat-Nova Ave", regex: /(?:սայաթ[\s-]նովա(?:յի)?|саят[\s-]нова|sayat[\s-]nova)/i },
         { name: "Northern Ave", regex: /(?:հյուսիսային|северный|northern\s*ave)/i },
-        { name: "Tumanyan St", regex: /(?:թումանյան|туманян|tumanyan)/i },
-        { name: "Amiryan St", regex: /(?:ամիրյան|амирян|amiryan)/i },
-        { name: "Nalbandyan St", regex: /(?:նալբանդյան|налбандян|nalbandyan)/i },
-        { name: "Abovyan St", regex: /(?:աբովյան\s*(?:փողոց|փող|փ\.|st|street)?|абовян|abovyan)/i },
-        { name: "Tigran Mets Ave", regex: /(?:տիգրան\s+մեծ|тигран\s+мец|tigran\s+mets)/i },
-        { name: "Khanjyan St", regex: /(?:խանջյան|ханджян|khanjyan)/i },
+        { name: "Tumanyan St", regex: /(?:թումանյան(?:ի)?|туманян(?:а)?|tumanyan)/i },
+        { name: "Amiryan St", regex: /(?:ամիրյան(?:ի)?|амирян(?:а)?|amiryan)/i },
+        { name: "Nalbandyan St", regex: /(?:նալբանդյան(?:ի)?|налбандян(?:а)?|nalbandyan)/i },
+        { name: "Abovyan St", regex: /(?:աբովյան(?:ի)?\s*(?:փողոց|փող|փ\.|st|street)?|абовян|abovyan)/i },
+        { name: "Tigran Mets Ave", regex: /(?:տիգրան\s+մեծ(?:ի)?|тигран\s+мец(?:а)?|tigran\s+mets)/i },
+        { name: "Khanjyan St", regex: /(?:խանջյան(?:ի)?|ханджян(?:а)?|khanjyan)/i },
         { name: "Vardanants St", regex: /(?:վարդանանց|вардананц|vardanants)/i },
-        { name: "Charents St", regex: /(?:չարենց|чаренц|charents)/i },
-        { name: "Pushkin St", regex: /(?:պուշկին|пушкин|pushkin)/i },
+        { name: "Charents St", regex: /(?:չարենց(?:ի)?|чаренц(?:а)?|charents)/i },
+        { name: "Pushkin St", regex: /(?:պուշկին(?:ի)?|пушкин(?:а)?|pushkin)/i },
         { name: "Arami St", regex: /(?:արամի\s*(?:փողոց|փ\.|st)?|арами|arami)/i },
-        { name: "Isahakyan St", regex: /(?:իսահակյան|исаакян|isahakyan)/i },
+        { name: "Isahakyan St", regex: /(?:իսահակյան(?:ի)?|исаакян(?:а)?|isahakyan)/i },
         { name: "Moskovyan St", regex: /(?:մոսկովյան|московян|moskovyan)/i },
-        { name: "Kasyan St", regex: /(?:կասյան|касьян|kasyan)/i },
-        { name: "Vagharshyan St", regex: /(?:վաղարշյան|вагаршян|vagharshyan)/i },
-        { name: "Gulbenkian St", regex: /(?:գյուլբենկյան|гюльбенкян|gulbenkian|gyulbenkyan)/i },
+        { name: "Kasyan St", regex: /(?:կասյան(?:ի)?|касьян(?:а)?|kasyan)/i },
+        { name: "Vagharshyan St", regex: /(?:վաղարշյան(?:ի)?|вагаршян(?:а)?|vagharshyan)/i },
+        { name: "Gulbenkian St", regex: /(?:գյուլբենկյան(?:ի)?|гюльбенкян(?:а)?|gulbenkian|gyulbenkyan)/i },
         { name: "Azatutyan Ave", regex: /(?:ազատության|азатутян|azatutyan)/i },
-        { name: "Davit Anhaght St", regex: /(?:դավիթ\s+անհաղթ|давид\s+анахт|davit\s+anhaght)/i },
-        { name: "Sebastia St", regex: /(?:սեբաստիա|себастия|sebastia)/i },
+        { name: "Davit Anhaght St", regex: /(?:դավիթ\s+անհաղթ(?:ի)?|давид\s+анахт|davit\s+anhaght)/i },
+        { name: "Sebastia St", regex: /(?:սեբաստիա(?:յի)?|себастия|sebastia)/i },
         { name: "Gai Ave", regex: /(?:գայի\s+(?:պող|պողոտա)|gai\s+ave)/i },
-        { name: "Rubinyants St", regex: /(?:ռուբինյանց|рубинянц|rubinyants)/i }
+        { name: "Rubinyants St", regex: /(?:ռուբինյանց|рубинянц|rubinyants)/i },
+        { name: "Kievyan St", regex: /(?:կիևյան|киевская|kievyan)/i },
+        { name: "Halabyan St", regex: /(?:հալաբյան(?:ի)?|алабян(?:а)?|halabyan)/i },
+        { name: "Leningradyan St", regex: /(?:լենինգրադյան|ленинградская|leningradyan)/i },
+        { name: "Fuchik St", regex: /(?:ֆուչիկ(?:ի)?|фучик(?:а)?|fuchik)/i },
+        { name: "Mazmanyan St", regex: /(?:մազմանյան(?:ի)?|мазманян(?:а)?|mazmanyan)/i },
+        { name: "Bashinjaghyan St", regex: /(?:բաշինջաղյան(?:ի)?|башинджагян(?:а)?|bashinjaghyan)/i },
+        { name: "Arshakunyats Ave", regex: /(?:արշակունյաց|аршакуняц|arshakunyats)/i },
+        { name: "Garegin Nzhdeh St", regex: /(?:գարեգին\s+նժդեհ(?:ի)?|гарегин\s+нжде|garegin\s+nzhdeh)/i },
+        { name: "Bagratunyats Ave", regex: /(?:բագրատունյաց|багратуняц|bagratunyats)/i },
+        { name: "Shirak St", regex: /(?:շիրակ(?:ի)?\s*(?:փողոց|փ\.)|ширакская|shirak\s+st)/i },
+        { name: "Artashisyan St", regex: /(?:արտաշիսյան|арташисян|artashisyan)/i },
+        { name: "Manandyan St", regex: /(?:մանանդյան(?:ի)?|манандян(?:а)?|manandyan)/i },
+        { name: "Moldovakan St", regex: /(?:մոլդովական|молдаванская|moldovakan)/i },
+        { name: "Safaryan St", regex: /(?:սաֆարյան(?:ի)?|сафарян(?:а)?|safaryan)/i },
+        { name: "Gyurjyan St", regex: /(?:գյուրջյան(?:ի)?|гюрджян(?:а)?|gyurjyan)/i },
+        { name: "Bagrevand St", regex: /(?:բագրևանդ(?:ի)?|багреванд(?:а)?|bagrevand)/i },
+        { name: "Mikoyan St", regex: /(?:(?:անաստաս\s+)?միկոյան(?:ի)?|микоян(?:а)?|mikoyan)/i },
+        { name: "Adonts St", regex: /(?:ադոնց(?:ի)?|адонц(?:а)?|adonts)/i },
+        { name: "Mamikonyants St", regex: /(?:մամիկոնյանց|мамиконянц|mamikonyants)/i },
+        { name: "Hrachya Kochar St", regex: /(?:հրաչյա\s+քոչար(?:ի)?|грачья\s+кочар(?:а)?|hrachya\s+kochar)/i },
+        { name: "Yervand Kochar St", regex: /(?:երվանդ\s+քոչար(?:ի)?|ерванд\s+кочар(?:а)?|yervand\s+kochar)/i },
+        { name: "Kajaznuni St", regex: /(?:քաջազնուն(?:ու|ի)?|каджазнуни|kajaznuni)/i },
+        { name: "Saryan St", regex: /(?:սարյան(?:ի)?|сарян(?:а)?|saryan)/i },
+        { name: "Buzand St", regex: /(?:բուզանդ(?:ի)?|бузанд(?:а)?|buzand)/i },
+        { name: "Hanrapetutyan St", regex: /(?:հանրապետության|анрапетутян|hanrapetutyan)/i },
+        { name: "Koghbatsi St", regex: /(?:(?:եզնիկ\s+)?կողբաց(?:ու|ի)?|кохбаци|koghbatsi)/i },
+        { name: "Teryan St", regex: /(?:տերյան(?:ի)?|терян(?:а)?|teryan)/i },
+        { name: "Zakyan St", regex: /(?:զաքյան(?:ի)?|закян(?:а)?|zakyan)/i },
+        { name: "Deghatan St", regex: /(?:դեղատան|дехатан|deghatan)/i },
+        { name: "Heratsi St", regex: /(?:հերաց(?:ու|ի)?|гераци|heratsi)/i },
+        { name: "Paronyan St", regex: /(?:պարոնյան(?:ի)?|паронян(?:а)?|paronyan)/i },
+        { name: "Proshyan St", regex: /(?:պռոշյան(?:ի)?|прошян(?:а)?|proshyan)/i },
+        { name: "Dzorap St", regex: /(?:ձորափ(?:ի)?|дзорап(?:а)?|dzorap)/i },
+        { name: "Koryun St", regex: /(?:կորյուն(?:ի)?|корюна?|koryun)/i },
+        { name: "Nar-Dos St", regex: /(?:նար[\s-]դոս(?:ի)?|нар[\s-]дос(?:а)?|nar[\s-]dos)/i },
+        { name: "Vratsakan St", regex: /(?:վրացական|врацакан|vratsakan)/i },
+        { name: "Sundukyan St", regex: /(?:սունդուկյան(?:ի)?|сундукян(?:а)?|sundukyan)/i },
+        { name: "Avet Avetisyan St", regex: /(?:ավետ\s+ավետիսյան(?:ի)?|авет\s+аветисян(?:а)?|avet\s+avetisyan)/i },
+        { name: "Babayan St", regex: /(?:բաբայան(?:ի)?|бабаян(?:а)?|babayan)/i },
+        { name: "Ulnetsi St", regex: /(?:(?:կարապետ\s+)?ուլնեց(?:ու|ի)?|ульнеци|ulnetsi)/i },
+        { name: "Paruyr Sevak St", regex: /(?:(?:պարույր\s+)?սևակ(?:ի)?|паруйр\s+севак(?:а)?|paruyr\s+sevak)/i },
+        { name: "Dro St", regex: /(?:դրո(?:յի)?|дро|dro\s+st)/i },
+        { name: "Lepsius St", regex: /(?:լեփսիուս(?:ի)?|лепсиус(?:а)?|lepsius)/i },
+        { name: "Tsarav Aghbyur St", regex: /(?:ծարավ\s+աղբյուր(?:ի)?|царав\s+ахбюр(?:а)?|tsarav\s+aghbyur)/i },
+        { name: "Arakelyan St", regex: /(?:առաքելյան(?:ի)?|аракелян(?:а)?|arakelyan)/i },
+        { name: "Melkumov St", regex: /(?:մելքումով(?:ի)?|мелкумов(?:а)?|melkumov)/i },
+        { name: "Myasnikyan Ave", regex: /(?:մյասնիկյան|мясникян|myasnikyan)/i },
+        { name: "Monte Melkonian Ave", regex: /(?:մոնթե\s+մելքոնյան|монте\s+мелконян|monte\s+melkonian)/i },
+        { name: "Admiral Isakov Ave", regex: /(?:(?:ծովակալ\s+)?իսակով(?:ի)?|исаков(?:а)?|isakov)/i },
+        { name: "Tsitsernakaberd Hwy", regex: /(?:ծիծեռնակաբերդ(?:ի)?\s*խճ|цицернакаберд|tsitsernakaberd)/i },
+        { name: "Tbilisi Hwy", regex: /(?:թբիլիսյան\s*խճ|тбилисское\s*шоссе|tbilisi\s*hwy)/i },
+        { name: "Ashtarak Hwy", regex: /(?:աշտարակ(?:ի)?\s*խճ|аштаракское\s*шоссе|ashtarak\s*hwy)/i },
+        { name: "Erebuni St", regex: /(?:էրեբուն(?:ու|ի)\s*(?:փողոց|փ\.)|эребуни\s*ул|erebuni\s*st)/i },
+        { name: "Artsakh Ave", regex: /(?:արցախի\s*(?:պող|պողոտա)|арцах|artsakh\s*ave)/i },
+        { name: "Rostovyan St", regex: /(?:ռոստովյան|ростовян|rostovyan)/i },
+        { name: "David Bek St", regex: /(?:դավիթ\s+բեկ(?:ի)?|давид\s+бек(?:а)?|david\s+bek)/i },
+        { name: "Sasna Tsrer St", regex: /(?:սասնա\s+ծռեր(?:ի)?|сасна\s+црер|sasna\s+tsrer)/i },
+        { name: "Tamanyan St", regex: /(?:թամանյան(?:ի)?|таманян(?:а)?|tamanyan)/i },
+        { name: "Spendiaryan St", regex: /(?:սպենդիարյան(?:ի)?|спендиарян(?:а)?|spendiaryan)/i },
+        { name: "Khorenatsi St", regex: /(?:(?:մովսես\s+)?խորենաց(?:ու|ի)?|хоренаци|khorenatsi)/i },
+        { name: "Argishti St", regex: /(?:արգիշտի(?:ի)?|аргишти|argishti)/i },
+        { name: "Grigor Lusavorich St", regex: /(?:գրիգոր\s+լուսավոր(?:չի)?|григор\s+лусаворич|grigor\s+lusavorich)/i },
+        { name: "Leo St", regex: /(?:լեո(?:յի)?\s*(?:փողոց|փ\.)|лео\s*ул|leo\s*st)/i },
+        { name: "Parpetsi St", regex: /(?:(?:ղազար\s+)?փարպեց(?:ու|ի)?|парпеци|parpetsi)/i },
+        { name: "Yekmalyan St", regex: /(?:եկմալյան(?:ի)?|екмалян(?:а)?|yekmalyan)/i },
+        { name: "Nairi Zaryan St", regex: /(?:(?:նաիրի\s+)?զարյան(?:ի)?|наири\s+зарян(?:а)?|nairi\s+zaryan)/i },
+        { name: "Orbeli St", regex: /(?:օրբել(?:ու|ի)|орбели|orbeli)/i }
     ];
 
-    function buildGoogleMapsInfo(item) {
-        const textStr = (item.full_text || "") + " " + (item.title || "");
-        let detectedStreet = null;
-        for (const sp of STREET_PATTERNS) {
-            if (sp.regex.test(textStr)) {
-                detectedStreet = sp.name;
-                break;
+    function extractCoordinatesFromItem(item) {
+        if (!item) return null;
+
+        // 1. Direct coordinates field on listing item
+        if (item.coordinates) {
+            if (typeof item.coordinates === "object" && item.coordinates !== null) {
+                const lat = Number(item.coordinates.lat || item.coordinates.latitude);
+                const lng = Number(item.coordinates.lng || item.coordinates.lon || item.coordinates.longitude);
+                if (!isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0) {
+                    return { lat, lng };
+                }
+            } else if (Array.isArray(item.coordinates) && item.coordinates.length >= 2) {
+                const lat = Number(item.coordinates[0]);
+                const lng = Number(item.coordinates[1]);
+                if (!isNaN(lat) && !isNaN(lng) && lat !== 0 && lng !== 0) {
+                    return { lat, lng };
+                }
             }
         }
+
+        // 2. Extract from text / URLs
+        const textToSearch = [
+            item.full_text || "",
+            item.full_text_en || "",
+            item.url || "",
+            item.title || ""
+        ].join(" ");
+
+        if (!textToSearch.trim()) return null;
+
+        // A. Google Maps URL with lat/lng
+        const gmapsMatch = textToSearch.match(/(?:google\.[a-z.]+\/maps|maps\.google\.[a-z.]+)[^\s"'>]*[?&@](?:q=|ll=|@)?([34]\d\.\d{4,8}),([4]\d\.\d{4,8})/i);
+        if (gmapsMatch) {
+            return { lat: parseFloat(gmapsMatch[1]), lng: parseFloat(gmapsMatch[2]) };
+        }
+
+        // B. Yandex Maps / Navi URL
+        const yandexMatch = textToSearch.match(/yandex\.[a-z.]+(?:\/navi|\/maps)[^\s"'>]*[?&](?:text=|ll=)([34]\d\.\d{4,8})[,%2C]([4]\d\.\d{4,8})/i);
+        if (yandexMatch) {
+            return { lat: parseFloat(yandexMatch[1]), lng: parseFloat(yandexMatch[2]) };
+        }
+        const yandexRevMatch = textToSearch.match(/yandex\.[a-z.]+(?:\/navi|\/maps)[^\s"'>]*[?&](?:text=|ll=)([4]\d\.\d{4,8})[,%2C]([34]\d\.\d{4,8})/i);
+        if (yandexRevMatch) {
+            return { lat: parseFloat(yandexRevMatch[2]), lng: parseFloat(yandexRevMatch[1]) };
+        }
+
+        // C. 2GIS URL
+        const dgisMatch = textToSearch.match(/2gis\.[a-z.]+[^\s"'>]*(?:geo\/|points=)([4]\d\.\d{4,8})[,%2C]([34]\d\.\d{4,8})/i);
+        if (dgisMatch) {
+            return { lat: parseFloat(dgisMatch[2]), lng: parseFloat(dgisMatch[1]) };
+        }
+
+        // D. List.am standard header: Location: LAT, LNG
+        const listamMatch = textToSearch.match(/Location:\s*([34]\d\.\d{4,8})\s*,\s*([4]\d\.\d{4,8})/i);
+        if (listamMatch) {
+            return { lat: parseFloat(listamMatch[1]), lng: parseFloat(listamMatch[2]) };
+        }
+
+        // E. Labeled coordinates: Coordinates / Կոորդինատներ / Координаты: LAT, LNG
+        const labeledMatch = textToSearch.match(/(?:coordinates|կոորդինատներ|կորդինատներ|կոորդինատ|կորդինատ|координаты|gps|coords)[\s:՝=]+([34]\d\.\d{4,8})\s*[,;\s]+\s*([4]\d\.\d{4,8})/i);
+        if (labeledMatch) {
+            return { lat: parseFloat(labeledMatch[1]), lng: parseFloat(labeledMatch[2]) };
+        }
+
+        // F. Standalone or comma-separated GPS pair: LAT, LNG (Armenia: lat 38.0-42.5, lng 43.0-47.5)
+        const gpsPairMatch = textToSearch.match(/\b([34]\d\.\d{4,8})\s*[,;\s]+\s*([4]\d\.\d{4,8})\b/);
+        if (gpsPairMatch) {
+            const lat = parseFloat(gpsPairMatch[1]);
+            const lng = parseFloat(gpsPairMatch[2]);
+            if (lat >= 38.0 && lat <= 42.5 && lng >= 43.0 && lng <= 47.5) {
+                return { lat, lng };
+            }
+        }
+
+        // G. Reversed LNG, LAT pair
+        const gpsPairRev = textToSearch.match(/\b([4]\d\.\d{4,8})\s*[,;\s]+\s*([34]\d\.\d{4,8})\b/);
+        if (gpsPairRev) {
+            const lng = parseFloat(gpsPairRev[1]);
+            const lat = parseFloat(gpsPairRev[2]);
+            if (lat >= 38.0 && lat <= 42.5 && lng >= 43.0 && lng <= 47.5) {
+                return { lat, lng };
+            }
+        }
+
+        return null;
+    }
+
+    function extractStreetAddressWithNumber(textStr) {
+        if (!textStr) return null;
+
+        for (const sp of STREET_PATTERNS) {
+            const m = sp.regex.exec(textStr);
+            if (m) {
+                const matchIndex = m.index;
+                const matchEnd = matchIndex + m[0].length;
+                let buildingNum = null;
+                let laneNum = null;
+
+                const afterText = textStr.slice(matchEnd, matchEnd + 45);
+                const laneMatch = afterText.match(/(\d{1,2})-?(?:ին|րդ|я|й|st|nd|rd|th)?\s*(?:նրբանցք|նրբ|переулок|пер\.|lane)/i);
+                if (laneMatch) {
+                    const lNum = parseInt(laneMatch[1], 10);
+                    const suffix = (lNum === 1) ? "st" : (lNum === 2 ? "nd" : (lNum === 3 ? "rd" : "th"));
+                    laneNum = `${lNum}${suffix} lane`;
+                }
+
+                const bldgMatch = afterText.match(/(?:հասցե(?:ում|յում)?\s*[:#]?\s*|շենք\s*[:#]?\s*|շ\.\s*|дом\s*[:#]?\s*|bldg\s*[:#]?\s*|building\s*[:#]?\s*|\s+)(\d{1,4}(?:\/\d{1,3}|[a-zA-Zա-ֆа-я])?)(?!\s*(?:հարկ|հարկանի|սենյակ|քմ|մ2|մետր|դրամ|ամիս|տարի|этаж|комнат|кվ\.?\s*м|\$|amd|usd))/i);
+                if (bldgMatch && bldgMatch[1] && !/^\d{5,}$/.test(bldgMatch[1])) {
+                    buildingNum = bldgMatch[1];
+                }
+
+                if (!buildingNum) {
+                    const beforeText = textStr.slice(Math.max(0, matchIndex - 30), matchIndex);
+                    const beforeBldgMatch = beforeText.match(/(?:շենք\s*[:#]?\s*|շ\.\s*|дом\s*[:#]?\s*|\b)(\d{1,4}(?:\/\d{1,3}|[a-zA-Zա-ֆа-я])?)\s*$/i);
+                    if (beforeBldgMatch && beforeBldgMatch[1] && !/^\d{5,}$/.test(beforeBldgMatch[1])) {
+                        buildingNum = beforeBldgMatch[1];
+                    }
+                }
+
+                let fullStreet = sp.name;
+                if (laneNum) {
+                    fullStreet += `, ${laneNum}`;
+                }
+                if (buildingNum) {
+                    fullStreet = `${buildingNum} ${fullStreet}`;
+                }
+
+                return {
+                    name: sp.name,
+                    fullAddress: fullStreet,
+                    hasExactNumber: Boolean(buildingNum || laneNum)
+                };
+            }
+        }
+
+        const genericMatch = textStr.match(/([Ա-ՖA-Z][Ա-Ֆա-ֆA-Za-z0-9\-\s]{2,25})\s+(?:փողոց(?:ում|ի)?|պողոտա(?:յում|ի)?|նրբանցք(?:ում|ի)?)/);
+        if (genericMatch) {
+            const rawName = genericMatch[1].trim();
+            if (!/^(այս|նոր|այլ|մեր|իր|մեծ|լավ|բոլոր|այն)$/i.test(rawName)) {
+                return {
+                    name: `${rawName} St`,
+                    fullAddress: `${rawName} St`,
+                    hasExactNumber: false
+                };
+            }
+        }
+
+        return null;
+    }
+
+    function extractVillageOrTown(textStr) {
+        if (!textStr) return null;
+        const vMatch = textStr.match(/([Ա-Ֆա-ֆ\w\-]+)\s+գյուղ(?:ում|ի)?|село\s+([А-Яа-я\w\-]+)|([A-Za-z\-]+)\s+village/i);
+        if (vMatch) {
+            const name = (vMatch[1] || vMatch[2] || vMatch[3]).trim();
+            if (name.length >= 3 && !/^(հողատարածք|բնակարան|տուն|հող|գյուղ|այս|նոր)$/i.test(name)) {
+                return name;
+            }
+        }
+        return null;
+    }
+
+    function buildGoogleMapsInfo(item) {
+        const textStr = [
+            item.full_text || "",
+            item.full_text_en || "",
+            item.title || "",
+            item.url || ""
+        ].join(" ");
+
+        // Priority 1: Exact Coordinates
+        const coords = extractCoordinatesFromItem(item);
 
         const locList = Array.isArray(item.locations) && item.locations.length > 0 
             ? [...new Set(item.locations.map(translateLocation).filter(Boolean))] 
@@ -523,13 +760,61 @@ document.addEventListener("DOMContentLoaded", () => {
         const primaryLoc = locList[0] || "";
         const formattedLoc = locList.join(", ") || text("armenia");
 
+        const detectedStreetInfo = extractStreetAddressWithNumber(textStr);
+        const detectedVillage = extractVillageOrTown(textStr);
+
         let mapQuery = "";
         let displaySubtitle = "";
 
-        if (detectedStreet) {
-            const locPart = primaryLoc ? `${primaryLoc}, ` : "";
-            mapQuery = `${detectedStreet}, ${locPart}Yerevan, Armenia`;
-            displaySubtitle = `${detectedStreet}, ${formattedLoc}`;
+        if (coords) {
+            // EXACT GPS COORDINATES GIVEN
+            const latStr = coords.lat.toFixed(6);
+            const lngStr = coords.lng.toFixed(6);
+            mapQuery = `${latStr},${lngStr}`;
+
+            const latShort = coords.lat.toFixed(4);
+            const lngShort = coords.lng.toFixed(4);
+
+            if (detectedStreetInfo) {
+                displaySubtitle = `${detectedStreetInfo.fullAddress}, ${formattedLoc} (📍 ${latShort}, ${lngShort})`;
+            } else if (detectedVillage) {
+                displaySubtitle = `${detectedVillage}, ${formattedLoc} (📍 ${latShort}, ${lngShort})`;
+            } else if (formattedLoc && formattedLoc !== text("armenia")) {
+                displaySubtitle = `${formattedLoc} (📍 ${latShort}, ${lngShort})`;
+            } else {
+                displaySubtitle = `📍 ${latShort}, ${lngShort} (${text("armenia")})`;
+            }
+
+            const propCat = translations[currentLanguage].propertyTypes[item.property_category] || text("property");
+            const listType = translations[currentLanguage].listingTypes[item.listing_type] || item.listing_type || "";
+            const displayTitle = (listType && item.listing_type !== "Unknown") ? `${propCat} • ${listType}` : propCat;
+
+            return {
+                query: mapQuery,
+                coordinates: coords,
+                displayTitle: displayTitle,
+                displaySubtitle: displaySubtitle,
+                embedUrl: `https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed`,
+                externalUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}`
+            };
+        }
+
+        // Priority 2: Exact Street / Building Number / Village
+        const isYerevanArea = !primaryLoc || YEREVAN_DISTRICTS.has(primaryLoc);
+
+        if (detectedStreetInfo) {
+            const streetStr = detectedStreetInfo.fullAddress;
+            if (isYerevanArea) {
+                const locPart = primaryLoc ? `${primaryLoc}, ` : "";
+                mapQuery = `${streetStr}, ${locPart}Yerevan, Armenia`;
+            } else {
+                mapQuery = `${streetStr}, ${primaryLoc}, Armenia`;
+            }
+            displaySubtitle = `${streetStr}, ${formattedLoc}`;
+        } else if (detectedVillage) {
+            const locPart = (primaryLoc && primaryLoc !== detectedVillage) ? `${primaryLoc}, ` : "";
+            mapQuery = `${detectedVillage}, ${locPart}Armenia`;
+            displaySubtitle = `${detectedVillage}, ${formattedLoc}`;
         } else if (locList.length > 0) {
             mapQuery = `${locList.join(", ")}, Armenia`;
             displaySubtitle = formattedLoc;
@@ -544,11 +829,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         return {
             query: mapQuery,
+            coordinates: null,
             displayTitle: displayTitle,
             displaySubtitle: displaySubtitle,
             embedUrl: `https://maps.google.com/maps?q=${encodeURIComponent(mapQuery)}&output=embed`,
             externalUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}`
         };
+    }
+
+    if (typeof window !== "undefined") {
+        window.buildGoogleMapsInfo = buildGoogleMapsInfo;
+        window.extractCoordinatesFromItem = extractCoordinatesFromItem;
     }
 
     const mapModal = document.getElementById("map-modal");
@@ -689,15 +980,30 @@ document.addEventListener("DOMContentLoaded", () => {
             const propCategory = translations[currentLanguage].propertyTypes[item.property_category] || text("property");
 
             const phoneBtnHtml = (item.phone_numbers && item.phone_numbers.length > 0 && item.phone_numbers[0].trim().length >= 6)
-                ? `<a href="tel:${escapeHtml(item.phone_numbers[0].replace(/\s+/g, ''))}" class="phone-link" title="${escapeHtml(item.phone_numbers.join(', '))}">📞 ${escapeHtml(item.phone_numbers[0])}</a>`
+                ? `<a href="tel:${escapeHtml(item.phone_numbers[0].replace(/\s+/g, ''))}" class="phone-link" title="${escapeHtml(item.phone_numbers.join(', '))}">
+                    <svg class="phone-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                    <span>${escapeHtml(item.phone_numbers[0])}</span>
+                   </a>`
                 : '';
 
             // Media / Visuals
             const categoryKey = item.property_category || "General";
             const fallbackClass = categoryKey === "Apartment" ? "cat-apartment" : (categoryKey === "House" ? "cat-house" : (categoryKey === "Land" ? "cat-land" : "cat-general"));
             const categorySvg = CATEGORY_SVGS[categoryKey] || CATEGORY_SVGS.General;
-            const firstImage = (item.images && item.images.length > 0) ? item.images[0] : null;
+            const firstImage = (item.images && item.images.length > 0 && typeof item.images[0] === 'string' && item.images[0].trim().length > 0)
+                ? item.images[0].trim()
+                : null;
             const imageCount = (item.images && item.images.length) || 0;
+
+            const fallbackHtml = `
+                <div class="card-media-fallback ${fallbackClass}">
+                    <div class="fallback-graphic">
+                        ${categorySvg}
+                    </div>
+                </div>
+            `;
 
             let mediaHtml = "";
             if (firstImage) {
@@ -706,18 +1012,15 @@ document.addEventListener("DOMContentLoaded", () => {
                     : '';
                 mediaHtml = `
                     <div class="card-media">
-                        <img class="card-media-img" src="${escapeHtml(firstImage)}" alt="${escapeHtml(propCategory)}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling?.remove();this.parentElement.innerHTML='<div class=\\'card-media-fallback ${fallbackClass}\\'><div class=\\'fallback-graphic\\'>${categorySvg.replace(/'/g, "\\'")}</div></div>';">
+                        ${fallbackHtml}
+                        <img class="card-media-img" src="${escapeHtml(firstImage)}" alt="${escapeHtml(propCategory)}" loading="lazy" decoding="async" onerror="this.remove(); this.parentElement?.querySelector('.photo-count-badge')?.remove();">
                         ${photoBadge}
                     </div>
                 `;
             } else {
                 mediaHtml = `
                     <div class="card-media">
-                        <div class="card-media-fallback ${fallbackClass}">
-                            <div class="fallback-graphic">
-                                ${categorySvg}
-                            </div>
-                        </div>
+                        ${fallbackHtml}
                     </div>
                 `;
             }
@@ -725,6 +1028,45 @@ document.addEventListener("DOMContentLoaded", () => {
             const typeBadgeHtml = (listingType === "Sale" || listingType === "Rent")
                 ? `<span class="source-tag ${typeTagClass}">${escapeHtml(listingTypeLabel)}</span>`
                 : '';
+
+            const origText = (item.full_text && item.full_text.trim()) || "";
+            const enText = (item.full_text_en && item.full_text_en.trim()) || "";
+            const hasTranslation = Boolean(enText && origText && enText.toLowerCase() !== origText.toLowerCase());
+
+            let initialText = origText;
+            if (currentLanguage === "en") {
+                initialText = enText || origText;
+            }
+
+            let descriptionHtml = "";
+            if (initialText) {
+                const isCurrentlyShowingEn = (currentLanguage === "en" && Boolean(enText));
+                const toggleLabel = isCurrentlyShowingEn ? text("showOriginal") : text("showTranslation");
+                const toggleBtnHtml = (hasTranslation && currentLanguage === "en")
+                    ? `<button type="button" class="translate-toggle-btn" title="${escapeHtml(toggleLabel)}">
+                        <span class="translate-icon">🌐</span>
+                        <span class="translate-text">${escapeHtml(toggleLabel)}</span>
+                       </button>`
+                    : '';
+                const isLongText = initialText.length > 110 || initialText.includes("\n");
+                const expandBtnHtml = isLongText
+                    ? `<button type="button" class="description-expand-btn" aria-expanded="false" title="${text("showMore")}">
+                        <span class="expand-text">${text("showMore")}</span>
+                        <span class="expand-arrow">▾</span>
+                       </button>`
+                    : '';
+
+                const actionsHtml = (toggleBtnHtml || expandBtnHtml)
+                    ? `<div class="description-actions">${expandBtnHtml}${toggleBtnHtml}</div>`
+                    : '';
+
+                descriptionHtml = `
+                    <div class="description-container">
+                        <p class="description-snippet" data-orig="${escapeHtml(origText)}" data-en="${escapeHtml(enText || origText)}">${escapeHtml(initialText)}</p>
+                        ${actionsHtml}
+                    </div>
+                `;
+            }
 
             card.innerHTML = `
                 ${mediaHtml}
@@ -751,14 +1093,10 @@ document.addEventListener("DOMContentLoaded", () => {
                         </button>
                     </div>
                     
-                    ${(item.full_text && item.full_text.trim().length > 0) ? `<p class="description-snippet">${escapeHtml(item.full_text.trim())}</p>` : ''}
+                    ${descriptionHtml}
 
                     <div class="card-footer">
                         ${phoneBtnHtml}
-                        <button type="button" class="map-btn" title="${text("viewOnMap")}">
-                            <span class="map-btn-icon">🗺️</span>
-                            <span>${text("map")}</span>
-                        </button>
                         <button type="button" class="share-btn" title="${text("shareLink")}">
                             <svg class="share-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <circle cx="18" cy="5" r="3"></circle>
@@ -770,14 +1108,59 @@ document.addEventListener("DOMContentLoaded", () => {
                             <span>${text("shareLink")}</span>
                         </button>
                         <a href="${escapeHtml(item.url)}" class="view-btn" target="_blank" rel="noopener noreferrer">
-                            ${text("viewOriginal")} <span class="arrow">↗</span>
+                            <span>${text("viewOriginal")}</span>
+                            <span class="arrow">↗</span>
                         </a>
                     </div>
                 </div>
             `;
 
-            // Map button interactions
-            const mapBtns = card.querySelectorAll(".map-link-btn, .map-btn");
+            // Translate toggle interaction
+            const transBtn = card.querySelector(".translate-toggle-btn");
+            if (transBtn) {
+                transBtn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    const snippet = card.querySelector(".description-snippet");
+                    const labelSpan = transBtn.querySelector(".translate-text");
+                    if (!snippet) return;
+
+                    const curContent = snippet.textContent.trim();
+                    const orig = snippet.getAttribute("data-orig") || "";
+                    const en = snippet.getAttribute("data-en") || "";
+
+                    if (curContent === en && orig) {
+                        snippet.textContent = orig;
+                        if (labelSpan) labelSpan.textContent = text("showTranslation");
+                    } else if (en) {
+                        snippet.textContent = en;
+                        if (labelSpan) labelSpan.textContent = text("showOriginal");
+                    }
+                });
+            }
+
+            // Expand description toggle interaction
+            const expandBtn = card.querySelector(".description-expand-btn");
+            if (expandBtn) {
+                expandBtn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    const snippet = card.querySelector(".description-snippet");
+                    const expandText = expandBtn.querySelector(".expand-text");
+                    const expandArrow = expandBtn.querySelector(".expand-arrow");
+                    if (!snippet) return;
+
+                    const isExpanded = snippet.classList.toggle("is-expanded");
+                    expandBtn.setAttribute("aria-expanded", String(isExpanded));
+                    if (expandText) {
+                        expandText.textContent = isExpanded ? text("showLess") : text("showMore");
+                    }
+                    if (expandArrow) {
+                        expandArrow.textContent = isExpanded ? "▴" : "▾";
+                    }
+                });
+            }
+
+            // Map button interactions (location link)
+            const mapBtns = card.querySelectorAll(".map-link-btn");
             mapBtns.forEach(btn => {
                 btn.addEventListener("click", (e) => {
                     e.stopPropagation();
@@ -805,7 +1188,7 @@ document.addEventListener("DOMContentLoaded", () => {
             card.setAttribute("role", "link");
             card.setAttribute("tabindex", "0");
             card.addEventListener("click", (e) => {
-                if (e.target.closest(".phone-link, .share-btn, .view-btn, .map-btn, .map-link-btn")) return;
+                if (e.target.closest(".phone-link, .share-btn, .view-btn, .map-link-btn, .description-expand-btn, .translate-toggle-btn")) return;
                 const selection = window.getSelection();
                 if (selection && selection.toString().trim().length > 0) return;
                 if (item.url) {
@@ -815,7 +1198,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             card.addEventListener("keydown", (e) => {
                 if (e.key === "Enter" || e.key === " ") {
-                    if (e.target.closest(".phone-link, .share-btn, .view-btn, .map-btn, .map-link-btn")) return;
+                    if (e.target.closest(".phone-link, .share-btn, .view-btn, .map-link-btn, .description-expand-btn, .translate-toggle-btn")) return;
                     e.preventDefault();
                     if (item.url) {
                         window.open(item.url, "_blank", "noopener,noreferrer");
@@ -970,9 +1353,16 @@ document.addEventListener("DOMContentLoaded", () => {
             });
         }
 
+        const filterActiveCount = document.getElementById("filter-active-count");
         if (chips.length === 0) {
             activeFilterChips.style.display = "none";
+            if (filterActiveCount) filterActiveCount.style.display = "none";
             return;
+        }
+
+        if (filterActiveCount) {
+            filterActiveCount.textContent = String(chips.length);
+            filterActiveCount.style.display = "inline-flex";
         }
 
         activeFilterChips.style.display = "flex";
@@ -1006,6 +1396,17 @@ document.addEventListener("DOMContentLoaded", () => {
         updateFilterToggle();
     });
 
+    const filterToolbar = document.querySelector(".filter-toolbar");
+    if (filterToolbar) {
+        filterToolbar.addEventListener("click", (e) => {
+            if (e.target.closest("#reset-filters") || e.target.closest("#toggle-filters")) return;
+            if (window.innerWidth <= 900) {
+                catalogLayout.classList.toggle("filters-collapsed");
+                updateFilterToggle();
+            }
+        });
+    }
+
     resetFilters.addEventListener("click", () => {
         if (keywordSearch) keywordSearch.value = "";
         document.querySelectorAll("input[type='checkbox']").forEach(input => input.checked = false);
@@ -1030,6 +1431,9 @@ document.addEventListener("DOMContentLoaded", () => {
             locationSearchInput.value = "";
             locationOptions.querySelectorAll("label").forEach(label => label.style.display = "");
         }
+
+        const filterActiveCount = document.getElementById("filter-active-count");
+        if (filterActiveCount) filterActiveCount.style.display = "none";
 
         applyFilters();
     });

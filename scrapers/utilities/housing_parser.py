@@ -86,12 +86,50 @@ PRICE_CURRENCY_PATTERN = re.compile(
     re.IGNORECASE
 )
 
+SQM_RATE_UNIT_REGEX = r'(?:քմ|ք/մ|ք\.մ\.?|ք․մ\.?|ք\.\s*մ|քառակուսի\s+մետր|քառ\.\s*(?:մ\.|մետր)|մ2|մ²|sqm|sq\s*m|sq\.m\.?|qm|q\.m\.?|кв\.?\s*м\.?|м²)'
+SOT_RATE_UNIT_REGEX = r'(?:սոտ(?:կա|եկ|կի|կան)?|сотка|сотки|соток|sot)'
+HA_RATE_UNIT_REGEX  = r'(?:հա|հեկտար|гектар|га|ha|hectare)'
+
+RATE_UNIT_MULTIPLIERS = {
+    'sqm': 1.0,
+    'sot': 100.0,
+    'ha': 10000.0
+}
+
+PREFIX_RATE_PATTERN = re.compile(
+    r'(?:(?P<lead_kw>արժեքը?|գինը?|цена|price)[\s:`՝—–-]*\s*)?'
+    r'(?:1\s*(?P<unit_sqm>' + SQM_RATE_UNIT_REGEX + r')|1\s*(?P<unit_sot>' + SOT_RATE_UNIT_REGEX + r')|1\s*(?P<unit_ha>' + HA_RATE_UNIT_REGEX + r'))'
+    r'(?:[-_֊]?ի(?:\s+համար)?)?'
+    r'[\s:=_֊՝—–-]*'
+    r'(?:(?P<mid_kw>արժեքը?|գինը?|цена|price)[\s:`՝—–-]*)?'
+    r'(?P<pre_curr>' + CURRENCY_SYMBOLS_REGEX + r')?\s*'
+    r'(?P<amount>[1-9]\d{0,2}(?:[,\s\.․]\d{3})+|[1-9]\d{0,7})\s*'
+    r'(?P<post_curr>' + CURRENCY_SYMBOLS_REGEX + r')?',
+    re.IGNORECASE
+)
+
+POSTFIX_RATE_PATTERN = re.compile(
+    r'(?:(?P<lead_kw>արժեքը?|գինը?|цена|price)[\s:`՝—–-]*\s*)?'
+    r'(?:'
+    r'(?P<pre_curr>' + CURRENCY_SYMBOLS_REGEX + r')\s*(?P<amount>[1-9]\d{0,2}(?:[,\s\.․]\d{3})+|[1-9]\d{0,7})\s*(?P<post_curr>' + CURRENCY_SYMBOLS_REGEX + r')?'
+    r'|'
+    r'(?P<amount2>[1-9]\d{0,2}(?:[,\s\.․]\d{3})+|[1-9]\d{0,7})\s*(?P<post_curr2>' + CURRENCY_SYMBOLS_REGEX + r')'
+    r')\s*'
+    r'(?:/|\bper\b|\bза\b|\bմ\b|[-_֊—–]|\s+համար\b|\s+)\s*'
+    r'(?:1\s*)?'
+    r'(?:(?P<unit_sqm>' + SQM_RATE_UNIT_REGEX + r')|(?P<unit_sot>' + SOT_RATE_UNIT_REGEX + r')|(?P<unit_ha>' + HA_RATE_UNIT_REGEX + r'))'
+    r'(?:[-_֊]?ի(?:\s+համար)?)?',
+
+    re.IGNORECASE
+)
+
 PER_SQM_PRICE_PATTERN = re.compile(
     r'(?:1\s*(?:քմ|ք/մ|ք\.մ|մ2|sqm|sq\s*m|кв\.?\s*м\.?)\s*[-֊:]?\s*(?P<p1>\$?\d[\d,\s.]*\$?)|'
     r'(?P<p2>\$?\d[\d,\s.]*\$?)\s*[-֊/]\s*(?:1\s*)?(?:քմ|ք/մ|ք\.մ|մ2|sqm|sq\s*m|кв\.?\s*м\.?)|'
     r'(?:արժեքը|գինը|цена)\s*1\s*(?:քմ|ք/մ|ք\.մ|մ2|sqm)\s*[-֊:]?\s*(?P<p3>\$?\d[\d,\s.]*\$?))',
     re.IGNORECASE
 )
+
 
 INVESTMENT_RENTAL_PATTERN = re.compile(
     r'\b(?:'
@@ -155,6 +193,59 @@ def normalize_price_amount(raw_str):
         return int(cleaned)
     except ValueError:
         return None
+
+
+def extract_per_sqm_rates(text, has_text_usd=False, has_text_amd=False):
+    """Extracts rate per unit (sqm, sotka, hectare) and returns list of matched rate dicts."""
+    rates = []
+    # 1. Prefix matches (e.g. 1քմ - 70$, 1քմ=630000, 1քմ արժեքը 900$)
+    for m in PREFIX_RATE_PATTERN.finditer(text):
+        matched_str = m.group(0)
+        curr_str = m.group('pre_curr') or m.group('post_curr')
+        has_kw = bool(m.group('lead_kw') or m.group('mid_kw') or '=' in matched_str or ':' in matched_str or '՝' in matched_str or '-' in matched_str or '֊' in matched_str)
+        if not curr_str and not has_kw:
+            continue
+        amt = normalize_price_amount(m.group('amount'))
+        if not amt:
+            continue
+        unit = 'sqm' if m.group('unit_sqm') else ('sot' if m.group('unit_sot') else 'ha')
+        rates.append((m.span(), matched_str, amt, curr_str, unit))
+
+    # 2. Postfix matches (e.g. 70$ / 1 քմ, 155$ մ 1քմ, 35 ԱՄՆ դոլար / 1 քմ)
+    for m in POSTFIX_RATE_PATTERN.finditer(text):
+        amt = normalize_price_amount(m.group('amount') or m.group('amount2'))
+        if not amt:
+            continue
+        curr_str = m.group('pre_curr') or m.group('post_curr') or m.group('post_curr2')
+        unit = 'sqm' if m.group('unit_sqm') else ('sot' if m.group('unit_sot') else 'ha')
+        if not any(r[0][0] <= m.start() < r[0][1] for r in rates):
+            rates.append((m.span(), m.group(0), amt, curr_str, unit))
+
+    parsed_rates = []
+    for span, raw_match, amount, curr_symbol, unit in rates:
+        symbol_clean = re.sub(r'\s+', ' ', (curr_symbol or '').strip().lower())
+        currency = CURRENCY_MAP.get(symbol_clean)
+        if not currency:
+            if has_text_amd and not has_text_usd:
+                currency = 'AMD'
+            elif has_text_usd and not has_text_amd:
+                currency = 'USD'
+            elif amount >= 10000:
+                currency = 'AMD'
+            else:
+                currency = 'USD'
+        unit_mult = RATE_UNIT_MULTIPLIERS.get(unit, 1.0)
+        rate_per_sqm = amount / unit_mult
+        parsed_rates.append({
+            "span": span,
+            "raw_text": raw_match.strip(),
+            "amount": amount,
+            "currency": currency,
+            "unit": unit,
+            "rate_per_sqm": rate_per_sqm
+        })
+    return parsed_rates
+
 
 
 def normalize_phone_number(raw_phone):
@@ -255,8 +346,9 @@ def extract_property_category(text, is_media_only=False):
     if re.search(r'\b\d{1,2}\s*/\s*\d{1,2}\s*(?:-?րդ\s+)?(?:հարկ|этаж|эт)\b', cleaned_text):
         return "Apartment"
 
-    if re.search(r'\b(?:քարե|պանելային|մոնոլիտ|նորակառույց)\s+շենք(?:ի|ում|ը)?\b', cleaned_text) and re.search(r'\b\d{1,2}\s*[-֊:]*\s*սենյակ\w*', cleaned_text):
+    if re.search(r'\b(?:քարե|պանելային|մոնոլիտ|նորակառույց|բնակելի)\s+(?:շենք|համալիր)(?:ի|ում|ը)?\b', cleaned_text) and re.search(r'\b\d{1,2}\s*[-֊:]*\s*սենյակ\w*', cleaned_text):
         return "Apartment"
+
 
     return "Media-Only" if is_media_only else "General / Unclassified"
 
@@ -360,6 +452,59 @@ def extract_locations_from_text(text_lower):
     return list(found_locations)
 
 
+def extract_coordinates(text):
+    """
+    Extracts geographic coordinates (latitude, longitude) from text, map links, or GPS patterns.
+    Returns a dict {"lat": float, "lng": float} if valid coordinates are found, else None.
+    """
+    if not text:
+        return None
+
+    # 1. Google Maps URLs
+    m = re.search(r'google\.[a-z.]+/maps[^\s"\'<>]*[?&@](?:q=|ll=|@)?([34]\d\.\d{4,8}),([4]\d\.\d{4,8})', text, re.IGNORECASE)
+    if m:
+        return {"lat": float(m.group(1)), "lng": float(m.group(2))}
+
+    # 2. Yandex Navi / Maps URLs
+    m = re.search(r'yandex\.[a-z.]+(?:/navi|/maps)[^\s"\'<>]*[?&](?:text=|ll=)([34]\d\.\d{4,8})[,%2C]([4]\d\.\d{4,8})', text, re.IGNORECASE)
+    if m:
+        return {"lat": float(m.group(1)), "lng": float(m.group(2))}
+    m_rev = re.search(r'yandex\.[a-z.]+(?:/navi|/maps)[^\s"\'<>]*[?&](?:text=|ll=)([4]\d\.\d{4,8})[,%2C]([34]\d\.\d{4,8})', text, re.IGNORECASE)
+    if m_rev:
+        return {"lat": float(m_rev.group(2)), "lng": float(m_rev.group(1))}
+
+    # 3. 2GIS URLs
+    m = re.search(r'2gis\.[a-z.]+[^\s"\'<>]*(?:geo/|points=)([4]\d\.\d{4,8})[,%2C]([34]\d\.\d{4,8})', text, re.IGNORECASE)
+    if m:
+        return {"lat": float(m.group(2)), "lng": float(m.group(1))}
+
+    # 4. Standard List.am header: Location: LAT, LNG
+    m = re.search(r'Location:\s*([34]\d\.\d{4,8})\s*,\s*([4]\d\.\d{4,8})', text, re.IGNORECASE)
+    if m:
+        return {"lat": float(m.group(1)), "lng": float(m.group(2))}
+
+    # 5. Labeled coordinates: Coordinates / Կոորդինատներ / Координаты: LAT, LNG
+    m = re.search(r'(?:coordinates|կոորդինատներ|կորդինատներ|կոորդինատ|կորդինատ|координаты|gps|coords)[\s:՝=]+([34]\d\.\d{4,8})\s*[,;\s]+\s*([4]\d\.\d{4,8})', text, re.IGNORECASE)
+    if m:
+        return {"lat": float(m.group(1)), "lng": float(m.group(2))}
+
+    # 6. Standalone or comma-separated GPS pair: LAT, LNG (Armenia bounds: lat 38.0-42.5, lng 43.0-47.5)
+    m = re.search(r'\b([34]\d\.\d{4,8})\s*[,;\s]+\s*([4]\d\.\d{4,8})\b', text)
+    if m:
+        lat, lng = float(m.group(1)), float(m.group(2))
+        if 38.0 <= lat <= 42.5 and 43.0 <= lng <= 47.5:
+            return {"lat": lat, "lng": lng}
+
+    # 7. Reversed LNG, LAT pair
+    m_rev = re.search(r'\b([4]\d\.\d{4,8})\s*[,;\s]+\s*([34]\d\.\d{4,8})\b', text)
+    if m_rev:
+        lng, lat = float(m_rev.group(1)), float(m_rev.group(2))
+        if 38.0 <= lat <= 42.5 and 43.0 <= lng <= 47.5:
+            return {"lat": lat, "lng": lng}
+
+    return None
+
+
 def extract_housing_details(text, is_media_only=False):
     has_text = bool(text and text.strip())
     if not has_text:
@@ -375,7 +520,8 @@ def extract_housing_details(text, is_media_only=False):
             "phone_numbers": [],
             "sizes_sqm": [],
             "rooms": [],
-            "zoning": []
+            "zoning": [],
+            "coordinates": None
         }
 
     sanitized_text = text
@@ -393,12 +539,26 @@ def extract_housing_details(text, is_media_only=False):
         sanitized_text = sanitized_text[:start] + " [PHONE_REMOVED] " + sanitized_text[end:]
     found_phones.reverse()
 
-    # 2. Extract sizes
+    has_text_amd = bool(re.search(
+        r'\b(?:amd|dram|drami|dramov|դրամ|դրամի|դրամով|դր|դ|հհ\s*դրամ|ամդ|драм|драма|драмов)\b|[֏]',
+        text, re.IGNORECASE
+    ))
+    has_text_usd = bool(re.search(
+        r'\b(?:usd|dollar|dollars|դոլար|դոլարի|դոլարով|տոլար|ամն\s*դոլար|доллар|доллара|долларов|у\.е)\b|[\$]',
+        text, re.IGNORECASE
+    ))
+
+    # 2. Extract and mask per-sqm / per-unit rates so rate numbers don't pollute sizes (as 1 sqm) or prices (as $70 property price)
+    extracted_rates = extract_per_sqm_rates(sanitized_text, has_text_usd=has_text_usd, has_text_amd=has_text_amd)
+    for r in sorted(extracted_rates, key=lambda x: x['span'][0], reverse=True):
+        start, end = r['span']
+        sanitized_text = sanitized_text[:start] + " [PER_SQM_PRICE_REMOVED] " + sanitized_text[end:]
+
+    # 3. Extract sizes
     found_sizes = []
-    clean_for_size = RATE_PER_SQM_HEADER_PATTERN.sub(" [RATE_HEADER] ", sanitized_text)
     
     # Hectare sizes (1 ha = 10,000 sqm)
-    for m in HA_PATTERN.finditer(clean_for_size):
+    for m in HA_PATTERN.finditer(sanitized_text):
         try:
             val = float(m.group('ha').replace(',', '.'))
             found_sizes.append(int(val * 10000))
@@ -406,7 +566,7 @@ def extract_housing_details(text, is_media_only=False):
             pass
 
     # Sotka sizes (1 sot = 100 sqm)
-    for m in SOT_PATTERN.finditer(clean_for_size):
+    for m in SOT_PATTERN.finditer(sanitized_text):
         try:
             val = float(m.group('sot').replace(',', '.'))
             found_sizes.append(int(val * 100))
@@ -414,7 +574,7 @@ def extract_housing_details(text, is_media_only=False):
             pass
 
     # Standard sqm sizes
-    size_matches = list(SIZE_PATTERN.finditer(clean_for_size))
+    size_matches = list(SIZE_PATTERN.finditer(sanitized_text))
     for match in reversed(size_matches):
         size_str = match.group('size1') or match.group('size2') or match.group('size3')
         if size_str:
@@ -435,7 +595,7 @@ def extract_housing_details(text, is_media_only=False):
         sanitized_text = sanitized_text[:start] + " [SIZE_REMOVED] " + sanitized_text[end:]
     found_sizes.reverse()
 
-    # 3. Extract rooms
+    # 4. Extract rooms
     found_rooms = []
     # Converted room formats (e.g. 2-3 սենյակ, 1 ձևափոխված 2)
     for m in CONVERTED_ROOMS_PATTERN.finditer(sanitized_text):
@@ -481,7 +641,7 @@ def extract_housing_details(text, is_media_only=False):
     sanitized_text = PERCENT_PATTERN.sub(" [PERCENT_REMOVED] ", sanitized_text)
     sanitized_text = COORDINATES_PATTERN.sub(" [COORDINATE_REMOVED] ", sanitized_text)
 
-    # 4. Determine initial sale/rent signals
+    # 5. Determine initial sale/rent signals
     rent_check_text = INVESTMENT_RENTAL_PATTERN.sub(" ", text_lower)
     is_rent = any(w in rent_check_text for w in [
         "վարձով", "վարձակալություն", "վարձակալության", "վարձակալությամբ", "տրվում է վարձով",
@@ -498,22 +658,13 @@ def extract_housing_details(text, is_media_only=False):
         "продается", "продам", "продажа", "продаю", "куплю"
     ])
 
-    has_text_amd = bool(re.search(
-        r'\b(?:amd|dram|drami|dramov|դրամ|դրամի|դրամով|դր|դ|հհ\s*դրամ|ամդ|драм|драма|драмов)\b|[֏]',
-        text, re.IGNORECASE
-    ))
-    has_text_usd = bool(re.search(
-        r'\b(?:usd|dollar|dollars|դոլար|դոլարի|դոլարով|տոլար|ամն\s*դոլար|доллар|доллара|долларов|у\.е)\b|[\$]',
-        text, re.IGNORECASE
-    ))
-
-    # Mask per-sqm price mentions so rate numbers don't get captured as total property prices
+    # Mask legacy per-sqm price mentions if any remain
     sanitized_text = PER_SQM_PRICE_PATTERN.sub(" [PER_SQM_PRICE_REMOVED] ", sanitized_text)
 
-    # 5. Extract prices
+    # 6. Extract prices
     parsed_prices = []
-    # Priority 1: Check explicit Price header line (List.am or FB format)
-    explicit_price_match = re.search(r'(?:Price:|Գինը[^\n:]*:|Արժեքը[^\n:]*:)\s*([^\n]+)', text, re.IGNORECASE)
+    # Priority 1: Check explicit Price header line on sanitized_text
+    explicit_price_match = re.search(r'(?:Price:|Գինը[^\n:]*:|Արժեքը[^\n:]*:)\s*([^\n]+)', sanitized_text, re.IGNORECASE)
     if explicit_price_match:
         price_header_line = explicit_price_match.group(1)
         header_has_amd = bool(re.search(r'\b(?:amd|dram|drami|dramov|դրամ|դրամի|դրամով|դր|դ|ամդ|драм)\b|[֏]', price_header_line, re.IGNORECASE))
@@ -555,10 +706,7 @@ def extract_housing_details(text, is_media_only=False):
             post_curr = match.group('post_curr')
             amount = normalize_price_amount(amount_raw)
             
-            if not amount:
-                continue
-                
-            if 2020 <= amount <= 2030 and not pre_curr and not post_curr:
+            if not amount or (2020 <= amount <= 2030 and not pre_curr and not post_curr):
                 continue
                 
             symbol = (pre_curr or post_curr or '').strip().lower()
@@ -598,10 +746,22 @@ def extract_housing_details(text, is_media_only=False):
             if (curr == "USD" and amt and amt < 1000) or (curr == "AMD" and amt and amt < 400000):
                 continue
             valid_prices.append(p)
-        if valid_prices:
-            parsed_prices = valid_prices
+        parsed_prices = valid_prices
 
-    # 6. Determine listing type (Sale vs Rent)
+    # 7. If no explicit total price, but per-sqm rate and property size are available, calculate total price
+    if not parsed_prices and extracted_rates and found_sizes:
+        rate_info = extracted_rates[0]
+        target_size = next((s for s in found_sizes if s > 1), None)
+        if target_size:
+            calc_amount = int(round(rate_info["rate_per_sqm"] * target_size))
+            parsed_prices.append({
+                "amount": calc_amount,
+                "currency": rate_info["currency"],
+                "raw_text": f"{rate_info['raw_text']} * {target_size} sqm = {calc_amount}"
+            })
+
+
+    # 8. Determine listing type (Sale vs Rent)
     first_price_val = parsed_prices[0]['amount'] if parsed_prices else None
     first_price_curr = parsed_prices[0]['currency'] if parsed_prices else None
     listing_type = "Unknown"
@@ -635,6 +795,7 @@ def extract_housing_details(text, is_media_only=False):
 
     found_locations = extract_locations_from_text(text_lower)
     zoning = extract_property_zoning(text, property_category)
+    coordinates = extract_coordinates(text)
 
     return {
         "has_text": True,
@@ -648,7 +809,8 @@ def extract_housing_details(text, is_media_only=False):
         "phone_numbers": list(dict.fromkeys(found_phones)),
         "sizes_sqm": list(dict.fromkeys(found_sizes)),
         "rooms": list(dict.fromkeys(found_rooms)),
-        "zoning": zoning
+        "zoning": zoning,
+        "coordinates": coordinates
     }
 
 

@@ -57,6 +57,7 @@ class ListingsStorage:
                     property_category TEXT,
                     listing_type TEXT,
                     full_text TEXT,
+                    full_text_en TEXT,
                     created_at TEXT,
                     creation_timestamp INTEGER,
                     extracted_at TEXT,
@@ -73,11 +74,13 @@ class ListingsStorage:
                     last_seen_at TEXT
                 );
             """)
-            # Migration check: Ensure images_json column exists in legacy tables
+            # Migration check: Ensure images_json and full_text_en columns exist in legacy tables
             cur = self.conn.cursor()
             cols = [col[1] for col in cur.execute("PRAGMA table_info(listings)").fetchall()]
             if "images_json" not in cols:
                 cur.execute("ALTER TABLE listings ADD COLUMN images_json TEXT;")
+            if "full_text_en" not in cols:
+                cur.execute("ALTER TABLE listings ADD COLUMN full_text_en TEXT;")
 
             self.conn.execute("""
                 CREATE INDEX IF NOT EXISTS idx_listings_active_ts 
@@ -120,6 +123,7 @@ class ListingsStorage:
             record.get("property_category") or "General / Unclassified",
             record.get("listing_type") or "Unknown",
             record.get("full_text") or "",
+            record.get("full_text_en"),
             record.get("created_at"),
             int(record.get("creation_timestamp") or 0),
             record.get("extracted_at") or now_iso,
@@ -153,25 +157,25 @@ class ListingsStorage:
                 cur.execute("""
                     INSERT INTO listings (
                         canonical_id, source, url, category_id, property_category, listing_type,
-                        full_text, created_at, creation_timestamp, extracted_at,
+                        full_text, full_text_en, created_at, creation_timestamp, extracted_at,
                         prices_json, sizes_json, rooms_json, locations_json, phones_json, zoning_json, images_json,
                         completeness_score, is_active, first_seen_at, last_seen_at
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, row_data)
                 return "inserted"
             else:
                 existing_score = existing["completeness_score"]
-                new_score = row_data[17]
+                new_score = row_data[18]
                 if new_score >= existing_score:
                     # Update all details and last_seen_at
                     cur.execute("""
                         UPDATE listings SET
                             source = ?, url = ?, category_id = ?, property_category = ?, listing_type = ?,
-                            full_text = ?, created_at = ?, creation_timestamp = ?, extracted_at = ?,
+                            full_text = ?, full_text_en = ?, created_at = ?, creation_timestamp = ?, extracted_at = ?,
                             prices_json = ?, sizes_json = ?, rooms_json = ?, locations_json = ?, phones_json = ?, zoning_json = ?, images_json = ?,
                             completeness_score = ?, is_active = 1, last_seen_at = ?
                         WHERE canonical_id = ?
-                    """, row_data[1:18] + (now_iso, canonical_id))
+                    """, row_data[1:19] + (now_iso, canonical_id))
                     return "updated"
                 else:
                     # Keep existing richer details, just update last_seen_at
@@ -196,24 +200,24 @@ class ListingsStorage:
                     cur.execute("""
                         INSERT INTO listings (
                             canonical_id, source, url, category_id, property_category, listing_type,
-                            full_text, created_at, creation_timestamp, extracted_at,
+                            full_text, full_text_en, created_at, creation_timestamp, extracted_at,
                             prices_json, sizes_json, rooms_json, locations_json, phones_json, zoning_json, images_json,
                             completeness_score, is_active, first_seen_at, last_seen_at
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """, row_data)
                     inserted += 1
                 else:
                     existing_score = existing["completeness_score"]
-                    new_score = row_data[17]
+                    new_score = row_data[18]
                     if new_score >= existing_score:
                         cur.execute("""
                             UPDATE listings SET
                                 source = ?, url = ?, category_id = ?, property_category = ?, listing_type = ?,
-                                full_text = ?, created_at = ?, creation_timestamp = ?, extracted_at = ?,
+                                full_text = ?, full_text_en = ?, created_at = ?, creation_timestamp = ?, extracted_at = ?,
                                 prices_json = ?, sizes_json = ?, rooms_json = ?, locations_json = ?, phones_json = ?, zoning_json = ?, images_json = ?,
                                 completeness_score = ?, is_active = 1, last_seen_at = ?
                             WHERE canonical_id = ?
-                        """, row_data[1:18] + (now_iso, canonical_id))
+                        """, row_data[1:19] + (now_iso, canonical_id))
                         updated += 1
                     else:
                         cur.execute("UPDATE listings SET last_seen_at = ?, is_active = 1 WHERE canonical_id = ?", (now_iso, canonical_id))
@@ -234,13 +238,15 @@ class ListingsStorage:
                 cur.execute("""
                     UPDATE listings SET
                         source = ?, category_id = ?, property_category = ?, listing_type = ?,
+                        full_text_en = ?,
                         prices_json = ?, sizes_json = ?, rooms_json = ?, locations_json = ?, phones_json = ?, zoning_json = ?, images_json = ?,
                         completeness_score = ?, last_seen_at = ?
                     WHERE canonical_id = ?
                 """, (
                     row_data[1], row_data[3], row_data[4], row_data[5],
-                    row_data[10], row_data[11], row_data[12], row_data[13], row_data[14], row_data[15], row_data[16],
-                    row_data[17], now_iso, canonical_id
+                    row_data[7],
+                    row_data[11], row_data[12], row_data[13], row_data[14], row_data[15], row_data[16], row_data[17],
+                    row_data[18], now_iso, canonical_id
                 ))
                 updated += 1
         return updated
@@ -262,6 +268,7 @@ class ListingsStorage:
             "property_category": row["property_category"],
             "listing_type": row["listing_type"],
             "full_text": row["full_text"],
+            "full_text_en": row["full_text_en"] if "full_text_en" in row_keys else None,
             "created_at": row["created_at"],
             "creation_timestamp": row["creation_timestamp"],
             "extracted_at": row["extracted_at"],

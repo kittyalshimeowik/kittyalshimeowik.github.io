@@ -250,6 +250,7 @@ def get_unique_listings_from_all_groups():
                             post["phone_numbers"] = reparsed_details.get("phone_numbers") or []
                             post["prices"] = reparsed_details.get("prices") or []
                             post["zoning"] = reparsed_details.get("zoning") or []
+                            post["coordinates"] = reparsed_details.get("coordinates")
 
                         if "prices" in post:
                             post["prices"] = normalize_and_convert_prices(post.get("prices"))
@@ -312,6 +313,7 @@ def get_unique_listings_from_all_groups():
                     if reparsed_details.get("prices"):
                         post["prices"] = reparsed_details.get("prices")
                     post["zoning"] = reparsed_details.get("zoning") or post.get("zoning", [])
+                    post["coordinates"] = reparsed_details.get("coordinates") or post.get("coordinates")
 
                 # Verify post has meaningful text or extracted attributes post-parsing
                 text = (post.get("full_text") or "").strip()
@@ -358,6 +360,9 @@ def prune_for_display(post):
     text = post.get("full_text") or ""
     if len(text) > 500:
         text = text[:497] + "..."
+    text_en = post.get("full_text_en") or ""
+    if len(text_en) > 500:
+        text_en = text_en[:497] + "..."
     images = post.get("images") or []
     if isinstance(images, list):
         # Cap to 5 to avoid overly large JSON payloads while providing multiple photos
@@ -365,7 +370,7 @@ def prune_for_display(post):
     else:
         images = []
 
-    return {
+    res = {
         "url": post.get("url"),
         "canonical_id": post.get("canonical_id"),
         "source": post.get("source") or "Facebook",
@@ -382,6 +387,9 @@ def prune_for_display(post):
         "created_at": post.get("created_at"),
         "creation_timestamp": post.get("creation_timestamp") or 0
     }
+    if text_en:
+        res["full_text_en"] = text_en
+    return res
 
 
 def categorize_and_save_master_files(all_posts):
@@ -468,6 +476,13 @@ def generate_site_data():
                 dedup_cache[post_id] = l_hash
             
             processed_listings.append(post)
+
+        # Automatically translate new listings to English (using persistent cache)
+        try:
+            from scrapers.utilities.translator import enrich_listings_with_translations
+            enrich_listings_with_translations(processed_listings)
+        except Exception as e:
+            print(f"[WARNING] Translation enrichment skipped or failed: {e}")
 
         categorize_and_save_master_files(processed_listings)
         save_dedup_cache(dedup_cache)

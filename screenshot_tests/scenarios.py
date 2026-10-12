@@ -111,6 +111,24 @@ def _setup_component_card(page: Page):
     _wait_for_site_ready(page)
 
 
+def _setup_component_card_photo(page: Page):
+    _wait_for_site_ready(page)
+    page.evaluate("""() => {
+        const card = document.querySelector('.property-card:not(.skeleton-card)');
+        if (card) {
+            card.classList.add('photo-demo-card');
+            const media = card.querySelector('.card-media');
+            if (media) {
+                media.innerHTML = `
+                    <img class="card-media-img" src="data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%231e3a5f'/%3E%3Cstop offset='100%25' stop-color='%230f172a'/%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23g)'/%3E%3Ctext x='50%25' y='50%25' fill='%2394a3b8' font-family='sans-serif' font-size='32' text-anchor='middle' dy='.3em'%3EListing Photo%3C/text%3E%3C/svg%3E" alt="Property Photo" loading="lazy" decoding="async">
+                    <span class="photo-count-badge">📷 8</span>
+                `;
+            }
+        }
+    }""")
+    time.sleep(0.3)
+
+
 # Master registry of test scenarios
 SCENARIOS = [
     TestScenario(
@@ -195,6 +213,14 @@ SCENARIOS = [
         viewport=(1440, 900),
         element_selector=".property-card:first-of-type",
         setup_action=_setup_component_card,
+    ),
+    TestScenario(
+        id="component_card_photo",
+        title="Single Property Card with Photography",
+        description="High-resolution element capture of a listing card with photo media, cover scaling, and photo counter badge.",
+        viewport=(1440, 900),
+        element_selector=".property-card.photo-demo-card",
+        setup_action=_setup_component_card_photo,
     ),
     TestScenario(
         id="header_branding_logo",

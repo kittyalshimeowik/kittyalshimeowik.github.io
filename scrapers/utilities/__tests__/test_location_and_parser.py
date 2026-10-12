@@ -9,6 +9,8 @@ if PROJECT_ROOT not in sys.path:
 
 from scrapers.utilities.housing_parser import (
     extract_housing_details,
+    extract_coordinates,
+    extract_per_sqm_rates,
     extract_property_category,
     extract_property_zoning,
     extract_negotiation_status,
@@ -134,10 +136,132 @@ class TestLocationAndHousingParser(unittest.TestCase):
         self.assertEqual(details["prices"][0]["amount"], 45000)
         self.assertEqual(details["prices"][0]["currency"], "USD")
         self.assertIn(800, details["sizes_sqm"])
+        self.assertIsNotNone(details.get("coordinates"))
+        self.assertAlmostEqual(details["coordinates"]["lat"], 40.187245)
+        self.assertAlmostEqual(details["coordinates"]["lng"], 44.515234)
+
+    def test_coordinates_extraction_methods(self):
+        # 1. List.am header
+        t1 = "Location: 40.521412, 44.71768, Կոտայքի մարզ\nPrice: $75,000"
+        c1 = extract_coordinates(t1)
+        self.assertIsNotNone(c1)
+        self.assertAlmostEqual(c1["lat"], 40.521412)
+        self.assertAlmostEqual(c1["lng"], 44.71768)
+
+        # 2. Yandex Maps URL
+        t2 = "Հողատարածք https://yandex.ru/navi?text=40.727950,44.686819&si=xyz Մարգահովիտ"
+        c2 = extract_coordinates(t2)
+        self.assertIsNotNone(c2)
+        self.assertAlmostEqual(c2["lat"], 40.727950)
+        self.assertAlmostEqual(c2["lng"], 44.686819)
+
+        # 3. Google Maps URL
+        t3 = "Գտնվելու վայրը https://maps.google.com/?q=40.187245,44.515234 Երևան"
+        c3 = extract_coordinates(t3)
+        self.assertIsNotNone(c3)
+        self.assertAlmostEqual(c3["lat"], 40.187245)
+        self.assertAlmostEqual(c3["lng"], 44.515234)
+
+        # 4. Labeled GPS coordinates
+        t4 = "📍 Coordinates: 40.312870, 44.311863 Փարպի"
+        c4 = extract_coordinates(t4)
+        self.assertIsNotNone(c4)
+        self.assertAlmostEqual(c4["lat"], 40.312870)
+        self.assertAlmostEqual(c4["lng"], 44.311863)
+
+        # 5. Raw GPS coordinate pair
+        t5 = "40.140146, 44.739168 ԿՈՐԴԻՆԱՏՆԵՐ Գառնի"
+        c5 = extract_coordinates(t5)
+        self.assertIsNotNone(c5)
+        self.assertAlmostEqual(c5["lat"], 40.140146)
+        self.assertAlmostEqual(c5["lng"], 44.739168)
+
+        # 6. None when no coordinates are present
+        t6 = "Վաճառվում է 2 սենյականոց բնակարան Կենտրոնում: Գինը 80,000$"
+        self.assertIsNone(extract_coordinates(t6))
+
+    def test_extract_per_sqm_rates_helper(self):
+        # Prefix format
+        rates_prefix = extract_per_sqm_rates("🏷️Արժեքը՝   1քմ - 70$")
+        self.assertEqual(len(rates_prefix), 1)
+        self.assertEqual(rates_prefix[0]["amount"], 70)
+        self.assertEqual(rates_prefix[0]["currency"], "USD")
+        self.assertEqual(rates_prefix[0]["rate_per_sqm"], 70.0)
+
+        # Postfix format
+        rates_postfix = extract_per_sqm_rates("Գինը՝ 35 ԱՄՆ դոլար / 1 քմ")
+        self.assertEqual(len(rates_postfix), 1)
+        self.assertEqual(rates_postfix[0]["amount"], 35)
+        self.assertEqual(rates_postfix[0]["currency"], "USD")
+        self.assertEqual(rates_postfix[0]["rate_per_sqm"], 35.0)
+
+        # Sotka format (1 sotka = 100 sqm)
+        rates_sot = extract_per_sqm_rates("1 սոտկան - 5000$")
+        self.assertEqual(len(rates_sot), 1)
+        self.assertEqual(rates_sot[0]["amount"], 5000)
+        self.assertEqual(rates_sot[0]["unit"], "sot")
+        self.assertEqual(rates_sot[0]["rate_per_sqm"], 50.0)
+
+    def test_per_sqm_rate_total_price_calculation_usd(self):
+        # Post 1 from user: 70$/sqm and 7066 sqm -> $494,620 total cost
+        text_post1 = (
+            "🌿 Վաճառվում է հողատարածք Ջրվեժ-Առինջ տանող ճանապարհին։\n"
+            "🏷️Արժեքը՝   1քմ - 70$\n"
+            "📐 Մակերես՝ 7066  քմ\n"
+            "🏡 Նշանակություն՝ գյուղատնտեսական"
+        )
+        details1 = extract_housing_details(text_post1)
+        self.assertEqual(len(details1["prices"]), 1)
+        self.assertEqual(details1["prices"][0]["amount"], 494620)
+        self.assertEqual(details1["prices"][0]["currency"], "USD")
+        self.assertEqual(details1["sizes_sqm"], [7066])
+        self.assertEqual(details1["property_category"], "Land")
+        self.assertEqual(details1["listing_type"], "Sale")
+
+        # Post 2 from user: 80$/sqm and 5770 sqm -> $461,600 total cost
+        text_post2 = (
+            "🌿 Վաճառվում է հողատարածք Ձորաղբյուրում՝ ձիարշավարանի մոտ։\n"
+            "🏷️Արժեքը՝   1քմ - 80$\n"
+            "📐 Մակերես՝ 5770  քմ\n"
+            "🏡 Նշանակություն՝ գյուղատնտեսական"
+        )
+        details2 = extract_housing_details(text_post2)
+        self.assertEqual(len(details2["prices"]), 1)
+        self.assertEqual(details2["prices"][0]["amount"], 461600)
+        self.assertEqual(details2["prices"][0]["currency"], "USD")
+        self.assertEqual(details2["sizes_sqm"], [5770])
+        self.assertEqual(details2["property_category"], "Land")
+        self.assertEqual(details2["listing_type"], "Sale")
+
+    def test_per_sqm_rate_total_price_calculation_amd(self):
+        # Apartment complex with AMD rate: 630,000 AMD/sqm and 107.5 sqm -> 67,725,000 AMD
+        text_amd_rate = "Բազիս բնակելի համալիր րաֆֆու 28։ 4 սենյակ 107.5քմ 1քմ=630000 սեփականատեր"
+        details_amd = extract_housing_details(text_amd_rate)
+        self.assertEqual(len(details_amd["prices"]), 1)
+        self.assertEqual(details_amd["prices"][0]["amount"], 67725000)
+        self.assertEqual(details_amd["prices"][0]["currency"], "AMD")
+        self.assertEqual(details_amd["sizes_sqm"], [107.5])
+        self.assertEqual(details_amd["property_category"], "Apartment")
+        self.assertEqual(details_amd["listing_type"], "Sale")
+
+    def test_explicit_price_not_overridden_by_sqm_rate(self):
+        # When an explicit total price is provided alongside a rate, the explicit total price must be used
+        text = "Վաճառվում է առանձնատուն: Գինը՝ 210,000$, 1քմ արժեքը 900$: Մակերեսը 235 քմ"
+        details = extract_housing_details(text)
+        self.assertEqual(len(details["prices"]), 1)
+        self.assertEqual(details["prices"][0]["amount"], 210000)
+        self.assertEqual(details["prices"][0]["currency"], "USD")
+
+    def test_per_sqm_rate_without_size_does_not_become_sale_price(self):
+        # A per-sqm price without a known property size must never be captured as the total property price
+        text = "Վաճառվում է հողատարածք: 1քմ - 70$: Զանգահարել 098390839"
+        details = extract_housing_details(text)
+        self.assertEqual(details["prices"], [])
 
     # -------------------------------------------------------------------------
     # 3. Room count extraction
     # -------------------------------------------------------------------------
+
 
     def test_room_counts_various_phrasings(self):
         cases = [

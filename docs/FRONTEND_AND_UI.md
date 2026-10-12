@@ -65,14 +65,24 @@ The application utilizes a curated, accessible color palette defined in `:root`:
    - Vector fallback: When photos are absent or fail to load, renders custom category-themed SVG graphics (Apartment, House, Land, Commercial) against subtle radial gradients.
 
 6. **Interactive Google Maps Modal (`#map-modal`)**:
-   - Zero-key embedded Google Maps preview triggered from either the card location link (`.map-link-btn`) or the footer map action (`.map-btn`).
-   - Automatically detects recognized Yerevan streets (Mashtots, Komitas, Baghramyan, Northern Ave, Tumanyan, Amiryan, Nalbandyan, etc.) or falls back to community/district level.
+   - Zero-key embedded Google Maps preview triggered directly by clicking on the location link/icon (`.map-link-btn`). Redundant footer map buttons have been decluttered to save card space.
+   - Automatically prioritizes exact GPS coordinates extracted from listings (List.am headers, Yandex Maps/Navi, 2GIS, Google Maps URLs, or coordinate pairs) for direct pinpointing (`lat,lng`).
+   - Automatically detects recognized streets across Yerevan and Armenian cities with building and lane numbers (e.g., `Vardanants 32`, `Fuchik 1st lane 11`), as well as specific regional towns and villages (e.g., `Garni`, `Musaler`, `Tsaghkadzor`), avoiding generic Yerevan fallbacks for regional properties.
    - Includes live loading spinner, interactive preview iframe, and direct "Open in Google Maps ↗" external navigation button.
    - Full keyboard accessibility (Escape to dismiss, focus trap handling, outside backdrop click).
 
 7. **Toast Notification System (`#toast-container`)**:
    - Centered floating toast notifications for copy-to-clipboard interactions.
    - Smooth enter/exit transition with green checkmark indicator.
+
+8. **Concise Cards & Text "Show More" (`.description-expand-btn`)**:
+   - Long property descriptions are clamped to 2 lines by default to keep row items clean and compact.
+   - For detailed descriptions, a "Show more ▾" / "Show less ▴" button dynamically toggles the full description text.
+   - Mobile card footer arranges primary action ("View original ↗"), call pill, and icon-only share into a single compact horizontal bar, reducing card height by ~35%.
+
+9. **Sticky Mobile Filters Overlay (`.filter-toolbar`, `.filter-panel`)**:
+   - On mobile screens, the filter toolbar is sticky at the top, showing active filter count badges and reset actions so filtering is always available.
+   - The filter options open as an overlay dropdown rather than pushing listings off the screen, keeping listings front-and-center.
 
 ---
 
@@ -110,7 +120,8 @@ Users can sort listings by:
 - **Size: Small to Large** (tie-breaker: lower price, then newest date)
 
 ### 4. Card Action Handlers
-- **Map Buttons (`.map-link-btn`, `.map-btn`)**: Opens the Google Maps modal with resolved street/location query and live embed preview.
+- **Location Map Link (`.map-link-btn`)**: Opens the Google Maps modal with resolved street/location query and live embed preview.
+- **Description Expand (`.description-expand-btn`)**: Toggles between 2-line concise snippet and full description.
 - **Phone Button**: Direct `tel:` link with formatted Armenian number.
 - **Share Button**: Copies permalink to system clipboard and triggers toast notification.
 - **View Original Button**: Opens origin source on Facebook or List.am in a new tab.
@@ -122,6 +133,8 @@ Users can sort listings by:
 
 The application supports real-time language toggling between **English (`en`)** and **Armenian (`hy`)**:
 - All UI strings, placeholders, badges, and counters update dynamically without page reloads.
+- **Listing Descriptions Translation**: When the user is in English mode, Armenian and Russian listing descriptions are automatically displayed in English via pre-translated and cached `full_text_en` strings, with an interactive inline toggle button (`🌐 Show original` / `🌐 Translate to English`) allowing instant inspection of the original text.
+- **Bilingual Keyword Search**: English search terms match against the translated description (`full_text_en`) as well as the original text (`full_text`).
 - Geographic locations are bilingual (e.g., *Kentron / Center* ↔ *Կենտրոն*, *Arabkir* ↔ *Արաբկիր*).
 - Currency defaults align with language selection (USD for English, AMD for Armenian).
 - User's selected language is persisted in `localStorage`.
