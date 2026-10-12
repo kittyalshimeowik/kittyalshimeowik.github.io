@@ -14,12 +14,18 @@
     <header>
         <div class="header-inner">
             <div class="header-branding">
+                <div class="header-badge-row">
+                    <span class="live-pill"><span class="live-dot"></span> LIVE FEED</span>
+                    <span class="source-pills-header">Facebook &bull; List.am</span>
+                </div>
                 <h1 class="logo" data-i18n="siteTitle">🇦🇲 Armenia Real Estate Hub</h1>
                 <p class="header-subtitle" data-i18n="siteSubtitle">Live Aggregated Real Estate from Facebook & List.am</p>
             </div>
-            <div class="language-toggle" role="group" aria-label="Language">
-                <button class="language-btn active" data-language="en" type="button">English</button>
-                <button class="language-btn" data-language="hy" type="button">Հայերեն</button>
+            <div class="header-actions">
+                <div class="language-toggle" role="group" aria-label="Language">
+                    <button class="language-btn active" data-language="en" type="button">English</button>
+                    <button class="language-btn" data-language="hy" type="button">Հայերեն</button>
+                </div>
             </div>
         </div>
     </header>
@@ -31,7 +37,11 @@
                     <span class="filter-toolbar-label" data-i18n="filterResults">Filter results</span>
                     <div class="filter-actions">
                         <button class="reset-btn" id="reset-filters" data-i18n="reset" type="button">Reset</button>
-                        <button class="collapse-btn" id="toggle-filters" type="button" aria-expanded="true" aria-controls="filter-content" aria-label="Collapse filters" title="Collapse filters">&lt;</button>
+                        <button class="collapse-btn" id="toggle-filters" type="button" aria-expanded="true" aria-controls="filter-content" aria-label="Collapse filters" title="Collapse filters">
+                            <svg class="collapse-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="15 18 9 12 15 6"></polyline>
+                            </svg>
+                        </button>
                     </div>
                 </div>
                 <aside class="filter-panel" aria-labelledby="filter-heading">
@@ -168,6 +178,16 @@
     <footer>
         <p data-i18n="footer">&copy; 2026 Armenia Real Estate Scraper Hub</p>
     </footer>
+
+    <!-- Back to top floating button -->
+    <button id="back-to-top" class="back-to-top-btn" type="button" aria-label="Back to top" title="Back to top">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <!-- Floating Toast Notification System -->
+    <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
     <script src="translations.js"></script>
     <script src="script.js"></script>

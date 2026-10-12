@@ -364,7 +364,15 @@ document.addEventListener("DOMContentLoaded", () => {
         if (currentFilteredListings.length === 0) {
             gridContainer.innerHTML = `
                 <div class="empty-state">
+                    <div class="empty-icon-wrap">
+                        <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            <line x1="8" y1="11" x2="14" y2="11"></line>
+                        </svg>
+                    </div>
                     <p class="empty-title">${text("noMatches")}</p>
+                    <p class="empty-desc">${text("noMatchesDesc")}</p>
                     <button class="reset-filter-btn" type="button" id="empty-reset-btn">${text("reset")}</button>
                 </div>
             `;
@@ -502,6 +510,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     <div class="card-footer">
                         ${phoneBtnHtml}
+                        <button type="button" class="share-btn" title="${text("shareLink")}">
+                            <svg class="share-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="18" cy="5" r="3"></circle>
+                                <circle cx="6" cy="12" r="3"></circle>
+                                <circle cx="18" cy="19" r="3"></circle>
+                                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                            </svg>
+                            <span>${text("shareLink")}</span>
+                        </button>
                         <a href="${escapeHtml(item.url)}" class="view-btn" target="_blank" rel="noopener noreferrer">
                             ${text("viewOriginal")} <span class="arrow">↗</span>
                         </a>
@@ -509,14 +527,29 @@ document.addEventListener("DOMContentLoaded", () => {
                 </div>
             `;
 
+            // Share button copy interaction
+            const shareBtn = card.querySelector(".share-btn");
+            if (shareBtn) {
+                shareBtn.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    const urlToShare = item.url || window.location.href;
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        navigator.clipboard.writeText(urlToShare)
+                            .then(() => showToast(text("linkCopied")))
+                            .catch(() => showToast(text("linkCopied")));
+                    } else {
+                        showToast(text("linkCopied"));
+                    }
+                });
+            }
+
             // Entire row is clickable to go to the post
             card.setAttribute("role", "link");
             card.setAttribute("tabindex", "0");
             card.addEventListener("click", (e) => {
-                if (e.target.closest(".phone-link")) return;
+                if (e.target.closest(".phone-link, .share-btn, .view-btn")) return;
                 const selection = window.getSelection();
                 if (selection && selection.toString().trim().length > 0) return;
-                if (e.target.closest(".view-btn")) return;
                 if (item.url) {
                     window.open(item.url, "_blank", "noopener,noreferrer");
                 }
@@ -524,7 +557,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             card.addEventListener("keydown", (e) => {
                 if (e.key === "Enter" || e.key === " ") {
-                    if (e.target.closest(".phone-link")) return;
+                    if (e.target.closest(".phone-link, .share-btn, .view-btn")) return;
                     e.preventDefault();
                     if (item.url) {
                         window.open(item.url, "_blank", "noopener,noreferrer");
@@ -572,6 +605,43 @@ document.addEventListener("DOMContentLoaded", () => {
 
         observer.observe(loadMoreBtn);
     }
+
+    function showToast(message) {
+        const toastContainer = document.getElementById("toast-container");
+        if (!toastContainer) return;
+        const toast = document.createElement("div");
+        toast.className = "toast-message";
+        toast.innerHTML = `<span class="toast-icon">✓</span> <span>${escapeHtml(message)}</span>`;
+        toastContainer.appendChild(toast);
+        requestAnimationFrame(() => toast.classList.add("visible"));
+        setTimeout(() => {
+            toast.classList.remove("visible");
+            toast.classList.add("fade-out");
+            setTimeout(() => toast.remove(), 300);
+        }, 2200);
+    }
+
+    function initScrollFeatures() {
+        const backToTopBtn = document.getElementById("back-to-top");
+        const header = document.querySelector("header");
+
+        window.addEventListener("scroll", () => {
+            const currentScrollY = window.scrollY || document.documentElement.scrollTop;
+            if (backToTopBtn) {
+                backToTopBtn.classList.toggle("visible", currentScrollY > 300);
+            }
+            if (header) {
+                header.classList.toggle("is-scrolled", currentScrollY > 15);
+            }
+        }, { passive: true });
+
+        if (backToTopBtn) {
+            backToTopBtn.addEventListener("click", () => {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            });
+        }
+    }
+    initScrollFeatures();
 
     function renderActiveFilterChips() {
         if (!activeFilterChips) return;

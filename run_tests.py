@@ -21,7 +21,8 @@ def run_all_tests():
 
     # Dynamically discover all '__tests__' directories under project root
     discovered_dirs = []
-    for root, dirs, files in os.walk(os.path.join(project_root, "scrapers")):
+    for root, dirs, files in os.walk(project_root):
+        dirs[:] = [d for d in dirs if d not in (".venv", ".git", ".vscode", "node_modules")]
         if os.path.basename(root) == "__tests__":
             discovered_dirs.append(root)
 
