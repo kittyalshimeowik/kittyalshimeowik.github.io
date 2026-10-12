@@ -133,6 +133,16 @@ def score_post_data(post):
 def load_dataset_for_group(output_dir, group_id):
     file_path = get_group_file_path(output_dir, group_id)
     if not os.path.exists(file_path):
+        try:
+            from scrapers.utilities.storage import ListingsStorage
+            with ListingsStorage() as storage:
+                all_db = storage.get_all_listings(active_only=True)
+                group_posts = [p for p in all_db if str(group_id) in p.get("url", "") or str(group_id) == str(p.get("category_id", ""))]
+                if group_posts:
+                    urls = set(normalize_url(p["url"]) for p in group_posts if p.get("url"))
+                    return group_posts, urls
+        except Exception:
+            pass
         return [], set()
     try:
         with open(file_path, "r", encoding="utf-8") as f:

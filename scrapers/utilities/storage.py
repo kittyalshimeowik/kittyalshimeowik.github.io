@@ -268,6 +268,11 @@ class ListingsStorage:
             cur.execute("UPDATE listings SET is_active = 1")
             return cur.rowcount
 
+    def optimize_db(self):
+        """Maintains SQLite query planner statistics and database health."""
+        with self.conn:
+            self.conn.execute("PRAGMA optimize;")
+
     def prune_stale_listings(self, max_age_days=60):
         """Deactivates listings older than max_age_days."""
         min_ts = int(time.time() - (max_age_days * 86400))

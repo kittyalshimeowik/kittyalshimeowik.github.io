@@ -21,6 +21,16 @@ def load_dataset_for_category(output_dir, cat_id):
     """Loads existing records and URL set for a given category."""
     file_path = get_category_file_path(output_dir, cat_id)
     if not os.path.exists(file_path):
+        try:
+            from scrapers.utilities.storage import ListingsStorage
+            with ListingsStorage() as storage:
+                all_db = storage.get_all_listings(active_only=True)
+                cat_posts = [p for p in all_db if str(cat_id) == str(p.get("category_id", "")) or f"/{cat_id}" in str(p.get("url", ""))]
+                if cat_posts:
+                    urls = set(p.get("url", "") for p in cat_posts if p.get("url"))
+                    return cat_posts, urls
+        except Exception:
+            pass
         return [], set()
     try:
         with open(file_path, "r", encoding="utf-8") as f:

@@ -36,6 +36,58 @@ def run_step(script_path, description, extra_args=None):
         print(f"\n[ERROR] Could not find the script at: {script_path}", file=sys.stderr)
         return False
 
+def manage_pipeline_storage():
+    """Consolidates newly scraped data into SQLite, archives transient JSONs, and optimizes storage."""
+    print(f"\n{'='*50}")
+    print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] STARTING: Storage Management & Database Optimization")
+    print(f"{'='*50}\n")
+    try:
+        from scrapers.utilities.storage import ListingsStorage
+        import zipfile
+
+        with ListingsStorage() as storage:
+            # Ingest any loose JSON files created during scraping into SQLite
+            stats = storage.migrate_from_json_directories()
+            if stats.get("records_migrated", 0) > 0:
+                print(f"📥 Ingested {stats['records_migrated']} records from {stats['files_processed']} loose JSON files into SQLite.")
+
+            # Archive and clean transient loose JSON files to prevent disk clutter
+            zip_path = os.path.join("scrapers", "data", "raw_json_legacy_archive.zip")
+            os.makedirs(os.path.dirname(zip_path), exist_ok=True)
+            loose_files = []
+            for root, _, files in os.walk("scrapers"):
+                if "housing_posts_data" in root:
+                    for f in files:
+                        if f.endswith(".json"):
+                            loose_files.append(os.path.join(root, f))
+            if os.path.exists(os.path.join("scrapers", "processors", "dedup_cache.json")):
+                loose_files.append(os.path.join("scrapers", "processors", "dedup_cache.json"))
+
+            if loose_files:
+                mode = 'a' if os.path.exists(zip_path) else 'w'
+                with zipfile.ZipFile(zip_path, mode, zipfile.ZIP_DEFLATED) as zf:
+                    existing_names = set(zf.namelist())
+                    for fp in loose_files:
+                        arcname = os.path.relpath(fp, "scrapers").replace("\\", "/")
+                        if arcname not in existing_names:
+                            zf.write(fp, arcname)
+                        try:
+                            os.remove(fp)
+                        except OSError:
+                            pass
+                print(f"📦 Archived and cleaned {len(loose_files)} transient JSON files into {zip_path}.")
+
+            # Optimize database query planner
+            storage.optimize_db()
+            total_active = storage.count_listings(active_only=True)
+            db_size_kb = os.path.getsize(storage.db_path) / 1024 if os.path.exists(storage.db_path) else 0
+            print(f"💾 Storage Status: SQLite Database healthy ({total_active} active listings, {db_size_kb:.1f} KB).")
+        return True
+    except Exception as e:
+        print(f"⚠️ Storage management warning: {e}", file=sys.stderr)
+        return False
+
+
 def auto_git_push(commit_message="Auto-update listings and site data"):
     """Helper function to stage, commit, and push changes to GitHub."""
     print(f"\n{'='*50}")
@@ -121,7 +173,10 @@ def main():
         print("\n❌ Pipeline aborted due to cleanup failure.", file=sys.stderr)
         sys.exit(1)
     
-    # Step 4: Auto Git Push (skipped if --no-push flag is provided)
+    # Step 4: Storage Management & SQLite Optimization
+    manage_pipeline_storage()
+
+    # Step 5: Auto Git Push (skipped if --no-push flag is provided)
     if not args.no_push:
         git_success = auto_git_push()
         if not git_success:
