@@ -11,7 +11,8 @@ from scrapers.utilities.env_utils import (
     ensure_utf8_output,
     get_project_root,
     get_venv_python,
-    ensure_virtualenv
+    ensure_virtualenv,
+    get_installed_chrome_major_version
 )
 
 
@@ -36,6 +37,14 @@ class TestEnvUtils(unittest.TestCase):
         ensure_virtualenv(__file__)
         self.assertTrue(True)
 
+    def test_get_installed_chrome_major_version(self):
+        version = get_installed_chrome_major_version()
+        # On a system with Chrome installed, it should return an integer > 0 or None if not found
+        if version is not None:
+            self.assertIsInstance(version, int)
+            self.assertGreater(version, 50)
+
 
 if __name__ == "__main__":
     unittest.main()
+

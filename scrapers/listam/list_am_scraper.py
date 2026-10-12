@@ -7,7 +7,7 @@ PROJ_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, '..', '..'))
 if PROJ_ROOT not in sys.path:
     sys.path.insert(0, PROJ_ROOT)
 
-from scrapers.utilities.env_utils import ensure_utf8_output, ensure_virtualenv
+from scrapers.utilities.env_utils import ensure_utf8_output, ensure_virtualenv, get_installed_chrome_major_version
 ensure_utf8_output()
 
 import time
@@ -80,7 +80,27 @@ class DirectBrowserListAmScraper(BaseScraper):
         prefs = {"profile.managed_default_content_settings.images": 2}
         options.experimental_options["prefs"] = prefs
 
-        self.driver = uc.Chrome(options=options, use_subprocess=True)
+        chrome_major = get_installed_chrome_major_version()
+        uc_kwargs = {"options": options, "use_subprocess": True}
+        if chrome_major:
+            print(f"🎯 Matching ChromeDriver to detected Chrome major version: {chrome_major}")
+            uc_kwargs["version_main"] = chrome_major
+
+        try:
+            self.driver = uc.Chrome(**uc_kwargs)
+        except Exception as e:
+            err_msg = str(e)
+            match = re.search(r"Current browser version is (\d+)", err_msg)
+            if match:
+                fallback_major = int(match.group(1))
+                if fallback_major != uc_kwargs.get("version_main"):
+                    print(f"🔄 Retrying ChromeDriver with browser version: {fallback_major}")
+                    uc_kwargs["version_main"] = fallback_major
+                    self.driver = uc.Chrome(**uc_kwargs)
+                else:
+                    raise
+            else:
+                raise
         
         try:
             self.driver.__del__ = lambda: None

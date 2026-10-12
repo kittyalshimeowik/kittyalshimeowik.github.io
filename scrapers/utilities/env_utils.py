@@ -60,3 +60,94 @@ def ensure_virtualenv(script_file):
         res = subprocess.run([target_py] + sys.argv, check=False)
         sys.exit(res.returncode)
 
+
+def get_installed_chrome_major_version():
+    """
+    Detects the major version of Google Chrome installed on the host system.
+    Supports Windows (Registry, PowerShell, Executable), Linux, and macOS.
+    Returns an int (e.g., 154) or None if cannot be determined.
+    """
+    import re
+    # 1. Windows Registry detection
+    if CURRENT_OS == "windows":
+        try:
+            import winreg
+            reg_paths = [
+                r"SOFTWARE\Google\Chrome\BLBeacon",
+                r"SOFTWARE\Wow6432Node\Google\Chrome\BLBeacon",
+            ]
+            for root in (winreg.HKEY_CURRENT_USER, winreg.HKEY_LOCAL_MACHINE):
+                for path in reg_paths:
+                    try:
+                        with winreg.OpenKey(root, path) as key:
+                            val, _ = winreg.QueryValueEx(key, "version")
+                            if val:
+                                m = re.search(r"^(\d+)", str(val).strip())
+                                if m:
+                                    return int(m.group(1))
+                    except (FileNotFoundError, OSError):
+                        pass
+        except Exception:
+            pass
+
+    # 2. Try undetected_chromedriver or standard executable discovery
+    exe = None
+    try:
+        import undetected_chromedriver as uc
+        exe = uc.find_chrome_executable()
+    except Exception:
+        pass
+
+    if not exe and CURRENT_OS == "windows":
+        default_paths = [
+            os.path.expandvars(r"%ProgramFiles%\Google\Chrome\Application\chrome.exe"),
+            os.path.expandvars(r"%ProgramFiles(x86)%\Google\Chrome\Application\chrome.exe"),
+            os.path.expandvars(r"%LocalAppData%\Google\Chrome\Application\chrome.exe"),
+        ]
+        for p in default_paths:
+            if os.path.isfile(p):
+                exe = p
+                break
+
+    if exe and os.path.isfile(exe):
+        if CURRENT_OS == "windows":
+            try:
+                cmd = ["powershell", "-NoProfile", "-Command", f'(Get-Item "{exe}").VersionInfo.ProductVersion']
+                out = subprocess.check_output(cmd, text=True, stderr=subprocess.DEVNULL).strip()
+                m = re.search(r"^(\d+)", out)
+                if m:
+                    return int(m.group(1))
+            except Exception:
+                pass
+        else:
+            try:
+                out = subprocess.check_output([exe, "--version"], text=True, stderr=subprocess.DEVNULL).strip()
+                m = re.search(r"(\d+)\.\d+\.\d+", out)
+                if m:
+                    return int(m.group(1))
+            except Exception:
+                pass
+
+    # 3. Unix CLI fallback
+    if CURRENT_OS in ("linux", "darwin"):
+        commands = [
+            ["google-chrome", "--version"],
+            ["google-chrome-stable", "--version"],
+            ["chromium", "--version"],
+            ["chromium-browser", "--version"],
+        ]
+        if CURRENT_OS == "darwin":
+            commands.insert(0, ["/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", "--version"])
+
+        for cmd in commands:
+            try:
+                out = subprocess.check_output(cmd, text=True, stderr=subprocess.DEVNULL).strip()
+                m = re.search(r"(\d+)\.\d+\.\d+", out)
+                if m:
+                    return int(m.group(1))
+            except Exception:
+                pass
+
+    return None
+
+
