@@ -261,6 +261,13 @@ class ListingsStorage:
             cur.execute("SELECT COUNT(*) FROM listings")
         return cur.fetchone()[0]
 
+    def reactivate_all_listings(self):
+        """Sets is_active = 1 for all stored listings."""
+        with self.conn:
+            cur = self.conn.cursor()
+            cur.execute("UPDATE listings SET is_active = 1")
+            return cur.rowcount
+
     def prune_stale_listings(self, max_age_days=60):
         """Deactivates listings older than max_age_days."""
         min_ts = int(time.time() - (max_age_days * 86400))

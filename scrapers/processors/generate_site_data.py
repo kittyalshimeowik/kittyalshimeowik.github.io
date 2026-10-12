@@ -199,6 +199,19 @@ def get_unique_listings_from_all_groups():
                         json_files.append(os.path.join(input_subdir_path, filename))
 
     total_files = len(json_files)
+    if total_files == 0:
+        print("[INFO] No raw JSON files found on disk. Loading listings directly from SQLite database...")
+        try:
+            from scrapers.utilities.storage import ListingsStorage
+            with ListingsStorage() as storage:
+                db_records = storage.get_all_listings(active_only=True)
+                if db_records:
+                    print(f"[SUCCESS] Retrieved {len(db_records)} records from SQLite database.")
+                    return merge_duplicate_listings(db_records)
+        except Exception as e:
+            print(f"[WARNING] Could not load from SQLite: {e}")
+        return []
+
     print(f"[INFO] Found {total_files} JSON data files to parse.")
 
     for idx, file_path in enumerate(json_files):
@@ -395,15 +408,13 @@ def generate_site_data():
         categorize_and_save_master_files(processed_listings)
         save_dedup_cache(dedup_cache)
 
-        # Sync all unique listings to local SQLite database and apply TTL pruning
+        # Sync all unique listings to local SQLite database
         try:
             from scrapers.utilities.storage import ListingsStorage
             with ListingsStorage() as storage:
                 sync_stats = storage.batch_upsert_listings(processed_listings)
-                pruned_count = storage.prune_stale_listings(max_age_days=60)
-                print(f"[INFO] SQLite Storage: Synced {len(processed_listings)} listings (inserted: {sync_stats['inserted']}, updated: {sync_stats['updated']}, active: {storage.count_listings(active_only=True)}).")
-                if pruned_count > 0:
-                    print(f"[INFO] SQLite Storage: Pruned {pruned_count} stale listings older than 60 days.")
+                storage.reactivate_all_listings()
+                print(f"[INFO] SQLite Storage: Synced {len(processed_listings)} listings (active: {storage.count_listings(active_only=True)}).")
         except Exception as e:
             print(f"[WARNING] SQLite storage sync skipped: {e}")
 
