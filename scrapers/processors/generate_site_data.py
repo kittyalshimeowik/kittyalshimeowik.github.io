@@ -395,6 +395,18 @@ def generate_site_data():
         categorize_and_save_master_files(processed_listings)
         save_dedup_cache(dedup_cache)
 
+        # Sync all unique listings to local SQLite database and apply TTL pruning
+        try:
+            from scrapers.utilities.storage import ListingsStorage
+            with ListingsStorage() as storage:
+                sync_stats = storage.batch_upsert_listings(processed_listings)
+                pruned_count = storage.prune_stale_listings(max_age_days=60)
+                print(f"[INFO] SQLite Storage: Synced {len(processed_listings)} listings (inserted: {sync_stats['inserted']}, updated: {sync_stats['updated']}, active: {storage.count_listings(active_only=True)}).")
+                if pruned_count > 0:
+                    print(f"[INFO] SQLite Storage: Pruned {pruned_count} stale listings older than 60 days.")
+        except Exception as e:
+            print(f"[WARNING] SQLite storage sync skipped: {e}")
+
         meta_file_path = os.path.join(MASTER_OUTPUT_DIR, "meta.json")
         build_meta = {
             "last_build": datetime.now().isoformat(),

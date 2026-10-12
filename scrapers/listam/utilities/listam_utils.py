@@ -32,10 +32,16 @@ def load_dataset_for_category(output_dir, cat_id):
 
 
 def save_record_to_disk(output_dir, cat_id, records):
-    """Saves records for a List.am category with clean formatting."""
+    """Saves records for a List.am category with clean compact formatting and syncs with SQLite."""
     file_path = get_category_file_path(output_dir, cat_id)
     with open(file_path, "w", encoding="utf-8") as f:
-        json.dump(records, f, ensure_ascii=False, indent=4)
+        json.dump(records, f, ensure_ascii=False, separators=(',', ':'))
+    try:
+        from scrapers.utilities.storage import ListingsStorage
+        with ListingsStorage() as storage:
+            storage.batch_upsert_listings(records)
+    except Exception:
+        pass
 
 
 def extract_listing_dates(item_soup):

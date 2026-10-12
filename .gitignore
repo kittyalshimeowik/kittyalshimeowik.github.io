@@ -15,3 +15,14 @@ __pycache__/
 venv/
 test_output/
 screenshot_tests/**/__pycache__/
+
+# Raw scrapers data & caches (prevent Git repository bloat)
+scrapers/facebook/housing_posts_data/
+scrapers/facebook/groups_metadata/
+scrapers/listam/housing_posts_data/
+scrapers/processors/dedup_cache.json
+scrapers/data/
+data/
+*.db
+*.sqlite3
+*.sqlite

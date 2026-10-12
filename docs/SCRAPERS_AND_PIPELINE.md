@@ -61,7 +61,18 @@ After raw scraping, listing items undergo processing through modular processors:
 - Resolves relative timestamps into deterministic Unix epoch timestamps (`creation_timestamp`).
 - Handles English (*"3 hours ago"*, *"yesterday"*) and Armenian (*"3 ժամ առաջ"*, *"երեկ"*) relative time tokens.
 
-### 3. Deduplication & Master Catalog Assembly
+### 3. Storage & Data Regulation (`scrapers/utilities/storage.py`)
+- **Transactional SQLite Database (`scrapers/data/listings.db`)**:
+  - Replaces scattered, heavy JSON files with indexed, atomic SQL storage.
+  - Automatically deduplicates and upserts records based on metadata completeness scores.
+  - Indexes on `(is_active, creation_timestamp)`, `source`, and `(property_category, listing_type)`.
+- **TTL Retention Policy**:
+  - Automatically deactivates stale listings older than 60 days to prevent infinite data bloat.
+- **Git Repository Size Regulation**:
+  - Raw scraping dumps, browser sessions, and local SQLite databases are strictly excluded via `.gitignore`.
+  - Only cleaned, minified public display catalogs (`master_listings_json/`) are synced to GitHub Pages.
+
+### 4. Deduplication & Master Catalog Assembly
 - Eliminates duplicate posts scraped from overlapping groups or re-posted classifieds.
 - Writes the combined, sorted master catalog to:
   `scrapers/processors/master_listings_json/all_for_sale_rent.json`

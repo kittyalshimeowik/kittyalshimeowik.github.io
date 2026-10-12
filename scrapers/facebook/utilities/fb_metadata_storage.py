@@ -168,20 +168,30 @@ def save_post_to_memory_and_disk(output_dir, group_id, all_posts, processed_urls
             break
     
     file_path = get_group_file_path(output_dir, group_id)
+    saved_action = None
     if existing_idx is None:
         processed_urls.add(norm_url)
         all_posts.append(post_record)
         with open(file_path, "w", encoding="utf-8") as f:
-            json.dump(all_posts, f, ensure_ascii=False, indent=4)
-        return "new"
+            json.dump(all_posts, f, ensure_ascii=False, separators=(',', ':'))
+        saved_action = "new"
     else:
         if score_post_data(post_record) > score_post_data(all_posts[existing_idx]):
             all_posts[existing_idx] = post_record
             processed_urls.add(norm_url)
             with open(file_path, "w", encoding="utf-8") as f:
-                json.dump(all_posts, f, ensure_ascii=False, indent=4)
-            return "updated"
-    return None
+                json.dump(all_posts, f, ensure_ascii=False, separators=(',', ':'))
+            saved_action = "updated"
+
+    if saved_action:
+        try:
+            from scrapers.utilities.storage import ListingsStorage
+            with ListingsStorage() as storage:
+                storage.upsert_listing(post_record)
+        except Exception:
+            pass
+
+    return saved_action
 
 
 def update_group_metadata(metadata_dir, group_id, group_name, session_posts, session_duration_sec):

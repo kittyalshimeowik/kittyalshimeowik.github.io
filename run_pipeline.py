@@ -40,9 +40,12 @@ def auto_git_push(commit_message="Auto-update listings and site data"):
     """Helper function to stage, commit, and push changes to GitHub."""
     print(f"\n{'='*50}")
     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] STARTING: Git Sync")
-    print(f"{'='*50}\n")
     try:
-        subprocess.run(["git", "add", "."], check=True)
+        # Stage master output files and tracked public website assets
+        subprocess.run(["git", "add", "scrapers/processors/master_listings_json/"], check=True)
+        for asset in ["index.html", "script.js", "style.css", "translations.js", "docs", "README.md", ".gitignore", "run_pipeline.py", "scrapers/"]:
+            if os.path.exists(asset):
+                subprocess.run(["git", "add", asset], check=False)
         
         status = subprocess.run(["git", "status", "--porcelain"], capture_output=True, text=True, check=True)
         if not status.stdout.strip():
