@@ -212,7 +212,7 @@ def get_unique_listings_from_all_groups():
                     reclassified_records = []
                     for post in db_records:
                         raw_text = (post.get("full_text") or post.get("text") or "").strip()
-                        if not post.get("source"):
+                        if not post.get("source") or post.get("source") in ["Unknown", "unknown", ""]:
                             post["source"] = "List.am" if "list.am" in str(post.get("url") or "").lower() else "Facebook"
 
                         is_media_only = (post.get("property_category") == "Media-Only")
@@ -283,7 +283,7 @@ def get_unique_listings_from_all_groups():
                     continue
 
                 # Normalize source
-                if not post.get("source"):
+                if not post.get("source") or post.get("source") in ["Unknown", "unknown", ""]:
                     post["source"] = "List.am" if "list.am" in str(post.get("url") or "").lower() else "Facebook"
 
                 if post.get("full_text"):
@@ -370,10 +370,23 @@ def prune_for_display(post):
     else:
         images = []
 
+    post_source = post.get("source")
+    if not post_source or post_source == "Unknown":
+        url = post.get("url") or ""
+        try:
+            from scrapers.platforms.registry import get_platform_for_url
+            plat = get_platform_for_url(url)
+            if plat:
+                post_source = plat.display_name
+        except Exception:
+            pass
+    if not post_source:
+        post_source = "Unknown"
+
     res = {
         "url": post.get("url"),
         "canonical_id": post.get("canonical_id"),
-        "source": post.get("source") or "Facebook",
+        "source": post_source,
         "property_category": post.get("property_category"),
         "listing_type": post.get("listing_type"),
         "prices": post.get("prices", []),

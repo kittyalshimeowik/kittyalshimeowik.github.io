@@ -172,6 +172,94 @@ class TestListingsStorage(unittest.TestCase):
             "https://s.list.am/g/123/457.jpg"
         ])
 
+    def test_update_listing_images(self):
+        record = {
+            "canonical_id": "fb_post_no_img",
+            "source": "Facebook",
+            "url": "https://facebook.com/groups/123/posts/999",
+            "property_category": "Apartment",
+            "images": [],
+            "creation_timestamp": int(time.time())
+        }
+        self.storage.upsert_listing(record)
+        initial = self.storage.get_all_listings()[0]
+        self.assertEqual(initial["images"], [])
+        self.assertIsNone(initial.get("photos_checked_at"))
+        old_score = initial["completeness_score"]
+
+        # Backfill photos
+        new_photos = [
+            "https://scontent.xx.fbcdn.net/v/t39.30808-6/photo1.jpg",
+            "https://scontent.xx.fbcdn.net/v/t39.30808-6/photo2.jpg"
+        ]
+        res = self.storage.update_listing_images("fb_post_no_img", new_photos)
+        self.assertTrue(res)
+
+        updated = self.storage.get_all_listings()[0]
+        self.assertEqual(updated["images"], new_photos)
+        self.assertIsNotNone(updated["photos_checked_at"])
+        self.assertGreater(updated["completeness_score"], old_score)
+
+        # Non-existent listing returns False
+        self.assertFalse(self.storage.update_listing_images("does_not_exist", new_photos))
+
+    def test_mark_photos_checked(self):
+        record = {
+            "canonical_id": "fb_post_empty_img",
+            "source": "Facebook",
+            "url": "https://facebook.com/groups/123/posts/1000",
+            "property_category": "Apartment",
+            "images": [],
+            "creation_timestamp": int(time.time())
+        }
+        self.storage.upsert_listing(record)
+        self.storage.mark_photos_checked("fb_post_empty_img")
+
+        listing = self.storage.get_all_listings()[0]
+        self.assertEqual(listing["images"], [])
+        self.assertIsNotNone(listing["photos_checked_at"])
+
+    def test_auto_classify_source_from_url(self):
+        # 1. Facebook listing without source
+        record_fb = {
+            "canonical_id": "auto_fb_1",
+            "url": "https://www.facebook.com/groups/123/posts/99999",
+            "full_text": "Sample text",
+            "creation_timestamp": int(time.time())
+        }
+        self.storage.upsert_listing(record_fb)
+
+        # 2. List.am listing with 'Unknown' source
+        record_listam = {
+            "canonical_id": "auto_listam_1",
+            "source": "Unknown",
+            "url": "https://www.list.am/item/188888",
+            "full_text": "Sample text",
+            "creation_timestamp": int(time.time())
+        }
+        self.storage.upsert_listing(record_listam)
+
+        all_listings = {l["canonical_id"]: l for l in self.storage.get_all_listings()}
+        self.assertEqual(all_listings["auto_fb_1"]["source"], "Facebook")
+        self.assertEqual(all_listings["auto_listam_1"]["source"], "List.am")
+
+    def test_normalize_unclassified_sources(self):
+        # Insert unclassified records directly into DB to test healing
+        cur = self.storage.conn.cursor()
+        cur.execute("""
+            INSERT INTO listings (canonical_id, source, url, completeness_score, is_active)
+            VALUES ('raw_fb', 'Unknown', 'https://facebook.com/groups/1/posts/555', 10, 1),
+                   ('raw_listam', '', 'https://list.am/item/777', 10, 1)
+        """)
+        self.storage.conn.commit()
+
+        self.storage.normalize_unclassified_sources()
+
+        cur.execute("SELECT canonical_id, source FROM listings WHERE canonical_id IN ('raw_fb', 'raw_listam')")
+        results = dict(cur.fetchall())
+        self.assertEqual(results["raw_fb"], "Facebook")
+        self.assertEqual(results["raw_listam"], "List.am")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -22,7 +22,11 @@ try:
     import setuptools
 except ImportError:
     pass
-import undetected_chromedriver as uc
+
+try:
+    import undetected_chromedriver as uc
+except ImportError:
+    uc = None
 from bs4 import BeautifulSoup
 
 def ignore_winerror_6(unraisable):
@@ -70,6 +74,13 @@ class DirectBrowserListAmScraper(BaseScraper):
     def init_driver(self):
         if self.driver is not None:
             return self.driver
+
+        if uc is None:
+            raise ImportError(
+                "undetected_chromedriver is not installed in the active Python environment.\n"
+                "Please run using the project virtual environment: .venv\\Scripts\\python.exe <script> "
+                "or activate it with: source .venv/Scripts/activate"
+            )
 
         print("🚀 Initializing Undetected ChromeDriver (Fast Mode - Images Disabled)...")
         options = uc.ChromeOptions()

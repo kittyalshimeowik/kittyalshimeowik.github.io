@@ -10,8 +10,10 @@ import os
 import re
 import sys
 import time
+import random
 import urllib.parse
 import urllib.request
+import urllib.error
 from typing import Dict, List, Optional
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -110,10 +112,23 @@ class TranslationCache:
         return True
 
 
-def _request_google_translate(query_text: str, target_lang: str = "en") -> Optional[str]:
-    """Sends a single translation request to the Google Translate web endpoint via POST."""
+_LAST_RATE_LIMIT_TIMESTAMP = 0.0
+
+
+def _check_rate_limit_cooldown(min_cooldown: float = 3.5):
+    """Enforces a global cooling-off pause if a rate limit was recently triggered."""
+    global _LAST_RATE_LIMIT_TIMESTAMP
+    elapsed = time.time() - _LAST_RATE_LIMIT_TIMESTAMP
+    if elapsed < min_cooldown:
+        time.sleep(min_cooldown - elapsed)
+
+
+def _request_google_translate(query_text: str, target_lang: str = "en", max_retries: int = 3) -> Optional[str]:
+    """Sends a single translation request to the Google Translate web endpoint via POST with adaptive backoff."""
     if not query_text or not query_text.strip():
         return ""
+
+    _check_rate_limit_cooldown()
 
     url = "https://translate.googleapis.com/translate_a/single"
     post_data = urllib.parse.urlencode({
@@ -128,18 +143,32 @@ def _request_google_translate(query_text: str, target_lang: str = "en") -> Optio
         url,
         data=post_data,
         headers={
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36"
         }
     )
 
-    try:
-        with urllib.request.urlopen(req, timeout=12) as response:
-            data = json.loads(response.read().decode("utf-8"))
-            if data and isinstance(data, list) and isinstance(data[0], list):
-                translated_parts = [part[0] for part in data[0] if part and part[0]]
-                return "".join(translated_parts)
-    except Exception as e:
-        return None
+    for attempt in range(max_retries):
+        try:
+            with urllib.request.urlopen(req, timeout=12) as response:
+                data = json.loads(response.read().decode("utf-8"))
+                if data and isinstance(data, list) and isinstance(data[0], list):
+                    translated_parts = [part[0] for part in data[0] if part and part[0]]
+                    return "".join(translated_parts)
+                return None
+        except urllib.error.HTTPError as e:
+            if e.code in (429, 503):
+                global _LAST_RATE_LIMIT_TIMESTAMP
+                _LAST_RATE_LIMIT_TIMESTAMP = time.time()
+                backoff_sec = (2.0 ** attempt) * 4.0 + random.uniform(1.0, 3.0)
+                print(f"⚠️ [Google Translate Rate Limit (HTTP {e.code})] Backing off for {backoff_sec:.1f}s (retry {attempt + 1}/{max_retries})...", file=sys.stderr)
+                time.sleep(backoff_sec)
+            else:
+                return None
+        except Exception:
+            if attempt < max_retries - 1:
+                time.sleep(1.5)
+            else:
+                return None
 
     return None
 
@@ -231,10 +260,11 @@ def batch_translate_texts(
                         progress_callback(processed, total_uncached)
                     if processed % 50 == 0:
                         local_cache.save()
-                    time.sleep(0.08)  # Polite pause between requests
+                    time.sleep(random.uniform(0.4, 0.7))  # Polite pause between batch requests
                     continue
 
-        # If batching didn't succeed or chunk is large, translate individually
+        # If batching didn't succeed or chunk is large, pause briefly and translate individually
+        time.sleep(random.uniform(1.2, 2.5))
         for idx in chunk_indices:
             orig = texts[idx].strip()
             translated = _request_google_translate(orig, target_lang=target_lang)
@@ -245,7 +275,7 @@ def batch_translate_texts(
             processed += 1
             if progress_callback:
                 progress_callback(processed, total_uncached)
-            time.sleep(0.05)
+            time.sleep(random.uniform(0.25, 0.45))
 
         if processed % 50 == 0:
             local_cache.save()

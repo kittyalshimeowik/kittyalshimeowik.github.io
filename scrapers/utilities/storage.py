@@ -36,6 +36,26 @@ def compute_record_completeness(record):
     return score
 
 
+def detect_source_from_record(record):
+    """Accurately classifies listing source from explicit field, URL, or platform registry."""
+    source = record.get("source")
+    if source and source not in ["Unknown", "unknown", "None", ""]:
+        return source
+    url = str(record.get("url") or "").lower()
+    if "facebook.com" in url or "fb.com" in url:
+        return "Facebook"
+    if "list.am" in url:
+        return "List.am"
+    try:
+        from scrapers.platforms.registry import get_platform_for_url
+        plat = get_platform_for_url(record.get("url") or "")
+        if plat:
+            return plat.display_name
+    except Exception:
+        pass
+    return source or "Unknown"
+
+
 class ListingsStorage:
     """SQLite-backed transactional storage for raw real estate listings."""
 
@@ -71,16 +91,25 @@ class ListingsStorage:
                     completeness_score REAL DEFAULT 0,
                     is_active INTEGER DEFAULT 1,
                     first_seen_at TEXT,
-                    last_seen_at TEXT
+                    last_seen_at TEXT,
+                    photos_checked_at TEXT
                 );
             """)
-            # Migration check: Ensure images_json and full_text_en columns exist in legacy tables
+            # Migration check: Ensure images_json, full_text_en, and photos_checked_at columns exist in legacy tables
             cur = self.conn.cursor()
             cols = [col[1] for col in cur.execute("PRAGMA table_info(listings)").fetchall()]
             if "images_json" not in cols:
                 cur.execute("ALTER TABLE listings ADD COLUMN images_json TEXT;")
             if "full_text_en" not in cols:
                 cur.execute("ALTER TABLE listings ADD COLUMN full_text_en TEXT;")
+            if "photos_checked_at" not in cols:
+                cur.execute("ALTER TABLE listings ADD COLUMN photos_checked_at TEXT;")
+                # Mark existing listings with non-empty images as already checked
+                cur.execute("""
+                    UPDATE listings 
+                    SET photos_checked_at = datetime('now') 
+                    WHERE images_json IS NOT NULL AND length(images_json) > 2;
+                """)
 
             self.conn.execute("""
                 CREATE INDEX IF NOT EXISTS idx_listings_active_ts 
@@ -94,8 +123,36 @@ class ListingsStorage:
                 CREATE INDEX IF NOT EXISTS idx_listings_cat_type 
                 ON listings(property_category, listing_type);
             """)
+            self.conn.execute("""
+                CREATE INDEX IF NOT EXISTS idx_listings_photos_checked 
+                ON listings(photos_checked_at);
+            """)
             self.conn.execute("PRAGMA journal_mode = WAL;")
             self.conn.execute("PRAGMA synchronous = NORMAL;")
+        
+        # Self-healing: normalize any legacy or unclassified records
+        self.normalize_unclassified_sources()
+
+    def normalize_unclassified_sources(self):
+        """Normalizes and heals any unclassified or 'Unknown' sources using URL inspection."""
+        try:
+            with self.conn:
+                cur = self.conn.cursor()
+                cur.execute("""
+                    UPDATE listings 
+                    SET source = 'Facebook' 
+                    WHERE (source IS NULL OR source = '' OR source = 'Unknown') 
+                      AND (url LIKE '%facebook.com%' OR url LIKE '%fb.com%');
+                """)
+                cur.execute("""
+                    UPDATE listings 
+                    SET source = 'List.am' 
+                    WHERE (source IS NULL OR source = '' OR source = 'Unknown') 
+                      AND (url LIKE '%list.am%');
+                """)
+                return cur.rowcount
+        except Exception:
+            return 0
 
     def close(self):
         if self.conn:
@@ -114,10 +171,14 @@ class ListingsStorage:
         if not canonical_id:
             return None
 
+        images = record.get("images") or []
+        photos_checked_at = now_iso if images else record.get("photos_checked_at")
+
         score = compute_record_completeness(record)
+        detected_source = detect_source_from_record(record)
         return (
             str(canonical_id),
-            record.get("source") or "Unknown",
+            detected_source,
             record.get("url") or "",
             str(record.get("category_id") or ""),
             record.get("property_category") or "General / Unclassified",
@@ -133,11 +194,12 @@ class ListingsStorage:
             json.dumps(record.get("locations") or [], ensure_ascii=False),
             json.dumps(record.get("phone_numbers") or [], ensure_ascii=False),
             json.dumps(record.get("zoning") or [], ensure_ascii=False),
-            json.dumps(record.get("images") or [], ensure_ascii=False),
+            json.dumps(images, ensure_ascii=False),
             score,
             1, # is_active
             now_iso, # first_seen_at
-            now_iso  # last_seen_at
+            now_iso, # last_seen_at
+            photos_checked_at
         )
 
     def upsert_listing(self, record):
@@ -159,23 +221,24 @@ class ListingsStorage:
                         canonical_id, source, url, category_id, property_category, listing_type,
                         full_text, full_text_en, created_at, creation_timestamp, extracted_at,
                         prices_json, sizes_json, rooms_json, locations_json, phones_json, zoning_json, images_json,
-                        completeness_score, is_active, first_seen_at, last_seen_at
-                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        completeness_score, is_active, first_seen_at, last_seen_at, photos_checked_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, row_data)
                 return "inserted"
             else:
                 existing_score = existing["completeness_score"]
                 new_score = row_data[18]
                 if new_score >= existing_score:
-                    # Update all details and last_seen_at
+                    # Update all details, last_seen_at, and photos_checked_at
                     cur.execute("""
                         UPDATE listings SET
                             source = ?, url = ?, category_id = ?, property_category = ?, listing_type = ?,
                             full_text = ?, full_text_en = ?, created_at = ?, creation_timestamp = ?, extracted_at = ?,
                             prices_json = ?, sizes_json = ?, rooms_json = ?, locations_json = ?, phones_json = ?, zoning_json = ?, images_json = ?,
-                            completeness_score = ?, is_active = 1, last_seen_at = ?
+                            completeness_score = ?, is_active = 1, last_seen_at = ?,
+                            photos_checked_at = COALESCE(photos_checked_at, ?)
                         WHERE canonical_id = ?
-                    """, row_data[1:19] + (now_iso, canonical_id))
+                    """, row_data[1:19] + (now_iso, row_data[22], canonical_id))
                     return "updated"
                 else:
                     # Keep existing richer details, just update last_seen_at
@@ -202,8 +265,8 @@ class ListingsStorage:
                             canonical_id, source, url, category_id, property_category, listing_type,
                             full_text, full_text_en, created_at, creation_timestamp, extracted_at,
                             prices_json, sizes_json, rooms_json, locations_json, phones_json, zoning_json, images_json,
-                            completeness_score, is_active, first_seen_at, last_seen_at
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                            completeness_score, is_active, first_seen_at, last_seen_at, photos_checked_at
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                     """, row_data)
                     inserted += 1
                 else:
@@ -215,9 +278,10 @@ class ListingsStorage:
                                 source = ?, url = ?, category_id = ?, property_category = ?, listing_type = ?,
                                 full_text = ?, full_text_en = ?, created_at = ?, creation_timestamp = ?, extracted_at = ?,
                                 prices_json = ?, sizes_json = ?, rooms_json = ?, locations_json = ?, phones_json = ?, zoning_json = ?, images_json = ?,
-                                completeness_score = ?, is_active = 1, last_seen_at = ?
+                                completeness_score = ?, is_active = 1, last_seen_at = ?,
+                                photos_checked_at = COALESCE(photos_checked_at, ?)
                             WHERE canonical_id = ?
-                        """, row_data[1:19] + (now_iso, canonical_id))
+                        """, row_data[1:19] + (now_iso, row_data[22], canonical_id))
                         updated += 1
                     else:
                         cur.execute("UPDATE listings SET last_seen_at = ?, is_active = 1 WHERE canonical_id = ?", (now_iso, canonical_id))
@@ -251,6 +315,39 @@ class ListingsStorage:
                 updated += 1
         return updated
 
+    def update_listing_images(self, canonical_id, images, checked=True):
+        """Updates images_json, photos_checked_at, and recomputes completeness score for a listing."""
+        with self.conn:
+            cur = self.conn.cursor()
+            cur.execute("SELECT * FROM listings WHERE canonical_id = ?", (str(canonical_id),))
+            row = cur.fetchone()
+            if not row:
+                return False
+            rec = self._row_to_dict(row)
+            rec["images"] = images or []
+            score = compute_record_completeness(rec)
+            now_iso = datetime.now(timezone.utc).isoformat()
+            row_keys = row.keys()
+            checked_at = now_iso if checked else (row["photos_checked_at"] if "photos_checked_at" in row_keys else None)
+            cur.execute("""
+                UPDATE listings 
+                SET images_json = ?, completeness_score = ?, last_seen_at = ?, photos_checked_at = ? 
+                WHERE canonical_id = ?
+            """, (json.dumps(images or [], ensure_ascii=False), score, now_iso, checked_at, str(canonical_id)))
+            return True
+
+    def mark_photos_checked(self, canonical_id):
+        """Marks that photos have been checked for this listing without modifying images."""
+        now_iso = datetime.now(timezone.utc).isoformat()
+        with self.conn:
+            cur = self.conn.cursor()
+            cur.execute("""
+                UPDATE listings 
+                SET photos_checked_at = ?, last_seen_at = ? 
+                WHERE canonical_id = ?
+            """, (now_iso, now_iso, str(canonical_id)))
+            return True
+
     def _row_to_dict(self, row):
         row_keys = row.keys()
         images = []
@@ -282,7 +379,8 @@ class ListingsStorage:
             "completeness_score": row["completeness_score"],
             "is_active": row["is_active"],
             "first_seen_at": row["first_seen_at"],
-            "last_seen_at": row["last_seen_at"]
+            "last_seen_at": row["last_seen_at"],
+            "photos_checked_at": row["photos_checked_at"] if "photos_checked_at" in row_keys else None
         }
 
     def get_all_listings(self, active_only=True, max_age_days=None):
@@ -346,7 +444,7 @@ class ListingsStorage:
 
         for site_dirname in os.listdir(root):
             site_path = os.path.join(root, site_dirname)
-            if not os.path.isdir(site_path) or site_dirname in ["processors", "utilities", "__pycache__", "data"]:
+            if not os.path.isdir(site_path) or site_dirname in ["processors", "utilities", "__pycache__", "data", "backfill", "platforms", "test_output"]:
                 continue
 
             for subdir in ["housing_posts_data", "raw_data"]:

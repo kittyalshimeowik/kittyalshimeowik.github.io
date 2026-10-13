@@ -55,6 +55,24 @@ def decode_facebook_id(raw_id):
     return raw_id_str
 
 
+def is_valid_fb_photo_url(url: str) -> bool:
+    """Validates that a URL is a genuine Facebook user photo and not an external link preview, avatar, or icon."""
+    if not url or not isinstance(url, str):
+        return False
+    if not ("scontent" in url or "fbcdn.net" in url):
+        return False
+    low = url.lower()
+    # Exclude external OpenGraph link previews (news article scrape cache)
+    if "/t39.99422-" in low or "safe_image.php" in low or "external.xx" in low:
+        return False
+    # Exclude avatars, profile thumbnails, emojis, and video reels
+    if "/t39.30808-1/" in low or "/t1.30497-1/" in low or "/t15.5256-10/" in low or "/t39.25447-" in low:
+        return False
+    if "emoji.php" in low or "static.xx" in low or "rsrc.php" in low or "avatar" in low:
+        return False
+    return True
+
+
 def extract_posts_from_graphql_payload(obj, group_id):
     """Recursively traverses Facebook GraphQL response objects to yield post records."""
     if isinstance(obj, dict):
@@ -83,8 +101,20 @@ def extract_posts_from_graphql_payload(obj, group_id):
                     attachment_images = []
                     attachments = story.get("attachments", [])
                     for att in attachments:
+                        # Exclude external link shares / reshares
+                        target_type = att.get("target", {}).get("__typename")
+                        if target_type in ["ExternalUrl", "WebPage", "Article"]:
+                            continue
+                        att_url = att.get("url") or ""
+                        if "l.facebook.com" in att_url:
+                            continue
+
                         media_node = att.get("media", {})
                         if isinstance(media_node, dict):
+                            media_type = media_node.get("__typename")
+                            if media_type in ["ExternalUrl", "GenericAttachmentMedia", "WebPage"]:
+                                continue
+
                             accessibility_caption = media_node.get("accessibility_caption")
                             if accessibility_caption:
                                 attachment_texts.append(accessibility_caption)
@@ -93,7 +123,7 @@ def extract_posts_from_graphql_payload(obj, group_id):
                                 or media_node.get("photo_image", {}).get("uri")
                                 or media_node.get("thumbnail_image", {}).get("uri")
                             )
-                            if img_uri and img_uri not in attachment_images:
+                            if img_uri and is_valid_fb_photo_url(img_uri) and img_uri not in attachment_images:
                                 attachment_images.append(img_uri)
                         
                         for subatt in media_node.get("all_subattachments", {}).get("nodes", []):
@@ -106,7 +136,7 @@ def extract_posts_from_graphql_payload(obj, group_id):
                                     sub_media.get("image", {}).get("uri")
                                     or sub_media.get("photo_image", {}).get("uri")
                                 )
-                                if sub_uri and sub_uri not in attachment_images:
+                                if sub_uri and is_valid_fb_photo_url(sub_uri) and sub_uri not in attachment_images:
                                     attachment_images.append(sub_uri)
 
                     combined_text = text if text else ""

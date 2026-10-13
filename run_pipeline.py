@@ -8,11 +8,12 @@ from scrapers.utilities.env_utils import ensure_utf8_output, get_venv_python
 
 ensure_utf8_output()
 
-# Define paths to your scripts relative to the project root directory
-FB_SCRAPER_SCRIPT = os.path.join("scrapers", "facebook", "fb_scraper.py")
-LIST_AM_SCRAPER_SCRIPT = os.path.join("scrapers", "listam", "list_am_scraper.py")
+# Define core processing scripts
+BACKFILL_SCRIPT = "run_backfill.py"
 GENERATOR_SCRIPT = os.path.join("scrapers", "processors", "generate_site_data.py")
 CLEANUP_SCRIPT = os.path.join("scrapers", "processors", "cleanup_master_listings.py")
+
+from scrapers.platforms.registry import get_all_platforms, get_platform, list_supported_platforms
 
 def run_step(script_path, description, extra_args=None):
     """Helper function to run a script using the virtual environment or current Python."""
@@ -130,13 +131,54 @@ def main():
         action="store_true",
         help="Skip staging, committing, and pushing changes to GitHub."
     )
+    parser.add_argument(
+        "-p", "--platform",
+        type=str,
+        default="all",
+        help=f"Target platform: {list_supported_platforms() + ['all']} (default: all)"
+    )
+    parser.add_argument(
+        "--backfill",
+        action="store_true",
+        help="Run full backfill (photos + translations) across platforms."
+    )
+    parser.add_argument(
+        "--backfill-photos", "--backfill-fb-photos",
+        action="store_true",
+        dest="backfill_photos",
+        help="Run photo backfill across platforms."
+    )
+    parser.add_argument(
+        "--backfill-translations",
+        action="store_true",
+        help="Run English translation backfill for listings lacking translation."
+    )
+    parser.add_argument(
+        "-s", "--scrape",
+        action="store_true",
+        help="Explicitly run scraping phase even when backfill flags are specified."
+    )
+    parser.add_argument(
+        "--status", "--audit",
+        action="store_true",
+        dest="show_status",
+        help="Display real-time completeness and backfill status dashboard."
+    )
     args = parser.parse_args()
+
+    if args.show_status:
+        from scrapers.processors.track_backfills import print_dashboard
+        print_dashboard()
+        return
+
+    is_backfill_mode = bool(args.backfill or args.backfill_photos or args.backfill_translations)
+    should_scrape = (not args.no_scrape) and (args.scrape or not is_backfill_mode)
 
     start_time = datetime.now()
     print("🚀 Starting Armenia Real Estate Data Pipeline...")
 
-    # Step 1: Run Scrapers (skipped if --no-scrape flag is provided)
-    if not args.no_scrape:
+    # Step 1: Run Scrapers (skipped if in decoupled backfill mode or --no-scrape)
+    if should_scrape:
         if args.time_limit:
             print(f"⏱️ Time limit configured: {args.time_limit} minutes max per target.")
         else:
@@ -146,20 +188,52 @@ def main():
         if args.time_limit:
             scraper_args.extend(["--time-limit", str(args.time_limit)])
 
-        # 1a. Run List.am Scraper
-        list_am_success = run_step(LIST_AM_SCRAPER_SCRIPT, "List.am Scraper", extra_args=scraper_args)
-        if not list_am_success:
-            print("\n❌ Pipeline aborted due to List.am scraper failure.", file=sys.stderr)
-            sys.exit(1)
+        # Determine target platforms dynamically
+        all_platforms = get_all_platforms()
+        if args.platform.lower() == "all":
+            target_platforms = list(all_platforms.values())
+        else:
+            plat = get_platform(args.platform)
+            if not plat:
+                print(f"❌ Unknown platform '{args.platform}'. Supported: {list_supported_platforms()}", file=sys.stderr)
+                sys.exit(1)
+            target_platforms = [plat]
 
-        # 1b. Run Facebook Scraper
-        fb_success = run_step(FB_SCRAPER_SCRIPT, "Facebook Feed Scraper", extra_args=scraper_args)
-        if not fb_success:
-            print("\n❌ Pipeline aborted due to Facebook scraper failure.", file=sys.stderr)
-            sys.exit(1)
-            
+        for plat in target_platforms:
+            script_path = plat.scraper_script_relpath
+            if script_path and os.path.exists(script_path):
+                success = run_step(script_path, f"{plat.display_name} Scraper", extra_args=scraper_args)
+                if not success:
+                    print(f"\n❌ Pipeline aborted due to {plat.display_name} scraper failure.", file=sys.stderr)
+                    sys.exit(1)
+            else:
+                print(f"ℹ️ Platform '{plat.display_name}' has no active scraper script registered, skipping.")
+
     else:
-        print("⏩ Skipping scraping phase (--no-scrape requested).")
+        if is_backfill_mode:
+            print("⏩ Decoupled Backfill Mode: Skipping scraping phase because backfill was requested.")
+            print("   (Scraping takes longer; backfills operate directly on the database & target listings.)")
+        else:
+            print("⏩ Skipping scraping phase (--no-scrape requested).")
+
+    # Step 1c: Optional Multi-Platform Backfills
+    if args.backfill:
+        bf_args = ["--skip-site-gen"]
+        if args.platform != "all":
+            bf_args.extend(["--platform", args.platform])
+        run_step(BACKFILL_SCRIPT, "Unified Multi-Platform Backfill", extra_args=bf_args)
+    else:
+        if args.backfill_photos:
+            bf_args = ["--photos", "--skip-site-gen"]
+            if args.platform != "all":
+                bf_args.extend(["--platform", args.platform])
+            run_step(BACKFILL_SCRIPT, "Photos Backfill", extra_args=bf_args)
+
+        if args.backfill_translations:
+            bf_args = ["--translations", "--skip-site-gen"]
+            if args.platform != "all":
+                bf_args.extend(["--platform", args.platform])
+            run_step(BACKFILL_SCRIPT, "Translations Backfill", extra_args=bf_args)
 
     # Step 2: Run the Modular Website Data Generator
     generator_success = run_step(GENERATOR_SCRIPT, "Website Listings Data Generator")

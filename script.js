@@ -942,9 +942,12 @@ document.addEventListener("DOMContentLoaded", () => {
             if (listingType === "Rent") typeTagClass = "rent";
 
             const sourceName = item.source || "Facebook";
-            let sourceClass = "fb";
-            let sourceDisplay = "FB";
-            if (sourceName === "List.am") {
+            let sourceClass = "source-" + sourceName.toLowerCase().replace(/[^a-z0-9]/g, '');
+            let sourceDisplay = sourceName;
+            if (sourceName.toLowerCase() === "facebook") {
+                sourceClass = "fb";
+                sourceDisplay = "FB";
+            } else if (sourceName.toLowerCase() === "list.am" || sourceName.toLowerCase() === "listam") {
                 sourceClass = "listam";
                 sourceDisplay = "List.am";
             }

@@ -50,6 +50,21 @@ python -m http.server 8000
 ```bash
 # Execute end-to-end scraper, normalizer, and deduplication pipeline
 python run_pipeline.py
+
+# Run pipeline for a specific platform (or all by default)
+python run_pipeline.py -p facebook
+python run_pipeline.py -p listam
+
+# Check data completeness & backfill tracker dashboard
+python run_pipeline.py --status
+# Or: python run_backfill.py --status
+
+# Unified multi-platform backfiller (photos + translations across all platforms)
+python run_backfill.py
+python run_backfill.py --photos
+python run_backfill.py --translations
+python run_backfill.py --platform facebook
+python run_backfill.py --platform listam
 ```
 
 ### 3. Run Automated Tests
@@ -80,6 +95,7 @@ kittyalshimeowik.github.io/
 ├── style.css                    # Design system, glassmorphism, responsive grid
 ├── script.js                    # In-memory filter engine, scroll observers, UI controller
 ├── translations.js              # Bilingual dictionary (English & Armenian)
+├── run_backfill.py              # Unified multi-platform backfiller CLI
 ├── run_pipeline.py              # Master data ingestion pipeline orchestrator
 ├── run_tests.py                 # Master test runner discovering all __tests__
 ├── run_screenshot_tests.py      # Automated visual regression testing CLI
@@ -90,6 +106,8 @@ kittyalshimeowik.github.io/
 │   ├── FRONTEND_AND_UI.md       # Frontend UI, CSS design system, and state engine
 │   └── TESTING_AND_VISUAL_REGRESSION.md # Screenshot testing and QA verification
 ├── scrapers/                    # Scraping engine and data processors
+│   ├── platforms/               # Extensible platform registry (Facebook, List.am, Telegram, etc.)
+│   ├── backfill/                # Multi-platform backfiller registry and providers
 │   ├── base_scraper.py          # Abstract base scraper interface
 │   ├── facebook/                # Facebook Group real estate scrapers
 │   ├── listam/                  # List.am classifieds scrapers

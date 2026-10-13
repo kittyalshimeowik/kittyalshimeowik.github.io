@@ -24,7 +24,7 @@ def is_ghost_record(item):
 
 
 def is_valid_listing_url(url):
-    """Verifies that a URL is a valid, working listing URL (not empty, placeholder, or broken)."""
+    """Verifies that a URL is a valid, working listing URL across any supported or future platform."""
     if not url or not isinstance(url, str):
         return False
     u = url.strip()
@@ -36,13 +36,26 @@ def is_valid_listing_url(url):
         from urllib.parse import urlparse
         parsed = urlparse(u)
         host = (parsed.netloc or "").lower()
-        if not ("facebook.com" in host or "fb.com" in host or "list.am" in host):
+        if not host or "." not in host:
             return False
+
+        # If a registered platform matches, check platform-specific validity
+        try:
+            from scrapers.platforms.registry import get_platform_for_url
+            platform = get_platform_for_url(u)
+            if platform:
+                return platform.is_valid_url(u)
+        except ImportError:
+            pass
+
+        # Platform-specific fallbacks
         if "list.am" in host and not re.search(r"/item/\d+", parsed.path):
             return False
         if ("facebook.com" in host or "fb.com" in host) and len(parsed.path) < 5:
             return False
-        return True
+
+        # Generic web listing URL requires non-empty path
+        return len(parsed.path) >= 2
     except Exception:
         return False
 
@@ -143,19 +156,42 @@ def compute_listing_hash(post):
 
 
 def extract_canonical_post_id(url, post_id=None):
-    """Extracts the numeric canonical identifier from Facebook or List.am URLs."""
+    """Extracts the numeric or unique canonical identifier from listing URLs across all platforms."""
     if post_id:
         return str(post_id)
     if not url:
         return None
 
-    path_match = re.search(r'/(?:posts|permalink|multi_permalink|story\.php|item)/(\d+)', url)
+    # Check registered platform extractor first
+    try:
+        from scrapers.platforms.registry import get_platform_for_url
+        platform = get_platform_for_url(url)
+        if platform:
+            pid = platform.extract_canonical_id(url)
+            if pid:
+                return str(pid)
+    except ImportError:
+        pass
+
+    # Generic multi-platform path pattern (e.g. /item/123, /posts/123, /ad/123, /listing/123, /rent/123)
+    path_match = re.search(r'/(?:posts|permalink|multi_permalink|story\.php|item|property|ad|listing|rent|sale|catalog|id)/(\d+)', url)
     if path_match:
         return path_match.group(1)
 
-    query_match = re.search(r'(?:story_fbid|fbid)=(\d+)', url)
+    # Telegram channel message pattern: t.me/channel/123
+    tg_match = re.search(r't\.me/[^/]+/(\d+)', url)
+    if tg_match:
+        return tg_match.group(1)
+
+    # Query param pattern (?story_fbid=123, &id=123, ?item_id=123, etc.)
+    query_match = re.search(r'[?&](?:story_fbid|fbid|item_id|ad_id|listing_id|id)=(\d+)', url)
     if query_match:
         return query_match.group(1)
+
+    # Trailing numeric segment (e.g. site.am/12345 or site.am/yerevan/12345.html)
+    trailing_match = re.search(r'/(\d+)(?:\.[a-zA-Z]+)?/?$', url)
+    if trailing_match:
+        return trailing_match.group(1)
 
     return None
 
