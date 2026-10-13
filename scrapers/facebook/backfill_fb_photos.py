@@ -16,7 +16,9 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from scrapers.utilities.env_utils import ensure_utf8_output
+from scrapers.utilities.logger import get_logger
 ensure_utf8_output()
+logger = get_logger("facebook_backfill")
 
 from scrapers.utilities.storage import ListingsStorage
 from scrapers.utilities.browser_humanizer import smooth_scroll, check_global_break
@@ -172,14 +174,14 @@ def extract_post_photos_from_page(page, canonical_id, max_photos=5):
 
 
 def get_fb_posts_to_backfill(storage, active_only=True, limit=None):
-    """Retrieves Facebook listings that have no images and have not been checked before."""
+    """Retrieves Facebook listings that need photo backfilling (pending, rate-limited, or errored)."""
     cur = storage.conn.cursor()
     query = """
         SELECT canonical_id, url, property_category, listing_type, created_at, is_active
         FROM listings
         WHERE source = 'Facebook'
           AND (images_json IS NULL OR images_json = '[]' OR length(images_json) <= 2)
-          AND photos_checked_at IS NULL
+          AND (photo_status IN ('PENDING', 'RATE_LIMITED', 'ERROR') OR (photos_checked_at IS NULL AND photo_status != 'NO_PHOTO'))
     """
     if active_only:
         query += " AND is_active = 1"
@@ -245,6 +247,7 @@ def run_fb_photos_backfill(
             return {"processed": 0, "photos_found": 0, "updated": 0, "remaining_in_db": 0}
 
         print(f"📋 Found {total_targets} Facebook listings requiring photo backfill.")
+        logger.info(f"Starting Facebook photo backfill: {total_targets} target posts (limit={limit}, active_only={active_only})")
 
         from playwright.sync_api import sync_playwright
 
@@ -306,8 +309,10 @@ def run_fb_photos_backfill(
                     block_info = check_facebook_rate_limit_or_block(page)
                     if block_info["blocked"]:
                         blocked_count += 1
-                        print(f"  ⚠️ Facebook rate limit / action block: {block_info['message']}")
-                        print("  ⏳ Skipping post WITHOUT marking as checked, cooling down for 45s...")
+                        storage.update_photo_status(cid, "RATE_LIMITED")
+                        logger.warning(f"Facebook rate limit / action block for {cid} ({url}): {block_info['message']}")
+                        print(f"  ⚠️ Facebook rate limit / action block: {block_info['message']} (marked RATE_LIMITED in DB)")
+                        print("  ⏳ Skipping post, cooling down for 45s...")
                         time.sleep(45.0)
                         continue
 
@@ -320,19 +325,26 @@ def run_fb_photos_backfill(
                     photos = extract_post_photos_from_page(page, cid)
 
                     if photos:
-                        storage.update_listing_images(cid, photos)
+                        storage.update_listing_images(cid, photos, status="SUCCESS")
                         photos_found_count += len(photos)
                         posts_with_photos += 1
-                        print(f"  📸 Found {len(photos)} photos -> Stored in database.")
+                        logger.info(f"Extracted {len(photos)} photos for {cid}")
+                        print(f"  📸 Found {len(photos)} photos -> Stored in database (SUCCESS).")
                     else:
-                        storage.update_listing_images(cid, [])
-                        print("  ℹ️ No post photos found (text-only or media unavailable).")
+                        storage.update_listing_images(cid, [], status="NO_PHOTO")
+                        logger.info(f"No photos found for {cid} (marked NO_PHOTO)")
+                        print("  ℹ️ No post photos found (marked NO_PHOTO in database).")
 
                     processed_count += 1
                     print(f"  📊 Run stats: Photos found: {photos_found_count} | Posts with photos: {posts_with_photos} | Remaining: {remaining_in_run} | Elapsed: {elapsed_sec:.1f}s (ETA: {eta_sec:.0f}s)")
 
                 except Exception as ex:
+                    logger.error(f"Error fetching {cid} ({url}): {ex}", exc_info=True)
                     print(f"  ❌ Error fetching {url}: {ex}")
+                    try:
+                        storage.update_photo_status(cid, "ERROR")
+                    except Exception:
+                        pass
 
                 # Human rest pause every 25 posts
                 if (idx + 1) % 25 == 0 and (idx + 1) < total_targets:
@@ -353,6 +365,11 @@ def run_fb_photos_backfill(
         """).fetchone()[0]
 
     total_elapsed = (datetime.now() - run_start).total_seconds()
+    logger.info(
+        f"Facebook photo backfill completed: processed={processed_count}/{total_targets}, "
+        f"photos_found={photos_found_count}, posts_with_photos={posts_with_photos}, "
+        f"blocked={blocked_count}, remaining={pending_remaining}, elapsed={total_elapsed:.1f}s"
+    )
     print("\n" + "=" * 65)
     print("Facebook Photo Backfill Run Summary")
     print(f"Processed Listings:   {processed_count}/{total_targets}")

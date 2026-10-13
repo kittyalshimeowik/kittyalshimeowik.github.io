@@ -32,3 +32,14 @@ See the complete specification in: [`.agents/rules/safe_scraping_and_browser_gui
    - Pricing must never capture per-m² rates ($55–$170) as total sale prices.
    - Locations must resolve Armenian inflected forms (`-ում`, `-ի`) and match bilingual translations in [`translations.js`](file:///d:/Projects/kittyalshimeowik.github.io/translations.js).
    - Re-running classification must sync both SQLite ([`scrapers/data/listings.db`](file:///d:/Projects/kittyalshimeowik.github.io/scrapers/data/listings.db)) and public feeds ([`scrapers/processors/master_listings_json/`](file:///d:/Projects/kittyalshimeowik.github.io/scrapers/processors/master_listings_json/)).
+
+---
+
+## 💻 Terminal & Shell Preferences
+
+- **Environment**: User operates strictly in **Git Bash**.
+- **Formatting**: Always format terminal commands using Git Bash conventions:
+  - Use forward slashes (`/`) instead of Windows backslashes (`\`).
+  - Use `.venv/Scripts/python` (or `source .venv/Scripts/activate && python`).
+  - Use standard POSIX shell syntax.
+

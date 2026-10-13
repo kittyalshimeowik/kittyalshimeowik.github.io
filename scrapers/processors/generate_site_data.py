@@ -14,6 +14,9 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from scrapers.utilities.housing_parser import extract_housing_details
+from scrapers.utilities.logger import get_logger
+
+logger = get_logger("generate_site_data")
 
 # --- File Paths & Directories ---
 SCRAPERS_ROOT = os.path.abspath(os.path.join(SCRIPT_DIR, '..'))
@@ -350,6 +353,37 @@ def get_unique_listings_from_all_groups():
     id_unique_posts = list(all_unique_posts_by_id.values())
     content_unique_posts = merge_duplicate_listings(id_unique_posts)
 
+    # Enrich from SQLite storage to pick up backfilled photos and translations
+    try:
+        from scrapers.utilities.storage import ListingsStorage
+        from scrapers.utilities.translator import is_genuine_translation
+        with ListingsStorage() as storage:
+            db_records = {r["canonical_id"]: r for r in storage.get_all_listings(active_only=True)}
+            enriched_photos = 0
+            enriched_trans = 0
+            for post in content_unique_posts:
+                cid = post.get("canonical_id")
+                if cid and cid in db_records:
+                    db_item = db_records[cid]
+                    # Overlay photos if SQLite has photos and post doesn't, or SQLite has more
+                    db_images = db_item.get("images") or []
+                    post_images = post.get("images") or []
+                    if len(db_images) > len(post_images):
+                        post["images"] = db_images
+                        enriched_photos += 1
+
+                    # Overlay translations if SQLite has a genuine translation
+                    db_en = db_item.get("full_text_en")
+                    if db_en and is_genuine_translation(db_item.get("full_text"), db_en):
+                        if not is_genuine_translation(post.get("full_text"), post.get("full_text_en")):
+                            post["full_text_en"] = db_en
+                            enriched_trans += 1
+
+            if enriched_photos > 0 or enriched_trans > 0:
+                print(f"[INFO] SQLite Storage Overlay: Enriched {enriched_photos} posts with photos and {enriched_trans} with translations.")
+    except Exception as e:
+        print(f"[WARNING] Could not overlay SQLite enrichments: {e}")
+
     print(f"[SUCCESS] Processed {total_files} files across all scraper modules.")
     print(f"[SUCCESS] Retained {len(content_unique_posts)} unique listings post-deduplication.")
     return content_unique_posts
@@ -471,11 +505,13 @@ def generate_site_data():
     print("=" * 60)
     print("Starting Master JSON Generation for Website Visualization")
     print("=" * 60)
+    logger.info("Starting master JSON generation for website visualization")
 
     dedup_cache = load_dedup_cache()
     all_unique_data = get_unique_listings_from_all_groups()
 
     if all_unique_data:
+        logger.info(f"Loaded {len(all_unique_data)} raw unique listings across all sources")
         processed_listings = []
         for post in all_unique_data:
             l_hash = compute_listing_hash(post)
@@ -490,11 +526,13 @@ def generate_site_data():
             
             processed_listings.append(post)
 
-        # Automatically translate new listings to English (using persistent cache)
+        # Automatically enrich listings with translations using persistent cache only
         try:
             from scrapers.utilities.translator import enrich_listings_with_translations
-            enrich_listings_with_translations(processed_listings)
+            enrich_listings_with_translations(processed_listings, cached_only=True)
+            logger.info("Enriched listings with cached English translations")
         except Exception as e:
+            logger.warning(f"Translation enrichment skipped or failed: {e}")
             print(f"[WARNING] Translation enrichment skipped or failed: {e}")
 
         categorize_and_save_master_files(processed_listings)
@@ -506,8 +544,11 @@ def generate_site_data():
             with ListingsStorage() as storage:
                 sync_stats = storage.batch_upsert_listings(processed_listings)
                 storage.reactivate_all_listings()
-                print(f"[INFO] SQLite Storage: Synced {len(processed_listings)} listings (active: {storage.count_listings(active_only=True)}).")
+                active_count = storage.count_listings(active_only=True)
+                logger.info(f"SQLite storage sync completed: {len(processed_listings)} listings synced, {active_count} active")
+                print(f"[INFO] SQLite Storage: Synced {len(processed_listings)} listings (active: {active_count}).")
         except Exception as e:
+            logger.error(f"SQLite storage sync error: {e}", exc_info=True)
             print(f"[WARNING] SQLite storage sync skipped: {e}")
 
         meta_file_path = os.path.join(MASTER_OUTPUT_DIR, "meta.json")
@@ -519,7 +560,9 @@ def generate_site_data():
         with open(meta_file_path, 'w', encoding='utf-8') as f:
             json.dump(build_meta, f, indent=2)
         print(f"[INFO] Meta metadata stored: '{meta_file_path}'")
+        logger.info(f"Master site data build successfully finished. Total listings: {len(processed_listings)}")
     else:
+        logger.warning("No listings data found or processed during site generation")
         print("[WARNING] No data processed.")
 
     print("=" * 60)

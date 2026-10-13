@@ -14,7 +14,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=dev2">
+    <script>
+        (function() {
+            var h = window.location.hostname || '';
+            var p = window.location.port || '';
+            var q = window.location.href || '';
+            if (h === 'localhost' || h === '[::1]' || p === '8000' || window.location.protocol === 'file:' || /[?&#](dev|test|debug)\b/i.test(q) || localStorage.getItem('devMode') === 'true') {
+                document.documentElement.classList.add('is-dev-env');
+            }
+        })();
+    </script>
 </head>
 <body>
 
@@ -64,6 +74,26 @@
                 </div>
                 <aside class="filter-panel" aria-labelledby="filter-heading">
                     <div id="filter-content">
+                        <!-- Developer / Testing Filter Group (active on localhost, port 8000, or ?dev=1 / ?test=1) -->
+                        <fieldset class="filter-group dev-test-group" id="dev-test-filter-group">
+                            <div class="filter-group-header">
+                                <legend data-i18n="devTestingFilter">🧪 Testing / Inspection</legend>
+                                <span class="dev-badge">DEV</span>
+                            </div>
+                            <label>
+                                <input type="checkbox" id="filter-both-translated-photos" name="dev-filter" value="both">
+                                <span data-i18n="translatedAndPhotos">Only translated &amp; with photos</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" id="filter-photos-only" name="dev-filter" value="photos">
+                                <span data-i18n="photosOnly">With photos only</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" id="filter-translated-only" name="dev-filter" value="translated">
+                                <span data-i18n="translatedOnly">Translated only</span>
+                            </label>
+                        </fieldset>
+
                         <!-- Keyword Search Input -->
                         <label class="field-label" for="keyword-search" data-i18n="searchKeywords">Keyword search</label>
                         <input type="search" id="keyword-search" class="filter-control keyword-search" data-i18n-placeholder="searchPlaceholder" placeholder="Search keywords, street...">
@@ -166,6 +196,10 @@
                     <div class="results-title-wrap">
                         <h2 data-i18n="availableListings">Available listings</h2>
                         <span class="result-count" id="result-count">0 listings</span>
+                        <button type="button" id="dev-quick-filter-btn" class="dev-quick-pill" title="Toggle Translated & Photos Filter">
+                            <span class="dev-quick-pill-icon">🧪</span>
+                            <span class="dev-quick-pill-text">Translated &amp; Photos Only (45)</span>
+                        </button>
                     </div>
                     <div class="toolbar-sort-wrap">
                         <label class="sort-heading" for="sort-filter" data-i18n="sort">Sort:</label>
@@ -234,7 +268,7 @@
         </div>
     </div>
 
-    <script src="translations.js"></script>
-    <script src="script.js"></script>
+    <script src="translations.js?v=dev2"></script>
+    <script src="script.js?v=dev2"></script>
 </body>
 </html>

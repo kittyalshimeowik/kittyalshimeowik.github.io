@@ -9,6 +9,9 @@ from bs4 import BeautifulSoup
 
 from scrapers.backfill.base import BasePlatformBackfiller
 from scrapers.listam.utilities.listam_utils import extract_listing_images, human_scroll
+from scrapers.utilities.logger import get_logger
+
+logger = get_logger("listam_backfill")
 
 
 def clean_listam_images(raw_images):
@@ -57,7 +60,7 @@ class ListAmBackfiller(BasePlatformBackfiller):
             SELECT COUNT(*) FROM listings
             WHERE source = 'List.am'
               AND (images_json IS NULL OR images_json = '[]' OR length(images_json) <= 2)
-              AND photos_checked_at IS NULL
+              AND (photo_status IN ('PENDING', 'RATE_LIMITED', 'ERROR') OR (photos_checked_at IS NULL AND photo_status != 'NO_PHOTO'))
         """
         if active_only:
             query += " AND is_active = 1"
@@ -69,8 +72,8 @@ class ListAmBackfiller(BasePlatformBackfiller):
         query = """
             SELECT COUNT(*) FROM listings
             WHERE source = 'List.am'
-              AND (full_text_en IS NULL OR length(trim(full_text_en)) <= 5)
               AND full_text IS NOT NULL AND length(trim(full_text)) > 5
+              AND (translation_status IN ('PENDING', 'RATE_LIMITED', 'ERROR') OR translation_status IS NULL)
         """
         if active_only:
             query += " AND is_active = 1"
@@ -84,7 +87,7 @@ class ListAmBackfiller(BasePlatformBackfiller):
             FROM listings
             WHERE source = 'List.am'
               AND (images_json IS NULL OR images_json = '[]' OR length(images_json) <= 2)
-              AND photos_checked_at IS NULL
+              AND (photo_status IN ('PENDING', 'RATE_LIMITED', 'ERROR') OR (photos_checked_at IS NULL AND photo_status != 'NO_PHOTO'))
         """
         if active_only:
             query += " AND is_active = 1"
@@ -110,6 +113,7 @@ class ListAmBackfiller(BasePlatformBackfiller):
             return {"processed": 0, "photos_found": 0, "remaining_in_db": 0}
 
         print(f"🚀 Commencing List.am photo backfill for {total_targets} listings...")
+        logger.info(f"Starting List.am photo backfill: {total_targets} target listings (limit={limit}, active_only={active_only})")
 
         from scrapers.listam.list_am_scraper import DirectBrowserListAmScraper
         scraper = DirectBrowserListAmScraper()
@@ -144,8 +148,10 @@ class ListAmBackfiller(BasePlatformBackfiller):
                         cf_status = check_listam_rate_limit_or_challenge(driver)
                         if cf_status["blocked"]:
                             blocked_count += 1
-                            print(f"  ⚠️ List.am / Cloudflare block: {cf_status['message']}")
-                            print("  ⏳ Skipping listing WITHOUT marking as checked, backing off for 25s...")
+                            storage.update_photo_status(cid, "RATE_LIMITED")
+                            logger.warning(f"List.am rate limit / Cloudflare block for {cid} ({url}): {cf_status['message']}")
+                            print(f"  ⚠️ List.am / Cloudflare block: {cf_status['message']} (marked RATE_LIMITED in DB)")
+                            print("  ⏳ Skipping listing, backing off for 25s...")
                             time.sleep(25.0)
                             continue
 
@@ -156,19 +162,26 @@ class ListAmBackfiller(BasePlatformBackfiller):
                     images = clean_listam_images(raw_images)
 
                     if images:
-                        storage.update_listing_images(cid, images)
+                        storage.update_listing_images(cid, images, status="SUCCESS")
                         photos_found_count += len(images)
                         posts_with_photos += 1
-                        print(f"  📸 Found {len(images)} photos -> Stored in database.")
+                        logger.info(f"Extracted {len(images)} photos for {cid}")
+                        print(f"  📸 Found {len(images)} photos -> Stored in database (SUCCESS).")
                     else:
-                        storage.update_listing_images(cid, [])
-                        print("  ℹ️ No property photos found.")
+                        storage.update_listing_images(cid, [], status="NO_PHOTO")
+                        logger.info(f"No property photos found for {cid} (marked NO_PHOTO)")
+                        print("  ℹ️ No property photos found (marked NO_PHOTO in database).")
 
                     processed_count += 1
                     print(f"  📊 Run stats: Photos found: {photos_found_count} | Posts with photos: {posts_with_photos} | Remaining: {remaining_in_run} | Elapsed: {elapsed_sec:.1f}s (ETA: {eta_sec:.0f}s)")
 
                 except Exception as ex:
+                    logger.error(f"Error fetching {cid} ({url}): {ex}", exc_info=True)
                     print(f"  ❌ Error fetching {url}: {ex}")
+                    try:
+                        storage.update_photo_status(cid, "ERROR")
+                    except Exception:
+                        pass
 
                 # Rest break every 25 listings
                 if (idx + 1) % 25 == 0 and (idx + 1) < total_targets:
@@ -185,6 +198,11 @@ class ListAmBackfiller(BasePlatformBackfiller):
         total_elapsed = time.time() - run_start
         pending_remaining = self.get_pending_photos_count(storage, active_only=active_only)
 
+        logger.info(
+            f"List.am photo backfill completed: processed={processed_count}/{total_targets}, "
+            f"photos_found={photos_found_count}, posts_with_photos={posts_with_photos}, "
+            f"blocked={blocked_count}, remaining={pending_remaining}, elapsed={total_elapsed:.1f}s"
+        )
         print("\n" + "=" * 65)
         print("List.am Photo Backfill Run Summary")
         print(f"Total Targets In Run: {total_targets}")

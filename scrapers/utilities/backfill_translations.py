@@ -14,27 +14,31 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from scrapers.utilities.env_utils import ensure_utf8_output
+from scrapers.utilities.logger import get_logger
 ensure_utf8_output()
+logger = get_logger("translations_backfill")
 
 from scrapers.utilities.storage import ListingsStorage, compute_record_completeness
 from scrapers.utilities.translator import (
     TranslationCache,
     batch_translate_texts,
     translate_single_text,
-    is_already_english
+    is_already_english,
+    is_genuine_translation,
+    is_recently_rate_limited
 )
 
 
 def get_listings_missing_translation(storage, source=None, active_only=True, limit=None):
-    """Retrieves listings that lack an English translation."""
+    """Retrieves listings that lack an English translation (pending, rate-limited, or errored)."""
     cur = storage.conn.cursor()
     query = """
         SELECT canonical_id, source, url, property_category, listing_type, 
                full_text, full_text_en, is_active
         FROM listings
-        WHERE (full_text_en IS NULL OR length(full_text_en) <= 5)
-          AND full_text IS NOT NULL 
+        WHERE full_text IS NOT NULL 
           AND length(trim(full_text)) > 5
+          AND (translation_status IN ('PENDING', 'RATE_LIMITED', 'ERROR') OR translation_status IS NULL)
     """
     params = []
 
@@ -47,12 +51,18 @@ def get_listings_missing_translation(storage, source=None, active_only=True, lim
 
     query += " ORDER BY is_active DESC, creation_timestamp DESC"
 
-    if limit is not None and limit > 0:
-        query += f" LIMIT {int(limit)}"
-
     cur.execute(query, params)
     rows = cur.fetchall()
-    return [dict(r) for r in rows]
+
+    missing = []
+    for r in rows:
+        d = dict(r)
+        if not is_genuine_translation(d.get("full_text"), d.get("full_text_en")):
+            missing.append(d)
+            if limit is not None and limit > 0 and len(missing) >= limit:
+                break
+
+    return missing
 
 
 def run_translation_backfill(
@@ -81,6 +91,7 @@ def run_translation_backfill(
             return {"processed": 0, "translated": 0}
 
         print(f"📋 Found {total_targets} listings missing English translation.\n")
+        logger.info(f"Starting translation backfill: {total_targets} listings (source={source}, limit={limit}, active_only={active_only}, batch_size={batch_size})")
 
         cache = TranslationCache()
         print(f"💾 Loaded translation cache ({len(cache)} entries).")
@@ -102,20 +113,20 @@ def run_translation_backfill(
             )
 
             batch_saved = 0
-            with storage.conn:
-                cur = storage.conn.cursor()
-                for item, en_text in zip(chunk, translated_batch):
-                    cid = item["canonical_id"]
-                    if en_text and en_text.strip():
-                        item["full_text_en"] = en_text.strip()
-                        new_score = compute_record_completeness(item)
-                        cur.execute("""
-                            UPDATE listings
-                            SET full_text_en = ?, completeness_score = ?
-                            WHERE canonical_id = ?
-                        """, (en_text.strip(), new_score, cid))
-                        translated_count += 1
-                        batch_saved += 1
+            for item, en_text in zip(chunk, translated_batch):
+                cid = item["canonical_id"]
+                orig_text = item.get("full_text") or ""
+                if en_text and en_text.strip() and is_genuine_translation(orig_text, en_text):
+                    storage.update_listing_translation(cid, en_text.strip(), status="SUCCESS")
+                    translated_count += 1
+                    batch_saved += 1
+                else:
+                    curr_st = "RATE_LIMITED" if is_recently_rate_limited() else "ERROR"
+                    storage.update_translation_status(cid, curr_st)
+                    if curr_st == "RATE_LIMITED":
+                        logger.warning(f"Translation rate limited (HTTP 429) for {cid}")
+                    else:
+                        logger.warning(f"Translation error/failed validation for {cid}")
 
             cache.save()
 
@@ -140,6 +151,10 @@ def run_translation_backfill(
         ))
 
     total_elapsed = (datetime.now() - run_start).total_seconds()
+    logger.info(
+        f"Translation backfill completed: processed={total_targets}, translated={translated_count}, "
+        f"remaining_in_db={remaining_in_db}, elapsed={total_elapsed:.1f}s"
+    )
     print("\n" + "=" * 65)
     print("Translation Backfill Run Summary")
     print(f"Processed In Run:     {total_targets}")

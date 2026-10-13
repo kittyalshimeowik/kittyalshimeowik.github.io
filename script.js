@@ -74,11 +74,100 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
+        initDevFilterGroup();
+        updateDevFilterCounts();
+
         if (allListings.length > 0) {
             renderActiveFilterChips();
             updatePaginationInfo();
         }
     }
+
+    function isDevTestEnvironment() {
+        try {
+            if (document.documentElement.classList.contains("is-dev-env")) return true;
+            const hostname = window.location.hostname || "";
+            const port = window.location.port || "";
+            const href = window.location.href || "";
+
+            // 1. Any localhost / loopback address
+            if (hostname === "localhost" || hostname === "[::1]" || hostname === "127.0.0.1") return true;
+
+            // 2. Port 8000
+            if (port === "8000") return true;
+
+            // 3. Local file protocol
+            if (window.location.protocol === "file:") return true;
+
+            // 4. Query param or hash flag (?dev=1, ?test=1, #dev, #test)
+            if (/[?&#](?:dev|test|debug)\b/i.test(href)) return true;
+
+            // 5. LocalStorage override
+            if (localStorage.getItem("devMode") === "true") return true;
+        } catch {
+            // Safe fallback
+        }
+        return false;
+    }
+
+    function initDevFilterGroup() {
+        const devGroup = document.getElementById("dev-test-filter-group");
+        const devQuickBtn = document.getElementById("dev-quick-filter-btn");
+        const isDev = isDevTestEnvironment();
+        if (isDev) {
+            document.documentElement.classList.add("is-dev-env");
+            if (devGroup) devGroup.style.display = "";
+            if (devQuickBtn) devQuickBtn.style.display = "";
+        } else {
+            if (devGroup) devGroup.style.display = "none";
+            if (devQuickBtn) devQuickBtn.style.display = "none";
+        }
+    }
+
+    function hasListingPhotos(item) {
+        return Boolean(
+            item.images &&
+            item.images.length > 0 &&
+            typeof item.images[0] === "string" &&
+            item.images[0].trim().length > 0
+        );
+    }
+
+    function hasListingTranslation(item) {
+        const orig = (item.full_text && item.full_text.trim()) || "";
+        const en = (item.full_text_en && item.full_text_en.trim()) || "";
+        if (!en || en.length <= 5) return false;
+        if (/[\u0530-\u058F\u0400-\u04FF]/.test(en)) return false;
+        if (en.toLowerCase() !== orig.toLowerCase()) return true;
+        return !/[\u0530-\u058F\u0400-\u04FF]/.test(orig);
+    }
+
+    function updateDevFilterCounts() {
+        if (!isDevTestEnvironment() || allListings.length === 0) return;
+        const bothSpan = document.querySelector("#filter-both-translated-photos ~ span");
+        const photosSpan = document.querySelector("#filter-photos-only ~ span");
+        const transSpan = document.querySelector("#filter-translated-only ~ span");
+        const quickPillText = document.querySelector("#dev-quick-filter-btn .dev-quick-pill-text");
+
+        let countBoth = 0;
+        let countPhotos = 0;
+        let countTrans = 0;
+
+        allListings.forEach(item => {
+            const photos = hasListingPhotos(item);
+            const trans = hasListingTranslation(item);
+            if (photos) countPhotos++;
+            if (trans) countTrans++;
+            if (photos && trans) countBoth++;
+        });
+
+        if (bothSpan) bothSpan.textContent = `${text("translatedAndPhotos")} (${countBoth})`;
+        if (photosSpan) photosSpan.textContent = `${text("photosOnly")} (${countPhotos})`;
+        if (transSpan) transSpan.textContent = `${text("translatedOnly")} (${countTrans})`;
+        if (quickPillText) quickPillText.textContent = `${text("translatedAndPhotos")} (${countBoth})`;
+    }
+
+    initDevFilterGroup();
 
     function updateFilterToggle() {
         const isCollapsed = catalogLayout.classList.contains("filters-collapsed");
@@ -168,6 +257,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             populateLocations();
             applyLanguage();
+            updateDevFilterCounts();
+            initDevFilterEvents();
             applyFilters();
             initInfiniteScroll();
         })
@@ -286,6 +377,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const minimumRooms = Number(document.getElementById("rooms-filter").value) || 0;
         const query = keywordSearch ? keywordSearch.value.trim().toLowerCase() : "";
 
+        // Dev / Test Filter Controls (Active when in localhost:8000 or dev mode)
+        const devBothCb = document.getElementById("filter-both-translated-photos");
+        const devPhotosCb = document.getElementById("filter-photos-only");
+        const devTransCb = document.getElementById("filter-translated-only");
+        const requireBoth = devBothCb ? devBothCb.checked : false;
+        const requirePhotos = devPhotosCb ? devPhotosCb.checked : false;
+        const requireTrans = devTransCb ? devTransCb.checked : false;
+
         currentFilteredListings = allListings.filter(item => {
             const itemPrice = getFirstPrice(item);
             const itemZonings = getListingZoning(item);
@@ -301,6 +400,22 @@ document.addEventListener("DOMContentLoaded", () => {
             const priceMatches = itemPrice === null ? minPrice === 0 : itemPrice >= minPrice && itemPrice <= maxPrice;
             const roomMatches = minimumRooms === 0 || (item.rooms || []).some(room => Number(room) >= minimumRooms);
 
+            let devMatches = true;
+            if (requireBoth || requirePhotos || requireTrans) {
+                const itemHasPhotos = hasListingPhotos(item);
+                const itemHasTranslation = hasListingTranslation(item);
+
+                if (requireBoth && (!itemHasPhotos || !itemHasTranslation)) {
+                    devMatches = false;
+                }
+                if (requirePhotos && !itemHasPhotos) {
+                    devMatches = false;
+                }
+                if (requireTrans && !itemHasTranslation) {
+                    devMatches = false;
+                }
+            }
+
             let queryMatches = true;
             if (query) {
                 const searchCorpus = [
@@ -315,8 +430,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 queryMatches = query.split(/\s+/).every(token => searchCorpus.includes(token));
             }
 
-            return sourceMatches && typeMatches && propertyTypeMatches && zoningMatches && locationMatches && priceMatches && roomMatches && queryMatches;
+            return sourceMatches && typeMatches && propertyTypeMatches && zoningMatches && locationMatches && priceMatches && roomMatches && devMatches && queryMatches;
         });
+
+        const devQuickBtn = document.getElementById("dev-quick-filter-btn");
+        if (devQuickBtn) {
+            devQuickBtn.classList.toggle("active", Boolean(requireBoth));
+        }
 
         const sortFilter = document.getElementById("sort-filter");
         const sortOrder = sortFilter ? sortFilter.value : "newest";
@@ -1338,6 +1458,31 @@ document.addEventListener("DOMContentLoaded", () => {
             chips.push({ label: `${roomsVal}+ Rooms`, clear: () => { document.getElementById("rooms-filter").value = "All"; applyFilters(); } });
         }
 
+        // Active chips for Dev / Test Filters
+        const devBothCb = document.getElementById("filter-both-translated-photos");
+        const devPhotosCb = document.getElementById("filter-photos-only");
+        const devTransCb = document.getElementById("filter-translated-only");
+
+        if (devBothCb && devBothCb.checked) {
+            chips.push({
+                label: `📷+🌐 ${text("chipTranslatedAndPhotos") || "Translated & Photos"}`,
+                clear: () => { devBothCb.checked = false; applyFilters(); }
+            });
+        } else {
+            if (devPhotosCb && devPhotosCb.checked) {
+                chips.push({
+                    label: `📷 ${text("chipPhotosOnly") || "With Photos"}`,
+                    clear: () => { devPhotosCb.checked = false; applyFilters(); }
+                });
+            }
+            if (devTransCb && devTransCb.checked) {
+                chips.push({
+                    label: `🌐 ${text("chipTranslatedOnly") || "Translated"}`,
+                    clear: () => { devTransCb.checked = false; applyFilters(); }
+                });
+            }
+        }
+
         const sortFilter = document.getElementById("sort-filter");
         if (sortFilter && sortFilter.value !== "newest") {
             const sortTextMap = {
@@ -1378,6 +1523,48 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
+    function initDevFilterEvents() {
+        const devBothCb = document.getElementById("filter-both-translated-photos");
+        const devPhotosCb = document.getElementById("filter-photos-only");
+        const devTransCb = document.getElementById("filter-translated-only");
+
+        if (!devBothCb || !devPhotosCb || !devTransCb) return;
+
+        devBothCb.addEventListener("change", () => {
+            if (devBothCb.checked) {
+                devPhotosCb.checked = false;
+                devTransCb.checked = false;
+            }
+            applyFilters();
+        });
+
+        devPhotosCb.addEventListener("change", () => {
+            if (devPhotosCb.checked) {
+                devBothCb.checked = false;
+                devTransCb.checked = false;
+            }
+            applyFilters();
+        });
+
+        devTransCb.addEventListener("change", () => {
+            if (devTransCb.checked) {
+                devBothCb.checked = false;
+                devPhotosCb.checked = false;
+            }
+            applyFilters();
+        });
+
+        const devQuickBtn = document.getElementById("dev-quick-filter-btn");
+        if (devQuickBtn) {
+            devQuickBtn.addEventListener("click", () => {
+                if (devBothCb) {
+                    devBothCb.checked = !devBothCb.checked;
+                    devBothCb.dispatchEvent(new Event("change"));
+                }
+            });
+        }
+    }
+
     let debounceTimer = null;
     function handleFilterChange(event) {
         if (event.target.matches("#keyword-search, #min-price, #max-price")) {
@@ -1386,7 +1573,7 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        if (event.target.matches(".filter-control, .sort-select, .mode-control, input[name='listing-type'], input[name='property-type'], input[name='property-zoning'], input[name='location-filter'], #sort-filter")) {
+        if (event.target.matches(".filter-control, .sort-select, .mode-control, input[name='listing-type'], input[name='property-type'], input[name='property-zoning'], input[name='location-filter'], input[name='dev-filter'], #sort-filter")) {
             applyFilters();
         }
     }
@@ -1413,6 +1600,8 @@ document.addEventListener("DOMContentLoaded", () => {
     resetFilters.addEventListener("click", () => {
         if (keywordSearch) keywordSearch.value = "";
         document.querySelectorAll("input[type='checkbox']").forEach(input => input.checked = false);
+        const devQuickBtn = document.getElementById("dev-quick-filter-btn");
+        if (devQuickBtn) devQuickBtn.classList.remove("active");
         document.getElementById("source-filter").value = "All";
         syncCurrencyWithLanguage();
         document.getElementById("listing-type-mode").value = "include";

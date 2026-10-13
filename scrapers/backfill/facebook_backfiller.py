@@ -18,7 +18,7 @@ class FacebookBackfiller(BasePlatformBackfiller):
             SELECT COUNT(*) FROM listings
             WHERE source = 'Facebook'
               AND (images_json IS NULL OR images_json = '[]' OR length(images_json) <= 2)
-              AND photos_checked_at IS NULL
+              AND (photo_status IN ('PENDING', 'RATE_LIMITED', 'ERROR') OR (photos_checked_at IS NULL AND photo_status != 'NO_PHOTO'))
         """
         if active_only:
             query += " AND is_active = 1"
@@ -30,8 +30,8 @@ class FacebookBackfiller(BasePlatformBackfiller):
         query = """
             SELECT COUNT(*) FROM listings
             WHERE source = 'Facebook'
-              AND (full_text_en IS NULL OR length(trim(full_text_en)) <= 5)
               AND full_text IS NOT NULL AND length(trim(full_text)) > 5
+              AND (translation_status IN ('PENDING', 'RATE_LIMITED', 'ERROR') OR translation_status IS NULL)
         """
         if active_only:
             query += " AND is_active = 1"

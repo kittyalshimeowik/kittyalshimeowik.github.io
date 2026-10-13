@@ -5,8 +5,10 @@ import os
 from datetime import datetime
 
 from scrapers.utilities.env_utils import ensure_utf8_output, get_venv_python
+from scrapers.utilities.logger import get_logger, print_log_diagnostic_report
 
 ensure_utf8_output()
+logger = get_logger("pipeline")
 
 # Define core processing scripts
 BACKFILL_SCRIPT = "run_backfill.py"
@@ -25,16 +27,20 @@ def run_step(script_path, description, extra_args=None):
     print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] STARTING: {description}")
     print(f"Executing: {' '.join(cmd)}")
     print(f"{'='*50}\n")
+    logger.info(f"Starting step: {description} | Executing: {' '.join(cmd)}")
 
     try:
         subprocess.run(cmd, check=True, text=True)
         print(f"\n[SUCCESS] {description} completed successfully.")
+        logger.info(f"Step '{description}' completed successfully.")
         return True
     except subprocess.CalledProcessError as e:
         print(f"\n[ERROR] {description} failed with exit code {e.returncode}.", file=sys.stderr)
+        logger.error(f"Step '{description}' failed with exit code {e.returncode}.")
         return False
     except FileNotFoundError:
         print(f"\n[ERROR] Could not find the script at: {script_path}", file=sys.stderr)
+        logger.error(f"Could not find script at: {script_path}")
         return False
 
 def manage_pipeline_storage():
@@ -164,7 +170,17 @@ def main():
         dest="show_status",
         help="Display real-time completeness and backfill status dashboard."
     )
+    parser.add_argument(
+        "--logs", "--analyze-logs",
+        action="store_true",
+        dest="show_logs",
+        help="Analyze recent system logs for errors, rate limits, and common issues."
+    )
     args = parser.parse_args()
+
+    if args.show_logs:
+        print_log_diagnostic_report()
+        return
 
     if args.show_status:
         from scrapers.processors.track_backfills import print_dashboard
@@ -175,6 +191,7 @@ def main():
     should_scrape = (not args.no_scrape) and (args.scrape or not is_backfill_mode)
 
     start_time = datetime.now()
+    logger.info(f"Pipeline started: scrape={should_scrape}, backfill={is_backfill_mode}, platform={args.platform}")
     print("🚀 Starting Armenia Real Estate Data Pipeline...")
 
     # Step 1: Run Scrapers (skipped if in decoupled backfill mode or --no-scrape)
@@ -259,6 +276,7 @@ def main():
         print("\n⏩ Skipping Git sync (--no-push requested).")
         
     elapsed = datetime.now() - start_time
+    logger.info(f"Pipeline finished successfully in {elapsed.total_seconds():.2f} seconds.")
     print(f"\n✨ Pipeline finished successfully in {elapsed.total_seconds():.2f} seconds!")
     print("🌐 Your website data is now updated and ready to display.")
 

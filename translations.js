@@ -95,6 +95,13 @@ const TRANSLATIONS = {
         showMore: "Show more",
         showLess: "Show less",
         translatedBadge: "Translated",
+        devTestingFilter: "🧪 Testing / Inspection",
+        translatedAndPhotos: "Only translated & with photos",
+        photosOnly: "With photos only",
+        translatedOnly: "Translated only",
+        chipTranslatedAndPhotos: "Translated & Photos",
+        chipPhotosOnly: "With Photos",
+        chipTranslatedOnly: "Translated",
         listingTypes: { Sale: "Sale", Rent: "Rent", Unknown: "Unknown" },
         propertyTypes: { Apartment: "Apartment", House: "House", Land: "Land" }
     },
@@ -189,6 +196,13 @@ const TRANSLATIONS = {
         showMore: "Տեսնել ավելին",
         showLess: "Փակել",
         translatedBadge: "Թարգմանված",
+        devTestingFilter: "🧪 Ստուգում / Թեստ",
+        translatedAndPhotos: "Միայն թարգմանված և լուսանկարներով",
+        photosOnly: "Միայն լուսանկարներով",
+        translatedOnly: "Միայն թարգմանված",
+        chipTranslatedAndPhotos: "Թարգմանված և լուսանկարներով",
+        chipPhotosOnly: "Լուսանկարներով",
+        chipTranslatedOnly: "Թարգմանված",
         listingTypes: { Sale: "Վաճառք", Rent: "Վարձակալություն", Unknown: "Անհայտ" },
         propertyTypes: { Apartment: "Բնակարան", House: "Տուն", Land: "Հողատարածք" }
     }
